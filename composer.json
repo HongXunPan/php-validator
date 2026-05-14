@@ -1,0 +1,34 @@
+{
+    "name": "hongxunpan/validator",
+    "description": "Framework-agnostic validator core with extensible DSL keywords and adapter-friendly contracts",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/HongXunPan/php-validator",
+    "keywords": [
+        "validator",
+        "validation",
+        "dsl",
+        "php"
+    ],
+    "support": {
+        "issues": "https://github.com/HongXunPan/php-validator/issues",
+        "source": "https://github.com/HongXunPan/php-validator"
+    },
+    "autoload": {
+        "psr-4": {
+            "HongXunPan\\Validator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "HongXunPan",
+            "email": "me@kangxuanpeng.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "scripts": {
+        "test": "@php tests/TestRunner.php"
+    }
+}

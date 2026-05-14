@@ -1,0 +1,7 @@
+<?php
+
+namespace HongXunPan\Validator\Rule\Marker;
+
+interface TimeRule
+{
+}
