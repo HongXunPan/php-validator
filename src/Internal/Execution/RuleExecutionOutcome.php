@@ -7,6 +7,13 @@ use HongXunPan\Validator\Result\RuleResult;
 
 class RuleExecutionOutcome
 {
+    const STATUS_SKIPPED = 'skipped';
+    const STATUS_PASSED = 'passed';
+    const STATUS_FAILED = 'failed';
+
+    const REASON_UNSUPPORTED = 'unsupported';
+    const REASON_RULE_FAILED = 'rule_failed';
+
     /**
      * @var string
      */
@@ -39,14 +46,14 @@ class RuleExecutionOutcome
 
     public static function skipped()
     {
-        return new static(RuleExecutionStatus::SKIPPED, null, null, null, null);
+        return new static(self::STATUS_SKIPPED, null, null, null, null);
     }
 
     public static function unsupported()
     {
         return new static(
-            RuleExecutionStatus::FAILED,
-            RuleExecutionFailureReason::UNSUPPORTED,
+            self::STATUS_FAILED,
+            self::REASON_UNSUPPORTED,
             null,
             null,
             null
@@ -56,7 +63,7 @@ class RuleExecutionOutcome
     public static function passed(ResolvedRule $resolvedRule, RuleResult $ruleResult)
     {
         return new static(
-            RuleExecutionStatus::PASSED,
+            self::STATUS_PASSED,
             null,
             $resolvedRule,
             null,
@@ -67,8 +74,8 @@ class RuleExecutionOutcome
     public static function failed(ResolvedRule $resolvedRule, $messageTemplate, RuleResult $ruleResult)
     {
         return new static(
-            RuleExecutionStatus::FAILED,
-            RuleExecutionFailureReason::RULE_FAILED,
+            self::STATUS_FAILED,
+            self::REASON_RULE_FAILED,
             $resolvedRule,
             $messageTemplate,
             $ruleResult
@@ -77,22 +84,22 @@ class RuleExecutionOutcome
 
     public function isSkipped()
     {
-        return $this->status === RuleExecutionStatus::SKIPPED;
+        return $this->status === self::STATUS_SKIPPED;
     }
 
     public function isPassed()
     {
-        return $this->status === RuleExecutionStatus::PASSED;
+        return $this->status === self::STATUS_PASSED;
     }
 
     public function isFailed()
     {
-        return $this->status === RuleExecutionStatus::FAILED;
+        return $this->status === self::STATUS_FAILED;
     }
 
     public function isUnsupported()
     {
-        return $this->failureReason === RuleExecutionFailureReason::UNSUPPORTED;
+        return $this->failureReason === self::REASON_UNSUPPORTED;
     }
 
     public function failureReason()

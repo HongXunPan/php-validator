@@ -2,7 +2,7 @@
 
 namespace HongXunPan\Validator\Rule;
 
-use HongXunPan\Validator\Internal\Field\PathLabelMap;
+use HongXunPan\Validator\Internal\Path\PathLabelMap;
 use LogicException;
 
 abstract class AbstractRule implements RuleInterface

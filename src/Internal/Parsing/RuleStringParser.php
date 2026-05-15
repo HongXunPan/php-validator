@@ -1,13 +1,12 @@
 <?php
 
-namespace HongXunPan\Validator\Support;
+namespace HongXunPan\Validator\Internal\Parsing;
 
-use HongXunPan\Validator\Internal\Field\RuleTarget;
-use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
+use HongXunPan\Validator\Internal\Target\RuleTarget;
 
-class RuleParser
+class RuleStringParser
 {
-    public function parseFieldRuleKey($rawKey)
+    public function parseTargetKey($rawKey)
     {
         $parts = explode(':', (string)$rawKey, 2);
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace HongXunPan\Validator\Tests\Cases\Support;
+namespace HongXunPan\Validator\Tests\Cases\Internal\Path;
 
-use HongXunPan\Validator\Support\PathAccessor;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
 use HongXunPan\Validator\Tests\TestCase;
 
 class PathAccessorTest extends TestCase

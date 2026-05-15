@@ -1,16 +1,16 @@
 <?php
 
-namespace HongXunPan\Validator\Tests\Cases\Support;
+namespace HongXunPan\Validator\Tests\Cases\Internal\Parsing;
 
-use HongXunPan\Validator\Support\RuleParser;
+use HongXunPan\Validator\Internal\Parsing\RuleStringParser;
 use HongXunPan\Validator\Tests\TestCase;
 
-class RuleParserTest extends TestCase
+class RuleStringParserTest extends TestCase
 {
-    public function testParseFieldRuleKeyResolvesDisplayName()
+    public function testParseTargetKeyResolvesDisplayName()
     {
-        $parser = new RuleParser();
-        $result = $parser->parseFieldRuleKey('profile.mobile:手机号');
+        $parser = new RuleStringParser();
+        $result = $parser->parseTargetKey('profile.mobile:手机号');
 
         $this->assertSame('profile.mobile', $result->fieldPath(), 'field path 应正确解析');
         $this->assertSame('手机号', $result->displayName(), '显示名应正确解析');
@@ -18,7 +18,7 @@ class RuleParserTest extends TestCase
 
     public function testParseRuleItemOnlySplitsFirstColon()
     {
-        $parser = new RuleParser();
+        $parser = new RuleStringParser();
         $result = $parser->parseRuleItem('formatTime:Y-m-d H:i:s');
 
         $this->assertSame('formatTime', $result->inputRuleKey(), 'rule key 应正确解析');
@@ -27,7 +27,7 @@ class RuleParserTest extends TestCase
 
     public function testHasRuleAndFindRuleArgumentWorkOnParsedItems()
     {
-        $parser = new RuleParser();
+        $parser = new RuleStringParser();
         $items = $parser->parseRuleItems('trim|minLength:2|formatTime:Y-m-d H:i:s');
 
         $this->assertTrue($parser->hasRule($items, 'minLength'), 'hasRule 应命中已有规则');

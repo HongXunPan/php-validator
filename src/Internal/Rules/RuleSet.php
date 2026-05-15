@@ -21,13 +21,13 @@ class RuleSet
 
     public static function fromValidatorClass($validatorClass)
     {
-        $catalog = new static();
-        $catalog->registerCoreRules(call_user_func(array($validatorClass, 'coreRules')));
-        $catalog->registerExtraRules(call_user_func(array($validatorClass, 'extraRules')));
-        $catalog->registerAliases(call_user_func(array($validatorClass, 'ruleAliases')));
-        $catalog->registerMessages(call_user_func(array($validatorClass, 'ruleMessages')));
+        $ruleSet = new static();
+        $ruleSet->registerCoreRules(call_user_func(array($validatorClass, 'coreRules')));
+        $ruleSet->registerExtraRules(call_user_func(array($validatorClass, 'extraRules')));
+        $ruleSet->registerAliases(call_user_func(array($validatorClass, 'ruleAliases')));
+        $ruleSet->registerMessages(call_user_func(array($validatorClass, 'ruleMessages')));
 
-        return $catalog;
+        return $ruleSet;
     }
 
     public static function unknownMessageTemplate()

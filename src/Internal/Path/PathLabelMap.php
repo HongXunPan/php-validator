@@ -1,6 +1,6 @@
 <?php
 
-namespace HongXunPan\Validator\Internal\Field;
+namespace HongXunPan\Validator\Internal\Path;
 
 class PathLabelMap
 {

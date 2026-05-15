@@ -1,17 +1,17 @@
 <?php
 
-namespace HongXunPan\Validator\Tests\Cases\Support;
+namespace HongXunPan\Validator\Tests\Cases\Internal\Target;
 
-use HongXunPan\Validator\Support\PathAccessor;
-use HongXunPan\Validator\Support\RuleParser;
-use HongXunPan\Validator\Support\UnknownFieldCollector;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
+use HongXunPan\Validator\Internal\Parsing\RuleStringParser;
+use HongXunPan\Validator\Internal\Target\UnknownTargetCollector;
 use HongXunPan\Validator\Tests\TestCase;
 
-class UnknownFieldCollectorTest extends TestCase
+class UnknownTargetCollectorTest extends TestCase
 {
     public function testCollectDetectsNestedUnknownFields()
     {
-        $collector = new UnknownFieldCollector(new RuleParser(), new PathAccessor());
+        $collector = new UnknownTargetCollector(new RuleStringParser(), new PathAccessor());
         $detail = $collector->collect(
             array(
                 'profile' => array(

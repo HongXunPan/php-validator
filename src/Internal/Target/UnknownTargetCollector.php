@@ -1,21 +1,25 @@
 <?php
 
-namespace HongXunPan\Validator\Support;
+namespace HongXunPan\Validator\Internal\Target;
 
-class UnknownFieldCollector
+use HongXunPan\Validator\Internal\Detail\ValidationDetailItem;
+use HongXunPan\Validator\Internal\Parsing\RuleStringParser;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
+
+class UnknownTargetCollector
 {
     /**
-     * @var RuleParser
+     * @var RuleStringParser
      */
-    private $ruleParser;
+    private $ruleStringParser;
     /**
      * @var PathAccessor
      */
     private $pathAccessor;
 
-    public function __construct(RuleParser $ruleParser, PathAccessor $pathAccessor)
+    public function __construct(RuleStringParser $ruleStringParser, PathAccessor $pathAccessor)
     {
-        $this->ruleParser = $ruleParser;
+        $this->ruleStringParser = $ruleStringParser;
         $this->pathAccessor = $pathAccessor;
     }
 
@@ -39,8 +43,8 @@ class UnknownFieldCollector
         $tree = array();
 
         foreach ($rules as $rawFieldKey => $ruleString) {
-            $fieldSpec = $this->ruleParser->parseFieldRuleKey($rawFieldKey);
-            $segments = explode('.', $fieldSpec->fieldPath());
+            $ruleTarget = $this->ruleStringParser->parseTargetKey($rawFieldKey);
+            $segments = explode('.', $ruleTarget->fieldPath());
             $current = &$tree;
 
             foreach ($segments as $segment) {
@@ -64,13 +68,7 @@ class UnknownFieldCollector
             $key = (string)$key;
             if (!array_key_exists($key, $allowedRuleTree)) {
                 $displayName = $this->pathAccessor->buildDisplayName($key, $fieldPrefix);
-                $detail[] = array(
-                    'param' => $displayName,
-                    'value' => $value,
-                    'rule' => 'unknown',
-                    'rule_value' => '',
-                    'reason' => 'unknown field',
-                );
+                $detail[] = ValidationDetailItem::unknownField($displayName, $value)->toArray();
 
                 continue;
             }

@@ -3,15 +3,15 @@
 namespace HongXunPan\Validator\Internal\Execution;
 
 use HongXunPan\Validator\Context\RuleContext;
-use HongXunPan\Validator\Internal\Field\RuleTarget;
-use HongXunPan\Validator\Internal\Field\TargetState;
+use HongXunPan\Validator\Internal\Target\RuleTarget;
+use HongXunPan\Validator\Internal\Target\TargetValueContext;
 use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
 use HongXunPan\Validator\Internal\Rules\RuleSet;
 use HongXunPan\Validator\Internal\State\ValidationState;
 use HongXunPan\Validator\Rule\PresenceRuleInterface;
 use HongXunPan\Validator\Rule\ValueRuleInterface;
 use HongXunPan\Validator\Support\LiteralValueParser;
-use HongXunPan\Validator\Support\PathAccessor;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
 use HongXunPan\Validator\Support\RuleResultNormalizer;
 
 class RuleExecutor
@@ -19,7 +19,7 @@ class RuleExecutor
     /**
      * @var RuleSet
      */
-    private $catalog;
+    private $ruleSet;
     /**
      * @var PathAccessor
      */
@@ -39,15 +39,15 @@ class RuleExecutor
         LiteralValueParser $literalValueParser,
         RuleResultNormalizer $ruleResultNormalizer
     ) {
-        $this->catalog = $ruleSet;
+        $this->ruleSet = $ruleSet;
         $this->pathAccessor = $pathAccessor;
         $this->literalValueParser = $literalValueParser;
         $this->ruleResultNormalizer = $ruleResultNormalizer;
     }
 
-    public function execute($phase, ValidationState $state, RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetState $targetState)
+    public function execute($phase, ValidationState $state, RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetValueContext $targetValueContext)
     {
-        $resolvedRule = $this->catalog->resolveRule($parsedRule->inputRuleKey());
+        $resolvedRule = $this->ruleSet->resolveRule($parsedRule->inputRuleKey());
         if ($resolvedRule === null) {
             return RuleExecutionOutcome::unsupported();
         }
@@ -62,20 +62,21 @@ class RuleExecutor
             new RuleContext(
                 $ruleTarget->fieldPath(),
                 $state->displayName($ruleTarget),
-                $targetState->exists(),
-                $targetState->value(),
+                $targetValueContext->currentExists(),
+                $targetValueContext->currentValue(),
                 $parsedRule->rawArgument(),
                 $state->rawData(),
+                $state->targetValueContextStore(),
                 $this->pathAccessor,
                 $this->literalValueParser
             )
         );
 
-        $ruleResult = $this->ruleResultNormalizer->normalize($rawResult, $targetState->value());
+        $ruleResult = $this->ruleResultNormalizer->normalize($rawResult, $targetValueContext->currentValue());
         if ($ruleResult->failed()) {
             return RuleExecutionOutcome::failed(
                 $resolvedRule,
-                $this->catalog->resolveMessage($resolvedRule),
+                $this->ruleSet->resolveMessage($resolvedRule),
                 $ruleResult
             );
         }

@@ -2,21 +2,21 @@
 
 namespace HongXunPan\Validator\Internal\Runner;
 
-use HongXunPan\Validator\Internal\Field\PathLabelMap;
-use HongXunPan\Validator\Internal\Field\TargetValidator;
+use HongXunPan\Validator\Internal\Path\PathLabelMap;
+use HongXunPan\Validator\Internal\Target\TargetValidator;
 use HongXunPan\Validator\Internal\Rules\RuleSet;
 use HongXunPan\Validator\Internal\State\ValidationState;
 use HongXunPan\Validator\Context\ValidationOptions;
-use HongXunPan\Validator\Support\PathAccessor;
-use HongXunPan\Validator\Support\RuleParser;
-use HongXunPan\Validator\Support\UnknownFieldCollector;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
+use HongXunPan\Validator\Internal\Parsing\RuleStringParser;
+use HongXunPan\Validator\Internal\Target\UnknownTargetCollector;
 
 class ObjectValidationRunner
 {
     /**
-     * @var RuleParser
+     * @var RuleStringParser
      */
-    private $ruleParser;
+    private $ruleStringParser;
     /**
      * @var PathAccessor
      */
@@ -24,18 +24,18 @@ class ObjectValidationRunner
     /**
      * @var TargetValidator
      */
-    private $fieldValidator;
+    private $targetValidator;
     /**
-     * @var UnknownFieldCollector
+     * @var UnknownTargetCollector
      */
-    private $unknownFieldCollector;
+    private $unknownTargetCollector;
 
     public function __construct(RuleSet $ruleSet)
     {
         $this->pathAccessor = new PathAccessor();
-        $this->ruleParser = new RuleParser();
-        $this->fieldValidator = new TargetValidator($ruleSet, $this->ruleParser, $this->pathAccessor);
-        $this->unknownFieldCollector = new UnknownFieldCollector($this->ruleParser, $this->pathAccessor);
+        $this->ruleStringParser = new RuleStringParser();
+        $this->targetValidator = new TargetValidator($ruleSet, $this->ruleStringParser, $this->pathAccessor);
+        $this->unknownTargetCollector = new UnknownTargetCollector($this->ruleStringParser, $this->pathAccessor);
     }
 
     public function run(array $data, array $rules, ValidationOptions $options, $normalizeOutput)
@@ -49,7 +49,7 @@ class ObjectValidationRunner
         );
 
         if ($options->rejectUnknown()) {
-            $unknownDetails = $this->unknownFieldCollector->collect(
+            $unknownDetails = $this->unknownTargetCollector->collect(
                 $data,
                 $rules,
                 $options->fieldPrefix()
@@ -61,7 +61,23 @@ class ObjectValidationRunner
         }
 
         foreach ($rules as $rawFieldKey => $ruleString) {
-            $this->fieldValidator->validate($state, $rawFieldKey, $ruleString);
+            $this->targetValidator->materialize($state, $rawFieldKey, $ruleString);
+        }
+
+        foreach ($rules as $rawFieldKey => $ruleString) {
+            $this->targetValidator->validateConditionalPresence($state, $rawFieldKey, $ruleString);
+        }
+
+        foreach ($rules as $rawFieldKey => $ruleString) {
+            $this->targetValidator->validatePresence($state, $rawFieldKey, $ruleString);
+        }
+
+        foreach ($rules as $rawFieldKey => $ruleString) {
+            $this->targetValidator->validateLocalValue($state, $rawFieldKey, $ruleString);
+        }
+
+        foreach ($rules as $rawFieldKey => $ruleString) {
+            $this->targetValidator->validateDependentValue($state, $rawFieldKey, $ruleString);
         }
 
         return $state->toValidationResult();
@@ -72,7 +88,7 @@ class ObjectValidationRunner
         $pathLabelMap = new PathLabelMap();
 
         foreach ($rules as $rawFieldKey => $ruleString) {
-            $ruleTarget = $this->ruleParser->parseFieldRuleKey($rawFieldKey);
+            $ruleTarget = $this->ruleStringParser->parseTargetKey($rawFieldKey);
             $pathLabelMap->register($ruleTarget->fieldPath(), $ruleTarget->displayName());
         }
 

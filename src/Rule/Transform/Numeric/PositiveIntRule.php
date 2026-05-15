@@ -5,8 +5,9 @@ namespace HongXunPan\Validator\Rule\Transform\Numeric;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
+use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
 
-class PositiveIntRule extends AbstractValueRule implements NumericRule
+class PositiveIntRule extends AbstractValueRule implements NumericRule, ValueMaterializationRuleInterface
 {
     const KEY = 'positiveInt';
     const MESSAGE = '$paramName must be positive integer';

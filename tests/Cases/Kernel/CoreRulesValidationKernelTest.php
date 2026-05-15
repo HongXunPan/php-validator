@@ -32,6 +32,19 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame(1, $result->validatedData()['page'], '默认值应继续经过归一化');
     }
 
+    public function testRequiredStillRunsAfterMaterializationStage()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array('name:姓名' => 'required|string')
+        );
+
+        $this->assertFalse($result->isPassed(), '缺失必填字段时仍应失败');
+        $this->assertSame('姓名', $result->detail()[0]['param'], '错误应落在当前字段自身');
+        $this->assertSame('required', $result->detail()[0]['rule'], '应由 required 规则负责报错');
+    }
+
     public function testFormatTimeAndFieldCompareRules()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);
@@ -67,6 +80,44 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertFalse($result->isPassed(), '时间字段比较失败时应返回错误');
         $this->assertContains('开始时间', $result->errors()[0], '错误消息应自动使用被比较字段的显示名');
         $this->assertSame('start_at', $result->detail()[0]['rule_value'], 'detail 中应保留原始字段路径参数');
+    }
+
+    public function testDependentCompareSkipsWhenReferencedTargetPrimaryValidationFailed()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'start_at' => 'not-a-time',
+                'end_at' => '2026-05-14 09:00:00',
+            ),
+            array(
+                'start_at:开始时间' => 'time',
+                'end_at:结束时间' => 'timeAfterOrEqualField:start_at',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '被依赖字段本地校验失败时整体应失败');
+        $this->assertCount(1, $result->errors(), '比较规则应跳过，不应级联产生第二条错误');
+        $this->assertSame('开始时间', $result->detail()[0]['param'], '错误应只来自被依赖字段自身');
+    }
+
+    public function testDependentCompareUsesMaterializedReferencedValue()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'min_value' => ' 2 ',
+                'current_value' => '3',
+            ),
+            array(
+                'min_value:最小值' => 'trim|positiveInt',
+                'current_value:当前值' => 'positiveInt|gtField:min_value',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '比较规则应读取被依赖字段物化后的值');
+        $this->assertSame(2, $result->validatedData()['min_value'], '被依赖字段应先完成本地归一化');
+        $this->assertSame(3, $result->validatedData()['current_value'], '比较通过后当前字段应正常输出');
     }
 
     public function testCanonicalListRulesCanCompose()

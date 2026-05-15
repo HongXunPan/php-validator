@@ -2,20 +2,21 @@
 
 namespace HongXunPan\Validator\Rule\Assert\Numeric;
 
-use HongXunPan\Validator\Internal\Field\PathLabelMap;
+use HongXunPan\Validator\Internal\Path\PathLabelMap;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\DependentValueRuleInterface;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
 
-abstract class AbstractNumericFieldCompareRule extends AbstractValueRule implements NumericRule
+abstract class AbstractNumericFieldCompareRule extends AbstractValueRule implements NumericRule, DependentValueRuleInterface
 {
     public static function validate($context)
     {
         $fieldPath = static::parseFieldPath($context->ruleArg());
-        $otherValueResult = $context->getFieldValue($fieldPath, true);
+        $otherValueResult = $context->getDependentTargetValue($fieldPath);
 
         if (!$otherValueResult->exists()) {
-            return RuleResult::fail($context->value());
+            return RuleResult::pass($context->value());
         }
 
         $currentValue = $context->value();

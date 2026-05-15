@@ -1,8 +1,8 @@
 <?php
 
-namespace HongXunPan\Validator\Internal\Field;
+namespace HongXunPan\Validator\Internal\Path;
 
-class PathLookupResult
+class PathValue
 {
     /**
      * @var bool

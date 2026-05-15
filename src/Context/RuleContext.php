@@ -2,8 +2,10 @@
 
 namespace HongXunPan\Validator\Context;
 
+use HongXunPan\Validator\Internal\Path\PathValue;
 use HongXunPan\Validator\Support\LiteralValueParser;
-use HongXunPan\Validator\Support\PathAccessor;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
+use HongXunPan\Validator\Internal\Target\TargetValueContextStore;
 
 class RuleContext
 {
@@ -36,6 +38,10 @@ class RuleContext
      */
     private $pathAccessor;
     /**
+     * @var TargetValueContextStore
+     */
+    private $targetValueContextStore;
+    /**
      * @var LiteralValueParser
      */
     private $literalValueParser;
@@ -47,6 +53,7 @@ class RuleContext
         $value,
         $ruleArg,
         array $rawData,
+        TargetValueContextStore $targetValueContextStore,
         PathAccessor $pathAccessor,
         LiteralValueParser $literalValueParser
     ) {
@@ -56,6 +63,7 @@ class RuleContext
         $this->value = $value;
         $this->ruleArg = $ruleArg;
         $this->rawData = $rawData;
+        $this->targetValueContextStore = $targetValueContextStore;
         $this->pathAccessor = $pathAccessor;
         $this->literalValueParser = $literalValueParser;
     }
@@ -98,5 +106,15 @@ class RuleContext
     public function getFieldValue($fieldPath, $strict)
     {
         return $this->pathAccessor->getValue($this->rawData, $fieldPath, $strict);
+    }
+
+    public function getMaterializedTargetValue($fieldPath)
+    {
+        return $this->targetValueContextStore->materializedPathValue($fieldPath);
+    }
+
+    public function getDependentTargetValue($fieldPath)
+    {
+        return $this->targetValueContextStore->dependentPathValue($fieldPath);
     }
 }

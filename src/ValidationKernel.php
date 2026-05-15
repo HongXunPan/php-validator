@@ -14,7 +14,7 @@ class ValidationKernel
     /**
      * @var RuleSet
      */
-    private $catalog;
+    private $ruleSet;
     /**
      * @var ObjectValidationRunner
      */
@@ -28,10 +28,10 @@ class ValidationKernel
      */
     private $validatedDataWriter;
 
-    public function __construct(RuleSet $catalog)
+    public function __construct(RuleSet $ruleSet)
     {
-        $this->catalog = $catalog;
-        $this->objectRunner = new ObjectValidationRunner($catalog);
+        $this->ruleSet = $ruleSet;
+        $this->objectRunner = new ObjectValidationRunner($ruleSet);
         $this->listRunner = new ListValidationRunner($this->objectRunner);
         $this->validatedDataWriter = new ArrayAccessValidatedDataWriter();
     }
@@ -43,7 +43,7 @@ class ValidationKernel
 
     public function catalog()
     {
-        return $this->catalog;
+        return $this->ruleSet;
     }
 
     public function validate(array $data, array $rules, array $options = array())

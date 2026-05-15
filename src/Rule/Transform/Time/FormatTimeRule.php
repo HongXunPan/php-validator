@@ -5,8 +5,9 @@ namespace HongXunPan\Validator\Rule\Transform\Time;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\TimeRule;
+use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
 
-class FormatTimeRule extends AbstractValueRule implements TimeRule
+class FormatTimeRule extends AbstractValueRule implements TimeRule, ValueMaterializationRuleInterface
 {
     const KEY = 'formatTime';
     const MESSAGE = '$paramName must be time';

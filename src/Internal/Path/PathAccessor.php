@@ -1,8 +1,6 @@
 <?php
 
-namespace HongXunPan\Validator\Support;
-
-use HongXunPan\Validator\Internal\Field\PathLookupResult;
+namespace HongXunPan\Validator\Internal\Path;
 
 class PathAccessor
 {
@@ -10,7 +8,7 @@ class PathAccessor
     {
         $path = (string)$path;
         if ($path === '') {
-            return new PathLookupResult(true, $data);
+            return new PathValue(true, $data);
         }
 
         $current = $data;
@@ -18,7 +16,7 @@ class PathAccessor
 
         foreach ($segments as $segment) {
             if (!is_array($current)) {
-                return new PathLookupResult(false, null);
+                return new PathValue(false, null);
             }
 
             $exists = $strict
@@ -26,13 +24,13 @@ class PathAccessor
                 : isset($current[$segment]);
 
             if (!$exists) {
-                return new PathLookupResult(false, null);
+                return new PathValue(false, null);
             }
 
             $current = $current[$segment];
         }
 
-        return new PathLookupResult(true, $current);
+        return new PathValue(true, $current);
     }
 
     public function setValue(array &$data, $path, $value)

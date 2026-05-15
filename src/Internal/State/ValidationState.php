@@ -3,14 +3,16 @@
 namespace HongXunPan\Validator\Internal\State;
 
 use HongXunPan\Validator\Context\ValidationOptions;
+use HongXunPan\Validator\Internal\Detail\ValidationDetailItem;
 use HongXunPan\Validator\Internal\Execution\RuleExecutionOutcome;
-use HongXunPan\Validator\Internal\Field\PathLabelMap;
-use HongXunPan\Validator\Internal\Field\RuleTarget;
-use HongXunPan\Validator\Internal\Field\TargetState;
+use HongXunPan\Validator\Internal\Path\PathLabelMap;
+use HongXunPan\Validator\Internal\Target\RuleTarget;
+use HongXunPan\Validator\Internal\Target\TargetValueContext;
+use HongXunPan\Validator\Internal\Target\TargetValueContextStore;
 use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
 use HongXunPan\Validator\Internal\Rules\RuleSet;
 use HongXunPan\Validator\Result\ValidationResult;
-use HongXunPan\Validator\Support\PathAccessor;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
 
 class ValidationState
 {
@@ -46,6 +48,10 @@ class ValidationState
      * @var array
      */
     private $validatedData = array();
+    /**
+     * @var TargetValueContextStore
+     */
+    private $targetValueContextStore;
 
     public function __construct(
         array $rawData,
@@ -60,6 +66,7 @@ class ValidationState
         $this->normalizeOutput = (bool)$normalizeOutput;
         $this->pathAccessor = $pathAccessor;
         $this->pathLabelMap = $pathLabelMap;
+        $this->targetValueContextStore = new TargetValueContextStore();
     }
 
     public function rawData()
@@ -97,29 +104,40 @@ class ValidationState
         $this->pathAccessor->setValue($this->validatedData, $fieldPath, $value);
     }
 
+    public function rememberTargetValueContext($targetPath, TargetValueContext $targetValueContext)
+    {
+        $this->targetValueContextStore->remember($targetPath, $targetValueContext);
+    }
+
+    public function targetValueContextStore()
+    {
+        return $this->targetValueContextStore;
+    }
+
+    public function materializedTargetValue($targetPath)
+    {
+        return $this->targetValueContextStore->materializedPathValue($targetPath);
+    }
+
     public function addUnknownField($paramName, $value)
     {
-        $this->appendError(
-            $paramName,
-            $value,
-            'unknown',
-            '',
-            'unknown field',
+        $this->appendDetailItem(
+            ValidationDetailItem::unknownField($paramName, $value),
             RuleSet::unknownMessageTemplate()
         );
     }
 
-    public function addFieldFailure(RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetState $targetState, RuleExecutionOutcome $outcome)
+    public function addTargetFailure(RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetValueContext $targetValueContext, RuleExecutionOutcome $outcome)
     {
         $paramName = $this->displayName($ruleTarget);
 
         if ($outcome->isUnsupported()) {
-            $this->appendError(
-                $paramName,
-                $targetState->value(),
-                'unsupported',
-                $parsedRule->inputRuleKey(),
-                'rule not support',
+            $this->appendDetailItem(
+                ValidationDetailItem::unsupportedRule(
+                    $paramName,
+                    $targetValueContext->currentValue(),
+                    $parsedRule->inputRuleKey()
+                ),
                 RuleSet::unsupportedRuleMessageTemplate()
             );
 
@@ -128,12 +146,13 @@ class ValidationState
 
         $resolvedRule = $outcome->resolvedRule();
 
-        $this->appendError(
-            $paramName,
-            $targetState->value(),
-            $resolvedRule->finalRuleKey(),
-            $parsedRule->rawArgument(),
-            'result: false',
+        $this->appendDetailItem(
+            ValidationDetailItem::ruleFailed(
+                $paramName,
+                $targetValueContext->currentValue(),
+                $resolvedRule->finalRuleKey(),
+                $parsedRule->rawArgument()
+            ),
             $outcome->messageTemplate(),
             call_user_func(
                 array($resolvedRule->ruleClass(), 'displayRuleValue'),
@@ -160,20 +179,14 @@ class ValidationState
         return ValidationResult::failure($this->errors, $this->detail, $this->validatedData);
     }
 
-    private function appendError($paramName, $value, $rule, $ruleValue, $reason, $template, $displayRuleValue = null)
+    private function appendDetailItem(ValidationDetailItem $detailItem, $template, $displayRuleValue = null)
     {
         if ($displayRuleValue === null) {
-            $displayRuleValue = $ruleValue;
+            $displayRuleValue = $detailItem->ruleValue();
         }
 
-        $this->errors[] = $this->renderMessage($template, $paramName, $displayRuleValue);
-        $this->detail[] = array(
-            'param' => $paramName,
-            'value' => $value,
-            'rule' => $rule,
-            'rule_value' => $ruleValue,
-            'reason' => $reason,
-        );
+        $this->errors[] = $this->renderMessage($template, $detailItem->param(), $displayRuleValue);
+        $this->detail[] = $detailItem->toArray();
     }
 
     private function renderMessage($template, $paramName, $displayRuleValue)

@@ -3,9 +3,10 @@
 namespace HongXunPan\Validator\Internal\Runner;
 
 use HongXunPan\Validator\Context\ValidationOptions;
+use HongXunPan\Validator\Internal\Detail\ValidationDetailItem;
 use HongXunPan\Validator\Result\ValidationResult;
 use HongXunPan\Validator\Rule\Type\ArrayType;
-use HongXunPan\Validator\Support\PathAccessor;
+use HongXunPan\Validator\Internal\Path\PathAccessor;
 
 class ListValidationRunner
 {
@@ -38,13 +39,7 @@ class ListValidationRunner
             if (is_array($rules)) {
                 if (!is_array($item)) {
                     $errors[] = str_replace('$paramName', $itemPrefix, ArrayType::defaultMessage());
-                    $detail[] = array(
-                        'param' => $itemPrefix,
-                        'value' => $item,
-                        'rule' => 'array',
-                        'rule_value' => '',
-                        'reason' => 'list item not array',
-                    );
+                    $detail[] = ValidationDetailItem::listItemNotArray($itemPrefix, $item)->toArray();
                     continue;
                 }
 

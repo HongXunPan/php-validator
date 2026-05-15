@@ -1,0 +1,130 @@
+<?php
+
+namespace HongXunPan\Validator\Internal\Detail;
+
+class ValidationDetailItem
+{
+    const RULE_UNKNOWN = 'unknown';
+    const RULE_ARRAY = 'array';
+    const RULE_UNSUPPORTED = 'unsupported';
+
+    const REASON_UNKNOWN_FIELD = 'unknown field';
+    const REASON_LIST_ITEM_NOT_ARRAY = 'list item not array';
+    const REASON_RULE_NOT_SUPPORT = 'rule not support';
+    const REASON_RULE_FAILED = 'result: false';
+
+    /**
+     * @var string
+     */
+    private $param;
+    /**
+     * @var mixed
+     */
+    private $value;
+    /**
+     * @var string
+     */
+    private $rule;
+    /**
+     * @var string
+     */
+    private $ruleValue;
+    /**
+     * @var string
+     */
+    private $reason;
+
+    private function __construct($param, $value, $rule, $ruleValue, $reason)
+    {
+        $this->param = (string)$param;
+        $this->value = $value;
+        $this->rule = (string)$rule;
+        $this->ruleValue = (string)$ruleValue;
+        $this->reason = (string)$reason;
+    }
+
+    public static function create($param, $value, $rule, $ruleValue, $reason)
+    {
+        return new static($param, $value, $rule, $ruleValue, $reason);
+    }
+
+    public static function unknownField($param, $value)
+    {
+        return new static(
+            $param,
+            $value,
+            self::RULE_UNKNOWN,
+            '',
+            self::REASON_UNKNOWN_FIELD
+        );
+    }
+
+    public static function listItemNotArray($param, $value)
+    {
+        return new static(
+            $param,
+            $value,
+            self::RULE_ARRAY,
+            '',
+            self::REASON_LIST_ITEM_NOT_ARRAY
+        );
+    }
+
+    public static function unsupportedRule($param, $value, $ruleValue)
+    {
+        return new static(
+            $param,
+            $value,
+            self::RULE_UNSUPPORTED,
+            $ruleValue,
+            self::REASON_RULE_NOT_SUPPORT
+        );
+    }
+
+    public static function ruleFailed($param, $value, $rule, $ruleValue)
+    {
+        return new static(
+            $param,
+            $value,
+            $rule,
+            $ruleValue,
+            self::REASON_RULE_FAILED
+        );
+    }
+
+    public function param()
+    {
+        return $this->param;
+    }
+
+    public function value()
+    {
+        return $this->value;
+    }
+
+    public function rule()
+    {
+        return $this->rule;
+    }
+
+    public function ruleValue()
+    {
+        return $this->ruleValue;
+    }
+
+    public function reason()
+    {
+        return $this->reason;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'param' => $this->param,
+            'value' => $this->value,
+            'rule' => $this->rule,
+            'rule_value' => $this->ruleValue,
+            'reason' => $this->reason,
+        );
+    }
+}

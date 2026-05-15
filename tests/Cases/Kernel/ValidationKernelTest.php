@@ -4,6 +4,7 @@ namespace HongXunPan\Validator\Tests\Cases\Kernel;
 
 use ArrayObject;
 use HongXunPan\Validator\Exception\InvalidValidatedDataTargetException;
+use HongXunPan\Validator\Tests\Fixtures\Validator\ConditionalValidator;
 use HongXunPan\Validator\Tests\Fixtures\Validator\CustomValidator;
 use HongXunPan\Validator\ValidationKernel;
 use HongXunPan\Validator\Tests\TestCase;
@@ -112,6 +113,69 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isPassed(), '列表标量规则应通过');
         $this->assertSame(array('a', 'bb'), $result->validatedData(), '列表标量应完成归一化');
+    }
+
+    public function testValidateListAndNormalizeRejectsNonArrayItemForObjectRules()
+    {
+        $kernel = ValidationKernel::create(CustomValidator::class);
+
+        $result = $kernel->validateListAndNormalize(
+            array(
+                array('name' => 'Alice'),
+                'broken',
+            ),
+            array(
+                'name:姓名' => 'trimTest',
+            ),
+            array(
+                'field_prefix' => 'items',
+            )
+        );
+
+        $this->assertTrue($result->isFailed(), '对象规则列表遇到非数组项时应失败');
+        $this->assertSame('items.2', $result->detail()[0]['param'], '非数组项应记录正确位置');
+        $this->assertSame('array', $result->detail()[0]['rule'], '应使用统一的 array 规则标记');
+        $this->assertSame('list item not array', $result->detail()[0]['reason'], '应使用统一的列表项类型错误原因');
+    }
+
+    public function testConditionalNullableRuleUsesMaterializedDependencyAndSkipsLocalValueValidation()
+    {
+        $kernel = ValidationKernel::create(ConditionalValidator::class);
+
+        $result = $kernel->validateAndNormalize(
+            array(
+                'flag' => ' skip ',
+                'note' => null,
+            ),
+            array(
+                'flag:开关' => 'trim',
+                'note:备注' => 'nullableIfTest:flag,skip|string',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'conditional nullable 命中后应跳过本地 string 校验');
+        $this->assertSame('skip', $result->validatedData()['flag'], '依赖字段应先完成物化归一化');
+        $this->assertArrayHasKey('note', $result->validatedData(), '命中 nullable 条件时仍应保留当前字段输出');
+        $this->assertSame(null, $result->validatedData()['note'], '当前字段应输出 null');
+    }
+
+    public function testConditionalRequiredRuleUsesMaterializedDependency()
+    {
+        $kernel = ValidationKernel::create(ConditionalValidator::class);
+
+        $result = $kernel->validate(
+            array(
+                'flag' => ' need ',
+            ),
+            array(
+                'flag:开关' => 'trim',
+                'name:姓名' => 'requiredIfTest:flag,need|string',
+            )
+        );
+
+        $this->assertTrue($result->isFailed(), 'conditional required 命中后缺失字段应失败');
+        $this->assertSame('姓名', $result->detail()[0]['param'], '错误应落在当前字段');
+        $this->assertSame('requiredIfTest', $result->detail()[0]['rule'], '应由 conditional required 规则负责报错');
     }
 
     public function testWriteValidatedDataToWritesIntoArrayAccessTarget()
