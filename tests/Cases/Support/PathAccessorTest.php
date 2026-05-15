@@ -12,8 +12,8 @@ class PathAccessorTest extends TestCase
         $accessor = new PathAccessor();
         $result = $accessor->getValue(array('user' => array('name' => 'Alice')), 'user.name', true);
 
-        $this->assertTrue($result['exists'], '嵌套路径应存在');
-        $this->assertSame('Alice', $result['value'], '嵌套路径值应正确返回');
+        $this->assertTrue($result->exists(), '嵌套路径应存在');
+        $this->assertSame('Alice', $result->value(), '嵌套路径值应正确返回');
     }
 
     public function testGetValueHonorsStrictModeForNull()
@@ -22,8 +22,8 @@ class PathAccessorTest extends TestCase
         $strictResult = $accessor->getValue(array('nickname' => null), 'nickname', true);
         $looseResult = $accessor->getValue(array('nickname' => null), 'nickname', false);
 
-        $this->assertTrue($strictResult['exists'], 'strict 模式下 null 字段仍应视为存在');
-        $this->assertFalse($looseResult['exists'], '非 strict 模式下 null 字段应按 isset 语义视为不存在');
+        $this->assertTrue($strictResult->exists(), 'strict 模式下 null 字段仍应视为存在');
+        $this->assertFalse($looseResult->exists(), '非 strict 模式下 null 字段应按 isset 语义视为不存在');
     }
 
     public function testSetValueCreatesNestedArrays()

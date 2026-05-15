@@ -7,30 +7,44 @@ namespace HongXunPan\Validator\Result;
  */
 class RuleResult
 {
+    /**
+     * @var bool
+     */
     private $passed;
+    /**
+     * @var mixed
+     */
     private $value;
+    /**
+     * @var bool
+     */
     private $shouldBreak;
+    /**
+     * @var bool|null
+     */
+    private $exists;
 
-    private function __construct($passed, $value, $shouldBreak)
+    private function __construct($passed, $value, $shouldBreak, $exists)
     {
         $this->passed = (bool)$passed;
         $this->value = $value;
         $this->shouldBreak = (bool)$shouldBreak;
+        $this->exists = $exists === null ? null : (bool)$exists;
     }
 
-    public static function pass($value)
+    public static function pass($value, $exists = null)
     {
-        return new static(true, $value, false);
+        return new static(true, $value, false, $exists);
     }
 
-    public static function fail($value)
+    public static function fail($value, $exists = null)
     {
-        return new static(false, $value, false);
+        return new static(false, $value, false, $exists);
     }
 
-    public static function passAndBreak($value)
+    public static function passAndBreak($value, $exists = null)
     {
-        return new static(true, $value, true);
+        return new static(true, $value, true, $exists);
     }
 
     public function passed()
@@ -51,5 +65,10 @@ class RuleResult
     public function shouldBreak()
     {
         return $this->shouldBreak;
+    }
+
+    public function exists()
+    {
+        return $this->exists;
     }
 }

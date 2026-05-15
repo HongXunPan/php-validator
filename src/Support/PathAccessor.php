@@ -2,16 +2,15 @@
 
 namespace HongXunPan\Validator\Support;
 
+use HongXunPan\Validator\Internal\Field\PathLookupResult;
+
 class PathAccessor
 {
     public function getValue(array $data, $path, $strict)
     {
         $path = (string)$path;
         if ($path === '') {
-            return array(
-                'exists' => true,
-                'value' => $data,
-            );
+            return new PathLookupResult(true, $data);
         }
 
         $current = $data;
@@ -19,10 +18,7 @@ class PathAccessor
 
         foreach ($segments as $segment) {
             if (!is_array($current)) {
-                return array(
-                    'exists' => false,
-                    'value' => null,
-                );
+                return new PathLookupResult(false, null);
             }
 
             $exists = $strict
@@ -30,19 +26,13 @@ class PathAccessor
                 : isset($current[$segment]);
 
             if (!$exists) {
-                return array(
-                    'exists' => false,
-                    'value' => null,
-                );
+                return new PathLookupResult(false, null);
             }
 
             $current = $current[$segment];
         }
 
-        return array(
-            'exists' => true,
-            'value' => $current,
-        );
+        return new PathLookupResult(true, $current);
     }
 
     public function setValue(array &$data, $path, $value)

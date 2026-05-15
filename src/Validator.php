@@ -2,22 +2,78 @@
 
 namespace HongXunPan\Validator;
 
-/**
- * Validator 对外静态入口。
- */
+use HongXunPan\Validator\Rule\CoreRules;
+
 abstract class Validator
 {
+    /**
+     * @var ValidationKernel|null
+     */
     protected static $kernel;
-    protected static $extraDefinitionSources = array();
-    protected static $messageSources = array();
+    /**
+     * @var array<string, string>
+     */
+    protected static $extraRules = array();
+    /**
+     * @var array<string, string>
+     */
+    protected static $ruleAliases = array();
+    /**
+     * @var array<string, string>
+     */
+    protected static $ruleMessages = array();
+
+    public static function coreRules()
+    {
+        return CoreRules::map();
+    }
+
+    public static function extraRules()
+    {
+        return static::$extraRules;
+    }
+
+    public static function ruleAliases()
+    {
+        return static::$ruleAliases;
+    }
+
+    public static function ruleMessages()
+    {
+        return static::$ruleMessages;
+    }
+
+    public static function resolveExtraRule($finalRuleKey)
+    {
+        $rules = static::extraRules();
+
+        return array_key_exists($finalRuleKey, $rules)
+            ? $rules[$finalRuleKey]
+            : null;
+    }
+
+    public static function resolveAlias($inputRuleKey)
+    {
+        $aliases = static::ruleAliases();
+
+        return array_key_exists($inputRuleKey, $aliases)
+            ? $aliases[$inputRuleKey]
+            : null;
+    }
+
+    public static function resolveRuleMessage($finalRuleKey)
+    {
+        $messages = static::ruleMessages();
+
+        return array_key_exists($finalRuleKey, $messages)
+            ? $messages[$finalRuleKey]
+            : null;
+    }
 
     protected static function kernel()
     {
         if (static::$kernel === null) {
-            static::$kernel = ValidationKernel::create(
-                static::$extraDefinitionSources,
-                static::$messageSources
-            );
+            static::$kernel = ValidationKernel::create(static::class);
         }
 
         return static::$kernel;

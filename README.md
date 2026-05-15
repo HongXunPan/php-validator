@@ -2,74 +2,79 @@
 
 [简体中文文档](./README.zh-CN.md)
 
-`hongxunpan/validator` is a **framework-agnostic validator core** intended for shared Composer package workflows. It is designed to provide:
+`hongxunpan/validator` is a framework-agnostic validator core built around three ideas:
 
-- an extensible DSL keyword system;
-- stable public contracts for package consumers;
-- an adapter-friendly validation core for business repositories.
+- rules are public extension units and execute themselves;
+- consumers extend through validator subclass arrays instead of handler/source registries;
+- the kernel only orchestrates and pushes execution details into smaller collaborators.
 
 ## Current Status
 
-This repository is currently in **pre-1.0 development**.
+This repository is in pre-1.0 development.
 
 Already in place:
 
-- the Composer package skeleton;
-- public DSL keyword conventions;
-- the `AbstractRule + RuleInterface + KEY + of(...)` convention;
-- marker interfaces and the package directory strategy;
-- the PHP `>=5.6` compatibility target.
+- Composer package skeleton;
+- PHP `>=5.6` compatibility baseline;
+- `RuleInterface + AbstractRule + KEY + of(...)` public convention;
+- validator subclass extension arrays:
+  - `extraRules`
+  - `ruleAliases`
+  - `ruleMessages`
+- canonical core validation pipeline.
 
 Still in progress:
 
-- the validation execution kernel;
-- rule definition resolution and lazy loading;
-- migration of built-in rules;
-- `validated_data` output writing;
-- backend adapter integration.
+- broader core canonical rule coverage;
+- backend adapter integration;
+- README examples and release hardening.
 
-At this stage, the repository should be treated as an **open-source package skeleton under active implementation**, rather than a feature-complete stable release.
+## Public Extension Model
 
-## Design Goals
+Default consumers only need a validator subclass:
 
-This package is primarily intended to solve the following problems:
+```php
+class DemoValidator extends Validator
+{
+    protected static $extraRules = array(
+        'trimTest' => TrimTestRule::class,
+    );
 
-1. prevent rule logic, path handling, result output, and exception concerns from collapsing back into a single giant `Validator.php`;
-2. provide clearer naming, structure, and reuse patterns for public DSL keywords;
-3. let business repositories keep a thin adapter layer while moving the reusable validation core into a shared package;
-4. preserve a conservative PHP syntax baseline without giving up structural extensibility.
+    protected static $ruleAliases = array(
+        'trimAlias' => 'trimTest',
+    );
+
+    protected static $ruleMessages = array(
+        'trimTest' => '$paramName must be trimmed',
+    );
+}
+```
+
+Rule lookup order is fixed:
+
+1. try the input rule key as a real rule;
+2. only when it does not exist, try alias mapping;
+3. resolve the final rule class;
+4. execute `RuleClass::validate($context)`.
 
 ## Public DSL Conventions
 
-The current public conventions are:
-
 - rule strings use `ruleName[:argument]`;
-- each rule is split on the **first** `:` only;
-- public keyword classes consistently expose:
+- each rule only splits on the first `:`;
+- public keyword classes expose:
   - `KEY`
   - `key()`
   - `of(...)`
-
-Example:
-
-```php
-TrimRule::KEY;
-NonBlankRule::KEY;
-FormatTimeRule::of('Y-m-d H:i:s');
-MinLengthRule::of(2);
-```
 
 ## Package Layout
 
 ```text
 src/
   Validator.php
+  ValidationKernel.php
+  Internal/
   Rule/
-  Handler/
-  Definition/
   Context/
-  Message/
-  Config/
   Support/
   Result/
   Output/
@@ -77,52 +82,63 @@ src/
 tests/
 ```
 
-Where:
-
-- `Rule/*` contains public DSL keywords, marker interfaces, and type keywords;
-- `Handler/*` contains execution logic;
-- `Definition/*` contains rule definitions and resolution logic;
-- `Support/*` contains reusable helpers such as path access and parsing utilities.
-
 ## Installation
 
 ```bash
 composer require hongxunpan/validator
 ```
 
-> Until the first stable release is published, local path repositories or explicit ref-based integration are recommended for real project adoption.
-
 ## Compatibility
-
-Current target compatibility:
 
 - PHP: `>=5.6`
 
-The implementation therefore avoids language features that require PHP 7+ or PHP 8+.
+## Integration and Migration Notes
+
+This package is **not a seamless drop-in replacement** for older validator helpers.
+
+Core methods currently return objects:
+
+- `validate(...)` -> `ValidationResult`
+- `validateAndNormalize(...)` -> `ValidationResult`
+- `validateListAndNormalize(...)` -> `ValidationResult`
+
+So if an existing project historically depends on:
+
+- an array envelope: `count / errors / detail / validated_data`
+- `validateOrThrow()` returning validated payload arrays
+- legacy aliases, legacy rules, or project-specific messages
+- old cross-field compare arguments such as `fieldPath,label`
+
+that compatibility should be handled in the **project-level adapter layer**, not pushed back into the core package.
+
+Recommended approach:
+
+- call `ValidationResult::toArray()` when an old array envelope must be preserved
+- keep project-local `*OrThrow` facade/helper methods if old signatures must remain stable
+- declare project-specific `extraRules / ruleAliases / ruleMessages` in a project validator subclass
+- keep ORM or business-specific rules such as `unique / exists` outside core
+
+Not recommended:
+
+- making `ValidationResult` implement `ArrayAccess` just for backward compatibility
+- turning the core package back into an array-first API
+- promoting one project's historical helper contract into the default public contract of this package
+
+For a practical project-level adapter example, see:
+
+- [Project Adapter Sample (Chinese)](./docs/项目适配层接入样板.zh-CN.md)
 
 ## Testing
-
-This repository currently uses a lightweight custom test runner so that the package can keep a conservative PHP compatibility baseline while the core is still evolving.
 
 ```bash
 composer test
 ```
 
-Or run it directly:
+Or run directly:
 
 ```bash
 php tests/TestRunner.php
 ```
-
-## Roadmap
-
-The next milestones are:
-
-- rule definition resolution;
-- core presence / transform / assert / collection rules;
-- `ValidationResult`;
-- `ArrayAccess` output writing support;
-- backend adapter examples and minimum verification scripts.
 
 ## License
 

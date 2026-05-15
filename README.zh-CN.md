@@ -2,73 +2,79 @@
 
 [English README](./README.md)
 
-`hongxunpan/validator` 是一个**与框架解耦**的验证器内核，目标是提供：
+`hongxunpan/validator` 是一个与框架解耦的验证器内核，当前围绕三条主线实现：
 
-- 可扩展的 DSL keyword 体系；
-- 面向共享 Composer 包的稳定公开契约；
-- 便于业务仓通过适配层接入的验证核心能力。
+- `Rule` 是公开扩展主体，并由规则类自己执行校验；
+- 使用侧通过 `Validator` 子类数组扩展，而不是实现 handler/source/registry 体系；
+- kernel 只做编排，把执行细节下沉到更小的内部协作者。
 
 ## 当前状态
 
-当前仓库处于 **pre-1.0 开发阶段**。
+当前仓库处于 pre-1.0 开发阶段。
 
 已完成：
 
 - Composer 子包骨架；
-- 公开 DSL keyword 约定；
-- `AbstractRule + RuleInterface + KEY + of(...)` 约定；
-- marker interface 与目录分层约定；
-- PHP `>=5.6` 兼容目标收口。
+- PHP `>=5.6` 兼容基线；
+- `RuleInterface + AbstractRule + KEY + of(...)` 公开约定；
+- `Validator` 子类三组扩展数组：
+  - `extraRules`
+  - `ruleAliases`
+  - `ruleMessages`
+- canonical core 主校验链路。
 
-开发中：
+进行中：
 
-- 校验执行内核；
-- 规则定义解析与懒加载；
-- 内建规则迁移；
-- `validated_data` 输出写入能力；
-- backend 业务适配层接回。
+- 更完整的 canonical core 规则覆盖；
+- backend 适配层接回；
+- README 示例与发布收口。
 
-因此，当前版本更适合作为**设计与实现中的开源仓骨架**，尚不是完整可用的稳定发布版。
+## 默认扩展方式
 
-## 设计目标
+默认使用侧只需要定义一个 `Validator` 子类：
 
-本项目重点解决以下问题：
+```php
+class DemoValidator extends Validator
+{
+    protected static $extraRules = array(
+        'trimTest' => TrimTestRule::class,
+    );
 
-1. 避免把所有规则、路径处理、结果输出和错误边界继续堆进单一巨型 `Validator.php`；
-2. 为公开 DSL keyword 提供更清晰的命名、分层与复用方式；
-3. 让业务仓可以保留适配层，而把通用验证内核沉淀到共享包；
-4. 在尽量保守的 PHP 语法前提下，保持结构可扩展。
+    protected static $ruleAliases = array(
+        'trimAlias' => 'trimTest',
+    );
+
+    protected static $ruleMessages = array(
+        'trimTest' => '$paramName 需要先完成 trim',
+    );
+}
+```
+
+规则查找顺序固定为：
+
+1. 先把输入规则名当作真实规则查找；
+2. 只有真实规则不存在时才尝试 alias；
+3. 得到最终规则类；
+4. 执行 `RuleClass::validate($context)`。
 
 ## 公开 DSL 约定
 
-当前已确定的公开约定包括：
-
 - 规则字符串采用 `ruleName[:argument]`；
-- 每条规则只按**第一个** `:` 解析；
-- 公开 keyword 类统一采用：
+- 每条规则只按第一个 `:` 解析；
+- 公开 keyword 类统一提供：
   - `KEY`
   - `key()`
   - `of(...)`
-- 示例：
-
-```php
-TrimRule::KEY;
-NonBlankRule::KEY;
-FormatTimeRule::of('Y-m-d H:i:s');
-MinLengthRule::of(2);
-```
 
 ## 目录结构
 
 ```text
 src/
   Validator.php
+  ValidationKernel.php
+  Internal/
   Rule/
-  Handler/
-  Definition/
   Context/
-  Message/
-  Config/
   Support/
   Result/
   Output/
@@ -76,32 +82,53 @@ src/
 tests/
 ```
 
-其中：
-
-- `Rule/*` 负责公开 DSL keyword、marker interface 与类型断言 keyword；
-- `Handler/*` 负责执行逻辑；
-- `Definition/*` 负责规则定义与解析；
-- `Support/*` 负责路径、解析、默认值等通用辅助能力。
-
 ## 安装
 
 ```bash
 composer require hongxunpan/validator
 ```
 
-> 当前仓库仍在开发中；在正式发布前，更推荐通过本地 path repository 或指定 ref 方式接入验证。
-
 ## 兼容性
-
-当前目标兼容版本：
 
 - PHP: `>=5.6`
 
-这意味着包内实现会避免依赖仅在 PHP 7+/8+ 中才可用的语法糖与类型语法。
+## 接入与适配注意事项
+
+本包当前**不是旧 validator helper 的无缝替换物**。
+
+core 默认返回：
+
+- `validate(...)` -> `ValidationResult`
+- `validateAndNormalize(...)` -> `ValidationResult`
+- `validateListAndNormalize(...)` -> `ValidationResult`
+
+因此如果你的项目历史上依赖以下行为：
+
+- 直接消费数组 envelope：`count / errors / detail / validated_data`
+- `validateOrThrow()` 直接返回 payload 数组
+- 旧的 alias / legacy rule / 中文错误提示
+- 旧的跨字段比较参数格式：`fieldPath,label`
+
+则应在**业务项目自己的适配层**中接回，而不是期待 core 自动兼容。
+
+推荐做法：
+
+- 需要旧 envelope 时，用 `ValidationResult::toArray()` 显式转换
+- 需要旧 `*OrThrow` 签名时，在项目内封装 facade / helper
+- 需要 legacy 规则或文案时，在项目自己的 `Validator` 子类中补 `extraRules / ruleAliases / ruleMessages`
+- 需要 ORM / 业务规则（如 `unique / exists`）时，继续放在项目适配层
+
+不建议：
+
+- 为兼容旧项目而让 `ValidationResult` 实现 `ArrayAccess`
+- 让 core 回退为“数组优先”心智
+- 把某个项目的历史 helper 契约直接提升成公共包默认契约
+
+如需给业务项目落适配层，可参考：
+
+- [项目适配层接入样板](./docs/项目适配层接入样板.zh-CN.md)
 
 ## 测试
-
-当前仓库先采用轻量自维护测试运行器，避免在 core 仍快速演进时过早把测试基建绑定到高版本 PHPUnit 约束上，同时继续保持 `php >=5.6` 的兼容目标。
 
 ```bash
 composer test
@@ -112,16 +139,6 @@ composer test
 ```bash
 php tests/TestRunner.php
 ```
-
-## 路线图
-
-后续将优先补齐：
-
-- 规则定义解析器；
-- presence / transform / assert / collection 核心规则；
-- `ValidationResult`；
-- `ArrayAccess` 结果写入能力；
-- backend 适配示例与最小验证。
 
 ## License
 

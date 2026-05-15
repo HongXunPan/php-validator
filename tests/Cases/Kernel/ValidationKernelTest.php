@@ -4,19 +4,15 @@ namespace HongXunPan\Validator\Tests\Cases\Kernel;
 
 use ArrayObject;
 use HongXunPan\Validator\Exception\InvalidValidatedDataTargetException;
+use HongXunPan\Validator\Tests\Fixtures\Validator\CustomValidator;
 use HongXunPan\Validator\ValidationKernel;
-use HongXunPan\Validator\Tests\Fixtures\Message\KernelMessageSource;
-use HongXunPan\Validator\Tests\Fixtures\Source\KernelRuleDefinitionSource;
 use HongXunPan\Validator\Tests\TestCase;
 
 class ValidationKernelTest extends TestCase
 {
     public function testValidateAndNormalizeRunsCustomRulePipeline()
     {
-        $kernel = ValidationKernel::create(
-            array(KernelRuleDefinitionSource::class),
-            array(KernelMessageSource::class)
-        );
+        $kernel = ValidationKernel::create(CustomValidator::class);
 
         $result = $kernel->validateAndNormalize(
             array('name' => '  Alice  '),
@@ -29,10 +25,7 @@ class ValidationKernelTest extends TestCase
 
     public function testValidateKeepsOriginalValueWhenRuleNormalizes()
     {
-        $kernel = ValidationKernel::create(
-            array(KernelRuleDefinitionSource::class),
-            array(KernelMessageSource::class)
-        );
+        $kernel = ValidationKernel::create(CustomValidator::class);
 
         $result = $kernel->validate(
             array('name' => '  Alice  '),
@@ -43,9 +36,35 @@ class ValidationKernelTest extends TestCase
         $this->assertSame('  Alice  ', $result->validatedData()['name'], '非 normalize 模式应保留原始值');
     }
 
+    public function testValidateSupportsAliasRules()
+    {
+        $kernel = ValidationKernel::create(CustomValidator::class);
+
+        $result = $kernel->validateAndNormalize(
+            array('name' => '  Alice  '),
+            array('name:姓名' => 'trimAlias|minAlias:3')
+        );
+
+        $this->assertTrue($result->isPassed(), 'alias 规则链应通过');
+        $this->assertSame('Alice', $result->validatedData()['name'], 'alias 应映射到最终规则并完成归一化');
+    }
+
+    public function testValidateUsesMessageOverrideByFinalRuleKey()
+    {
+        $kernel = ValidationKernel::create(CustomValidator::class);
+
+        $result = $kernel->validateAndNormalize(
+            array('name' => 'Al'),
+            array('name:姓名' => 'minAlias:3')
+        );
+
+        $this->assertTrue($result->isFailed(), '自定义最小长度失败时应返回失败');
+        $this->assertContains('长度太短', $result->errors()[0], '文案覆盖应按最终规则名命中');
+    }
+
     public function testValidateRejectsUnsupportedRuleOnExistingField()
     {
-        $kernel = ValidationKernel::create(array(), array());
+        $kernel = ValidationKernel::create(CustomValidator::class);
         $result = $kernel->validate(
             array('name' => 'Alice'),
             array('name:姓名' => 'unsupportedRule')
@@ -57,10 +76,7 @@ class ValidationKernelTest extends TestCase
 
     public function testValidateRejectsUnknownFieldsWhenOptionEnabled()
     {
-        $kernel = ValidationKernel::create(
-            array(KernelRuleDefinitionSource::class),
-            array(KernelMessageSource::class)
-        );
+        $kernel = ValidationKernel::create(CustomValidator::class);
 
         $result = $kernel->validateAndNormalize(
             array(
@@ -84,10 +100,7 @@ class ValidationKernelTest extends TestCase
 
     public function testValidateListAndNormalizeSupportsScalarRuleList()
     {
-        $kernel = ValidationKernel::create(
-            array(KernelRuleDefinitionSource::class),
-            array(KernelMessageSource::class)
-        );
+        $kernel = ValidationKernel::create(CustomValidator::class);
 
         $result = $kernel->validateListAndNormalize(
             array('  a  ', '  bb  '),
@@ -103,10 +116,7 @@ class ValidationKernelTest extends TestCase
 
     public function testWriteValidatedDataToWritesIntoArrayAccessTarget()
     {
-        $kernel = ValidationKernel::create(
-            array(KernelRuleDefinitionSource::class),
-            array(KernelMessageSource::class)
-        );
+        $kernel = ValidationKernel::create(CustomValidator::class);
         $result = $kernel->validateAndNormalize(
             array('name' => '  Alice  '),
             array('name:姓名' => 'trimTest')
@@ -120,7 +130,7 @@ class ValidationKernelTest extends TestCase
 
     public function testWriteValidatedDataToRejectsInvalidTarget()
     {
-        $kernel = ValidationKernel::create(array(), array());
+        $kernel = ValidationKernel::create(CustomValidator::class);
         $result = $kernel->validateAndNormalize(array(), array());
 
         $this->assertThrows(

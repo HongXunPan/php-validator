@@ -2,9 +2,22 @@
 
 namespace HongXunPan\Validator\Rule\Transform\Time;
 
-use HongXunPan\Validator\Rule\AbstractRule;
+use HongXunPan\Validator\Result\RuleResult;
+use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\Marker\TimeRule;
 
-class FormatTimeRule extends AbstractRule
+class FormatTimeRule extends AbstractValueRule implements TimeRule
 {
     const KEY = 'formatTime';
+    const MESSAGE = '$paramName must be time';
+
+    public static function validate($context)
+    {
+        $timestamp = strtotime((string)$context->value());
+        if ($timestamp === false) {
+            return RuleResult::fail($context->value());
+        }
+
+        return RuleResult::pass(date((string)$context->ruleArg(), $timestamp));
+    }
 }

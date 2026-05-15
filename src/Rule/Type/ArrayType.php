@@ -2,9 +2,18 @@
 
 namespace HongXunPan\Validator\Rule\Type;
 
-use HongXunPan\Validator\Rule\AbstractRule;
+use HongXunPan\Validator\Result\RuleResult;
+use HongXunPan\Validator\Rule\AbstractValueRule;
 
-class ArrayType extends AbstractRule
+class ArrayType extends AbstractValueRule
 {
     const KEY = 'array';
+    const MESSAGE = '$paramName must be array';
+
+    public static function validate($context)
+    {
+        return is_array($context->value())
+            ? RuleResult::pass($context->value())
+            : RuleResult::fail($context->value());
+    }
 }

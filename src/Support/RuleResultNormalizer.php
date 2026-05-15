@@ -16,16 +16,17 @@ class RuleResultNormalizer
             $passed = (bool)$result['passed'];
             $value = array_key_exists('value', $result) ? $result['value'] : $currentValue;
             $shouldBreak = !empty($result['break']);
+            $exists = array_key_exists('exists', $result) ? $result['exists'] : null;
 
             if ($passed && $shouldBreak) {
-                return RuleResult::passAndBreak($value);
+                return RuleResult::passAndBreak($value, $exists);
             }
 
             if ($passed) {
-                return RuleResult::pass($value);
+                return RuleResult::pass($value, $exists);
             }
 
-            return RuleResult::fail($value);
+            return RuleResult::fail($value, $exists);
         }
 
         if ((bool)$result) {

@@ -2,15 +2,18 @@
 
 namespace HongXunPan\Validator\Support;
 
+use HongXunPan\Validator\Internal\Field\RuleTarget;
+use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
+
 class RuleParser
 {
     public function parseFieldRuleKey($rawKey)
     {
         $parts = explode(':', (string)$rawKey, 2);
 
-        return array(
-            'field' => $parts[0],
-            'display_name' => isset($parts[1]) ? $parts[1] : $parts[0],
+        return new RuleTarget(
+            $parts[0],
+            isset($parts[1]) ? $parts[1] : $parts[0]
         );
     }
 
@@ -25,12 +28,7 @@ class RuleParser
                 continue;
             }
 
-            $parsedRule = $this->parseRuleItem($rawItem);
-            $parsedItems[] = array(
-                'raw' => $rawItem,
-                'key' => $parsedRule['key'],
-                'argument' => $parsedRule['argument'],
-            );
+            $parsedItems[] = $this->parseRuleItem($rawItem);
         }
 
         return $parsedItems;
@@ -40,16 +38,16 @@ class RuleParser
     {
         $parts = explode(':', (string)$rawRule, 2);
 
-        return array(
-            'key' => $parts[0],
-            'argument' => isset($parts[1]) ? $parts[1] : '',
+        return new ParsedRuleToken(
+            $parts[0],
+            isset($parts[1]) ? $parts[1] : ''
         );
     }
 
     public function hasRule(array $ruleItems, $targetRule)
     {
         foreach ($ruleItems as $ruleItem) {
-            if (isset($ruleItem['key']) && $ruleItem['key'] === $targetRule) {
+            if ($ruleItem instanceof ParsedRuleToken && $ruleItem->inputRuleKey() === $targetRule) {
                 return true;
             }
         }
@@ -60,8 +58,8 @@ class RuleParser
     public function findRuleArgument(array $ruleItems, $targetRule, $defaultValue = null)
     {
         foreach ($ruleItems as $ruleItem) {
-            if (isset($ruleItem['key']) && $ruleItem['key'] === $targetRule) {
-                return isset($ruleItem['argument']) ? $ruleItem['argument'] : $defaultValue;
+            if ($ruleItem instanceof ParsedRuleToken && $ruleItem->inputRuleKey() === $targetRule) {
+                return $ruleItem->rawArgument();
             }
         }
 

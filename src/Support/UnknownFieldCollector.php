@@ -4,7 +4,13 @@ namespace HongXunPan\Validator\Support;
 
 class UnknownFieldCollector
 {
+    /**
+     * @var RuleParser
+     */
     private $ruleParser;
+    /**
+     * @var PathAccessor
+     */
     private $pathAccessor;
 
     public function __construct(RuleParser $ruleParser, PathAccessor $pathAccessor)
@@ -33,8 +39,8 @@ class UnknownFieldCollector
         $tree = array();
 
         foreach ($rules as $rawFieldKey => $ruleString) {
-            $fieldInfo = $this->ruleParser->parseFieldRuleKey($rawFieldKey);
-            $segments = explode('.', $fieldInfo['field']);
+            $fieldSpec = $this->ruleParser->parseFieldRuleKey($rawFieldKey);
+            $segments = explode('.', $fieldSpec->fieldPath());
             $current = &$tree;
 
             foreach ($segments as $segment) {

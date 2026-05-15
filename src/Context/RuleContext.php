@@ -2,64 +2,75 @@
 
 namespace HongXunPan\Validator\Context;
 
-use HongXunPan\Validator\Definition\RuleDefinition;
+use HongXunPan\Validator\Support\LiteralValueParser;
+use HongXunPan\Validator\Support\PathAccessor;
 
-/**
- * RuleContext 承接单条规则执行上下文。
- */
 class RuleContext
 {
-    private $definition;
-    private $fieldName;
-    private $displayName;
+    /**
+     * @var string
+     */
+    private $fieldPath;
+    /**
+     * @var string
+     */
+    private $paramName;
+    /**
+     * @var bool
+     */
     private $fieldExists;
+    /**
+     * @var mixed
+     */
     private $value;
-    private $ruleArgument;
+    /**
+     * @var mixed
+     */
+    private $ruleArg;
+    /**
+     * @var array
+     */
     private $rawData;
-    private $options;
-    private $kernel;
-    private $pathReader;
+    /**
+     * @var PathAccessor
+     */
+    private $pathAccessor;
+    /**
+     * @var LiteralValueParser
+     */
+    private $literalValueParser;
 
     public function __construct(
-        RuleDefinition $definition,
-        $fieldName,
-        $displayName,
+        $fieldPath,
+        $paramName,
         $fieldExists,
         $value,
-        $ruleArgument,
+        $ruleArg,
         array $rawData,
-        ValidationOptions $options,
-        $kernel = null,
-        $pathReader = null
+        PathAccessor $pathAccessor,
+        LiteralValueParser $literalValueParser
     ) {
-        $this->definition = $definition;
-        $this->fieldName = (string)$fieldName;
-        $this->displayName = (string)$displayName;
+        $this->fieldPath = (string)$fieldPath;
+        $this->paramName = (string)$paramName;
         $this->fieldExists = (bool)$fieldExists;
         $this->value = $value;
-        $this->ruleArgument = $ruleArgument;
+        $this->ruleArg = $ruleArg;
         $this->rawData = $rawData;
-        $this->options = $options;
-        $this->kernel = $kernel;
-        $this->pathReader = $pathReader;
+        $this->pathAccessor = $pathAccessor;
+        $this->literalValueParser = $literalValueParser;
     }
 
-    public function definition()
+    public function fieldPath()
     {
-        return $this->definition;
+        return $this->fieldPath;
     }
 
-    public function fieldName()
+    public function paramName()
     {
-        return $this->fieldName;
+        return $this->paramName;
     }
 
-    public function displayName()
-    {
-        return $this->displayName;
-    }
-
-    public function exists()
+    public function fieldExists()
     {
         return $this->fieldExists;
     }
@@ -69,44 +80,23 @@ class RuleContext
         return $this->value;
     }
 
-    public function ruleArgument()
+    public function ruleArg()
     {
-        return $this->ruleArgument;
+        return $this->ruleArg;
     }
 
-    public function rawData()
+    public function parseRuleArg()
     {
-        return $this->rawData;
+        return $this->parseLiteral($this->ruleArg);
     }
 
-    public function options()
+    public function parseLiteral($raw)
     {
-        return $this->options;
+        return $this->literalValueParser->parse($raw);
     }
 
-    public function kernel()
+    public function getFieldValue($fieldPath, $strict)
     {
-        return $this->kernel;
-    }
-
-    public function pathReader()
-    {
-        return $this->pathReader;
-    }
-
-    public function readPath($fieldPath, $strict = null)
-    {
-        if ($this->pathReader === null || !method_exists($this->pathReader, 'getValue')) {
-            return array(
-                'exists' => false,
-                'value' => null,
-            );
-        }
-
-        if ($strict === null) {
-            $strict = $this->options->strict();
-        }
-
-        return $this->pathReader->getValue($this->rawData, $fieldPath, $strict);
+        return $this->pathAccessor->getValue($this->rawData, $fieldPath, $strict);
     }
 }

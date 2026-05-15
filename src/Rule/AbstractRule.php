@@ -2,11 +2,13 @@
 
 namespace HongXunPan\Validator\Rule;
 
+use HongXunPan\Validator\Internal\Field\PathLabelMap;
 use LogicException;
 
 abstract class AbstractRule implements RuleInterface
 {
     const KEY = '';
+    const MESSAGE = '$paramName validate failed';
 
     final public static function key()
     {
@@ -20,5 +22,15 @@ abstract class AbstractRule implements RuleInterface
     final public static function of($arg)
     {
         return static::key() . ':' . $arg;
+    }
+
+    public static function defaultMessage()
+    {
+        return static::MESSAGE;
+    }
+
+    public static function displayRuleValue($rawArg, PathLabelMap $pathLabelMap)
+    {
+        return (string)$rawArg;
     }
 }

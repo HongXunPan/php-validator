@@ -7,9 +7,21 @@ namespace HongXunPan\Validator\Context;
  */
 class ValidationOptions
 {
+    /**
+     * @var bool
+     */
     private $strict;
+    /**
+     * @var bool
+     */
     private $rejectUnknown;
+    /**
+     * @var string
+     */
     private $fieldPrefix;
+    /**
+     * @var array
+     */
     private $extra;
 
     public function __construct($strict, $rejectUnknown, $fieldPrefix, array $extra)

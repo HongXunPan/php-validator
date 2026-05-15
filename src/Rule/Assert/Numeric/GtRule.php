@@ -1,0 +1,20 @@
+<?php
+
+namespace HongXunPan\Validator\Rule\Assert\Numeric;
+
+use HongXunPan\Validator\Result\RuleResult;
+use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule;
+
+class GtRule extends AbstractValueRule implements NumericRule
+{
+    const KEY = 'gt';
+    const MESSAGE = '$paramName must be greater than $rule';
+
+    public static function validate($context)
+    {
+        return $context->value() > $context->parseRuleArg()
+            ? RuleResult::pass($context->value())
+            : RuleResult::fail($context->value());
+    }
+}

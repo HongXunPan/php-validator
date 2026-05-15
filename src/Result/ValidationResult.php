@@ -7,9 +7,21 @@ namespace HongXunPan\Validator\Result;
  */
 class ValidationResult
 {
+    /**
+     * @var int
+     */
     private $errorCount;
+    /**
+     * @var array
+     */
     private $errors;
+    /**
+     * @var array
+     */
     private $detail;
+    /**
+     * @var mixed
+     */
     private $validatedData;
 
     public function __construct($errorCount, array $errors, array $detail, $validatedData)
