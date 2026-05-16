@@ -20,6 +20,11 @@ class RuleSet
      */
     private $ruleMessageCatalog;
 
+    /**
+     * @param RuleRegistry $ruleRegistry
+     * @param RuleAliasMap $ruleAliasMap
+     * @param RuleMessageCatalog $ruleMessageCatalog
+     */
     public function __construct(RuleRegistry $ruleRegistry, RuleAliasMap $ruleAliasMap, RuleMessageCatalog $ruleMessageCatalog)
     {
         $this->ruleRegistry = $ruleRegistry;
@@ -27,6 +32,11 @@ class RuleSet
         $this->ruleMessageCatalog = $ruleMessageCatalog;
     }
 
+    /**
+     * @param string $validatorClass
+     *
+     * @return self
+     */
     public static function fromValidatorClass($validatorClass)
     {
         $ruleRegistry = new RuleRegistry();
@@ -42,6 +52,11 @@ class RuleSet
         return new self($ruleRegistry, $ruleAliasMap, $ruleMessageCatalog);
     }
 
+    /**
+     * @param string $inputRuleKey
+     *
+     * @return ResolvedRule|null
+     */
     public function resolveRule($inputRuleKey)
     {
         $inputRuleKey = (string)$inputRuleKey;
@@ -58,6 +73,11 @@ class RuleSet
         return new ResolvedRule($inputRuleKey, $finalRuleKey, $this->ruleRegistry->ruleClass($finalRuleKey));
     }
 
+    /**
+     * @param ResolvedRule $resolvedRule
+     *
+     * @return string
+     */
     public function resolveMessage(ResolvedRule $resolvedRule)
     {
         return $this->ruleMessageCatalog->resolveMessage($resolvedRule);

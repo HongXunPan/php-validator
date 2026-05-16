@@ -15,6 +15,11 @@ class RuleRegistry
      */
     private $ruleMap = array();
 
+    /**
+     * @param array<string, string> $ruleMap
+     *
+     * @return void
+     */
     public function registerCoreRules(array $ruleMap)
     {
         foreach ($ruleMap as $ruleKey => $ruleClass) {
@@ -23,6 +28,11 @@ class RuleRegistry
         }
     }
 
+    /**
+     * @param array<string, string> $ruleMap
+     *
+     * @return void
+     */
     public function registerExtraRules(array $ruleMap)
     {
         foreach ($ruleMap as $ruleKey => $ruleClass) {
@@ -36,11 +46,21 @@ class RuleRegistry
         }
     }
 
+    /**
+     * @param string $ruleKey
+     *
+     * @return bool
+     */
     public function hasRule($ruleKey)
     {
         return array_key_exists((string)$ruleKey, $this->ruleMap);
     }
 
+    /**
+     * @param string $ruleKey
+     *
+     * @return string|null
+     */
     public function ruleClass($ruleKey)
     {
         $ruleKey = (string)$ruleKey;
@@ -51,6 +71,12 @@ class RuleRegistry
         return $this->ruleMap[$ruleKey];
     }
 
+    /**
+     * @param string $declaredRuleKey
+     * @param string $ruleClass
+     *
+     * @return void
+     */
     private function assertRuleClass($declaredRuleKey, $ruleClass)
     {
         if (!is_string($ruleClass) || $ruleClass === '') {

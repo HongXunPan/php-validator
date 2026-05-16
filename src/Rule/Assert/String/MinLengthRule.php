@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Assert\String;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\StringRule;
@@ -11,7 +12,7 @@ class MinLengthRule extends AbstractValueRule implements StringRule
     const KEY = 'minLength';
     const MESSAGE = '$paramName length must be at least $rule';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         $value = $context->value();
         if (!is_string($value)) {

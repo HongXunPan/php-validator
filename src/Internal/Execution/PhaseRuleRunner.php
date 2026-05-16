@@ -15,11 +15,22 @@ class PhaseRuleRunner
      */
     private $ruleExecutor;
 
+    /**
+     * @param RuleExecutor $ruleExecutor
+     */
     public function __construct(RuleExecutor $ruleExecutor)
     {
         $this->ruleExecutor = $ruleExecutor;
     }
 
+    /**
+     * @param ValidationState $state
+     * @param RuleTarget $ruleTarget
+     * @param TargetValueContext $targetValueContext
+     * @param array<int, CompiledRule> $compiledRules
+     *
+     * @return PhaseExecutionResult
+     */
     public function run(ValidationState $state, RuleTarget $ruleTarget, TargetValueContext $targetValueContext, array $compiledRules)
     {
         foreach ($compiledRules as $compiledRule) {

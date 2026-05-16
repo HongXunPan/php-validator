@@ -35,6 +35,15 @@ class CompiledTargetRulePlan
      */
     private $dependentValueRules;
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param array<int, CompiledRule> $unsupportedRules
+     * @param array<int, CompiledRule> $materializationRules
+     * @param array<int, CompiledRule> $conditionalPresenceRules
+     * @param array<int, CompiledRule> $presenceRules
+     * @param array<int, CompiledRule> $localValueRules
+     * @param array<int, CompiledRule> $dependentValueRules
+     */
     public function __construct(
         RuleTarget $ruleTarget,
         array $unsupportedRules,
@@ -53,46 +62,73 @@ class CompiledTargetRulePlan
         $this->dependentValueRules = $dependentValueRules;
     }
 
+    /**
+     * @return RuleTarget
+     */
     public function ruleTarget()
     {
         return $this->ruleTarget;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function unsupportedRules()
     {
         return $this->unsupportedRules;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function materializationRules()
     {
         return $this->materializationRules;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function conditionalPresenceRules()
     {
         return $this->conditionalPresenceRules;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function presenceRules()
     {
         return $this->presenceRules;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function localValueRules()
     {
         return $this->localValueRules;
     }
 
+    /**
+     * @return array<int, CompiledRule>
+     */
     public function dependentValueRules()
     {
         return $this->dependentValueRules;
     }
 
+    /**
+     * @return bool
+     */
     public function hasDependentValueRules()
     {
         return !empty($this->dependentValueRules);
     }
 
+    /**
+     * @return bool
+     */
     public function hasUnsupportedRules()
     {
         return !empty($this->unsupportedRules);

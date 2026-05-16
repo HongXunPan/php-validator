@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Presence;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresenceRule;
 
@@ -10,7 +11,7 @@ class RequiredRule extends AbstractPresenceRule
     const KEY = 'required';
     const MESSAGE = '$paramName is required';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!$context->fieldExists()) {
             return RuleResult::fail($context->value(), false);

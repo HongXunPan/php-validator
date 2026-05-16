@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Type;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 
@@ -10,7 +11,7 @@ class ListOfType extends AbstractValueRule
     const KEY = 'listOf';
     const MESSAGE = '$paramName must be list';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         $value = $context->value();
         if (!is_array($value)) {

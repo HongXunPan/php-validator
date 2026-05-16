@@ -21,6 +21,9 @@ class ListValidationRunner
      */
     private $pathAccessor;
 
+    /**
+     * @param ObjectValidationRunner $objectRunner
+     */
     public function __construct(ObjectValidationRunner $objectRunner)
     {
         $this->objectRunner = $objectRunner;
@@ -32,6 +35,13 @@ class ListValidationRunner
         );
     }
 
+    /**
+     * @param array<int, mixed> $list
+     * @param string|array<string, string> $rules
+     * @param ValidationOptions $options
+     *
+     * @return \HongXunPan\Validator\Result\ValidationResult
+     */
     public function run(array $list, $rules, ValidationOptions $options)
     {
         $output = new ListValidationOutput();

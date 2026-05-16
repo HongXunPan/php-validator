@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Transform\Numeric;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
@@ -12,7 +13,7 @@ class NonNegativeIntRule extends AbstractValueRule implements NumericRule, Value
     const KEY = 'nonNegativeInt';
     const MESSAGE = '$paramName must be non-negative integer';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!static::isIntegerValue($context->value())) {
             return RuleResult::fail($context->value());

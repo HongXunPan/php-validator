@@ -4,6 +4,11 @@ namespace HongXunPan\Validator\Support;
 
 class LiteralValueParser
 {
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
     public function parse($value)
     {
         $decoded = json_decode((string)$value, true);

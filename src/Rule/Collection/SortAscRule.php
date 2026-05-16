@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Collection;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\ListRule;
@@ -11,7 +12,7 @@ class SortAscRule extends AbstractValueRule implements ListRule
     const KEY = 'sortAsc';
     const MESSAGE = '$paramName must be sortable list';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!is_array($context->value())) {
             return RuleResult::fail($context->value());

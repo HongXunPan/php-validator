@@ -2,7 +2,7 @@
 
 All notable changes to `hongxunpan/validator` will be documented in this file.
 
-This project is currently in **pre-1.0** and has not published a stable tag yet.
+This project is currently in **pre-1.0**. The first public tag has been published as `0.0.1`, but the package still does not promise a stable `1.x` compatibility contract.
 
 The format loosely follows Keep a Changelog, but is intentionally kept simple for the current stage.
 
@@ -21,6 +21,10 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
   - `extraRules`
   - `ruleAliases`
   - `ruleMessages`
+- validator subclass provider-class constants for large static configuration maps:
+  - `EXTRA_RULES_PROVIDER_CLASS`
+  - `RULE_ALIASES_PROVIDER_CLASS`
+  - `RULE_MESSAGES_PROVIDER_CLASS`
 - canonical core validation pipeline
 - `ValidationResult` object result boundary
 - validated output writer support for existing `ArrayAccess` targets
@@ -47,11 +51,15 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - public-facing helper types `PathValue` and `PathLabelMap` were moved out of `Internal/*` into `Context/*`
 - package README was refocused on public usage, while project-specific adapter samples were moved back to the shared workspace collaboration layer
 - `RuleContext` public construction no longer leaks `Internal/*` runtime types
+- `RuleInterface::validate(...)` and built-in rules now use `RuleContext $context`, so custom rule implementations can get IDE completion and jump-to-definition support
 - object validation now compiles target rule plans once and reuses them across execution stages
 - `RuleSet` was slimmed into a composition facade over registry, alias, and message components
 - list scalar validation no longer reuses object validation through synthetic public rule arrays
 - output aggregation was separated from failure reporting and message rendering
 - GitHub Actions checkout was upgraded from `actions/checkout@v4` to `@v6`, and the workflow now forces JavaScript actions onto Node24 ahead of the platform default switch
+- public docs now distinguish the two recommended extension paths more clearly:
+  - provider-class constants for large static maps
+  - `define*()` overrides for inherited merging or dynamic logic
 
 ### Fixed
 

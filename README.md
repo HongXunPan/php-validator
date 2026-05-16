@@ -33,7 +33,7 @@ Already in place:
 - Composer package skeleton;
 - PHP `>=5.6` compatibility baseline;
 - `RuleInterface + AbstractRule + KEY + of(...)` public convention;
-- validator subclass extension arrays:
+- validator subclass extension configuration:
   - `extraRules`
   - `ruleAliases`
   - `ruleMessages`
@@ -66,12 +66,24 @@ class DemoValidator extends Validator
 }
 ```
 
+When these maps become large, prefer two paths depending on the use case:
+
+- if you only want to split long static maps out of the validator class, prefer the provider-class constants:
+  - `EXTRA_RULES_PROVIDER_CLASS`
+  - `RULE_ALIASES_PROVIDER_CLASS`
+  - `RULE_MESSAGES_PROVIDER_CLASS`
+- only override:
+  - `defineExtraRules()`
+  - `defineRuleAliases()`
+  - `defineRuleMessages()`
+  when you really need inherited merging or dynamic logic.
+
 Rule lookup order is fixed:
 
 1. try the input rule key as a real rule;
 2. only when it does not exist, try alias mapping;
 3. resolve the final rule class;
-4. execute `RuleClass::validate($context)`.
+4. execute `RuleClass::validate(RuleContext $context)`.
 
 ## Public DSL Conventions
 
@@ -225,13 +237,14 @@ $legacy = $result->toArray();
 
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Context\RuleContext;
 
 class TrimNameRule extends AbstractValueRule
 {
     const KEY = 'trimName';
     const MESSAGE = '$paramName must be string';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!is_string($context->value())) {
             return RuleResult::fail($context->value());
@@ -292,6 +305,12 @@ Meaning:
 - `extraRules`: project-defined real rule keys;
 - `ruleAliases`: legacy or shorthand names mapped to final rule keys;
 - `ruleMessages`: message overrides by the **final rule key**.
+- When these maps grow large:
+  - if you only want to split long arrays out of the validator class, prefer the provider-class constants:
+    - `EXTRA_RULES_PROVIDER_CLASS`
+    - `RULE_ALIASES_PROVIDER_CLASS`
+    - `RULE_MESSAGES_PROVIDER_CLASS`
+  - only override `defineExtraRules() / defineRuleAliases() / defineRuleMessages()` when you really need inherited merging or dynamic logic.
 
 Rule lookup order is stable:
 
@@ -383,7 +402,7 @@ Recommended approach:
 
 - call `ValidationResult::toArray()` when an old array envelope must be preserved
 - keep project-local `*OrThrow` facade/helper methods if old signatures must remain stable
-- declare project-specific `extraRules / ruleAliases / ruleMessages` in a project validator subclass
+- declare project-specific `extraRules / ruleAliases / ruleMessages` in a project validator subclass; if you only need to split large static maps, prefer the provider-class constants, and reserve the matching `define*()` overrides for inherited merging or dynamic logic
 - keep ORM or business-specific rules such as `unique / exists` outside core
 
 Not recommended:

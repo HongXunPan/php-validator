@@ -6,6 +6,11 @@ use HongXunPan\Validator\Internal\Target\RuleTarget;
 
 class RuleStringParser
 {
+    /**
+     * @param string $rawKey
+     *
+     * @return RuleTarget
+     */
     public function parseTargetKey($rawKey)
     {
         $parts = explode(':', (string)$rawKey, 2);
@@ -16,6 +21,11 @@ class RuleStringParser
         );
     }
 
+    /**
+     * @param string $ruleString
+     *
+     * @return array<int, ParsedRuleToken>
+     */
     public function parseRuleItems($ruleString)
     {
         $rawItems = explode('|', (string)$ruleString);
@@ -33,6 +43,11 @@ class RuleStringParser
         return $parsedItems;
     }
 
+    /**
+     * @param string $rawRule
+     *
+     * @return ParsedRuleToken
+     */
     public function parseRuleItem($rawRule)
     {
         $parts = explode(':', (string)$rawRule, 2);
@@ -43,6 +58,12 @@ class RuleStringParser
         );
     }
 
+    /**
+     * @param array<int, ParsedRuleToken> $ruleItems
+     * @param string $targetRule
+     *
+     * @return bool
+     */
     public function hasRule(array $ruleItems, $targetRule)
     {
         foreach ($ruleItems as $ruleItem) {
@@ -54,6 +75,13 @@ class RuleStringParser
         return false;
     }
 
+    /**
+     * @param array<int, ParsedRuleToken> $ruleItems
+     * @param string $targetRule
+     * @param mixed $defaultValue
+     *
+     * @return mixed
+     */
     public function findRuleArgument(array $ruleItems, $targetRule, $defaultValue = null)
     {
         foreach ($ruleItems as $ruleItem) {

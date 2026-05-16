@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Transform\String;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\StringRule;
@@ -12,7 +13,7 @@ class BlankToNullRule extends AbstractValueRule implements StringRule, ValueMate
     const KEY = 'blankToNull';
     const MESSAGE = '$paramName must be string';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if ($context->value() === null) {
             return RuleResult::pass(null);

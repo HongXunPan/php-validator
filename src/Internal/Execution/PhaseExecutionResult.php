@@ -23,26 +23,41 @@ final class PhaseExecutionResult
         return new self(self::STATUS_COMPLETED);
     }
 
+    /**
+     * @return self
+     */
     public static function failed()
     {
         return new self(self::STATUS_FAILED);
     }
 
+    /**
+     * @return self
+     */
     public static function broken()
     {
         return new self(self::STATUS_BROKEN);
     }
 
+    /**
+     * @return bool
+     */
     public function isCompleted()
     {
         return $this->status === self::STATUS_COMPLETED;
     }
 
+    /**
+     * @return bool
+     */
     public function isFailed()
     {
         return $this->status === self::STATUS_FAILED;
     }
 
+    /**
+     * @return bool
+     */
     public function isBroken()
     {
         return $this->status === self::STATUS_BROKEN;

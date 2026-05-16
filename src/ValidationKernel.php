@@ -31,6 +31,9 @@ class ValidationKernel
      */
     private $validatedDataWriter;
 
+    /**
+     * @param RuleSet $ruleSet
+     */
     public function __construct(RuleSet $ruleSet)
     {
         $this->ruleSet = $ruleSet;
@@ -39,11 +42,23 @@ class ValidationKernel
         $this->validatedDataWriter = new ArrayAccessValidatedDataWriter();
     }
 
+    /**
+     * @param class-string<Validator> $validatorClass
+     *
+     * @return static
+     */
     public static function create($validatorClass)
     {
         return new static(RuleSet::fromValidatorClass($validatorClass));
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $rules
+     * @param array<string, mixed> $options
+     *
+     * @return ValidationResult
+     */
     public function validate(array $data, array $rules, array $options = array())
     {
         return $this->objectRunner->run(
@@ -54,6 +69,13 @@ class ValidationKernel
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $rules
+     * @param array<string, mixed> $options
+     *
+     * @return ValidationResult
+     */
     public function validateAndNormalize(array $data, array $rules, array $options = array())
     {
         return $this->objectRunner->run(
@@ -64,6 +86,13 @@ class ValidationKernel
         );
     }
 
+    /**
+     * @param array<int, mixed> $list
+     * @param string|array<string, string> $rules
+     * @param array<string, mixed> $options
+     *
+     * @return ValidationResult
+     */
     public function validateListAndNormalize(array $list, $rules, array $options = array())
     {
         return $this->listRunner->run(
@@ -73,11 +102,22 @@ class ValidationKernel
         );
     }
 
+    /**
+     * @param mixed $target
+     *
+     * @return mixed
+     */
     public function writeValidatedDataTo(ValidationResult $result, $target)
     {
         return $this->validatedDataWriter->write($result, $target);
     }
 
+    /**
+     * @param mixed $target
+     * @param array<string, mixed> $options
+     *
+     * @return ValidationResult
+     */
     public function validateAndWriteTo(array $data, array $rules, $target, array $options = array())
     {
         $result = $this->validateAndNormalize($data, $rules, $options);

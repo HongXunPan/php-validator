@@ -119,6 +119,17 @@ composer analyse
    - `ruleMessages`
    暴露给使用侧。
 
+补充约定：
+
+- 若只是想把长静态配置拆文件，优先使用：
+  - `EXTRA_RULES_PROVIDER_CLASS`
+  - `RULE_ALIASES_PROVIDER_CLASS`
+  - `RULE_MESSAGES_PROVIDER_CLASS`
+- 只有确实需要继承合并或动态逻辑时，再覆写：
+  - `defineExtraRules()`
+  - `defineRuleAliases()`
+  - `defineRuleMessages()`
+
 ### 4.2 不要这样做
 
 不要：

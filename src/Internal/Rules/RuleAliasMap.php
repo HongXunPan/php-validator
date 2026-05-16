@@ -12,6 +12,12 @@ class RuleAliasMap
      */
     private $aliasMap = array();
 
+    /**
+     * @param array<string, string> $aliases
+     * @param RuleRegistry $ruleRegistry
+     *
+     * @return void
+     */
     public function registerAliases(array $aliases, RuleRegistry $ruleRegistry)
     {
         foreach ($aliases as $aliasKey => $finalRuleKey) {
@@ -34,11 +40,21 @@ class RuleAliasMap
         }
     }
 
+    /**
+     * @param string $aliasKey
+     *
+     * @return bool
+     */
     public function hasAlias($aliasKey)
     {
         return array_key_exists((string)$aliasKey, $this->aliasMap);
     }
 
+    /**
+     * @param string $aliasKey
+     *
+     * @return string|null
+     */
     public function finalRuleKey($aliasKey)
     {
         $aliasKey = (string)$aliasKey;

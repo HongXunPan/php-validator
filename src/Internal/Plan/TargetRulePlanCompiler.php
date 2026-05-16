@@ -28,6 +28,11 @@ class TargetRulePlanCompiler
      */
     private $declaredTargetTreeBuilder;
 
+    /**
+     * @param RuleStringParser $ruleStringParser
+     * @param RuleSet $ruleSet
+     * @param DeclaredTargetTreeBuilder $declaredTargetTreeBuilder
+     */
     public function __construct(RuleStringParser $ruleStringParser, RuleSet $ruleSet, DeclaredTargetTreeBuilder $declaredTargetTreeBuilder)
     {
         $this->ruleStringParser = $ruleStringParser;
@@ -35,6 +40,11 @@ class TargetRulePlanCompiler
         $this->declaredTargetTreeBuilder = $declaredTargetTreeBuilder;
     }
 
+    /**
+     * @param array<string, string> $rules
+     *
+     * @return CompiledValidationPlan
+     */
     public function compile(array $rules)
     {
         $targetPlans = array();
@@ -54,6 +64,13 @@ class TargetRulePlanCompiler
         );
     }
 
+    /**
+     * @param string $fieldPath
+     * @param string $displayName
+     * @param string $ruleString
+     *
+     * @return CompiledTargetRulePlan
+     */
     public function compileStandalone($fieldPath, $displayName, $ruleString)
     {
         return $this->compileRuleTargetAndRuleString(
@@ -62,6 +79,12 @@ class TargetRulePlanCompiler
         );
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param string $ruleString
+     *
+     * @return CompiledTargetRulePlan
+     */
     private function compileRuleTargetAndRuleString(RuleTarget $ruleTarget, $ruleString)
     {
         $ruleItems = $this->ruleStringParser->parseRuleItems($ruleString);
@@ -114,6 +137,11 @@ class TargetRulePlanCompiler
         );
     }
 
+    /**
+     * @param ResolvedRule|null $resolvedRule
+     *
+     * @return string
+     */
     private function resolveStage($resolvedRule)
     {
         if (!$resolvedRule instanceof ResolvedRule) {

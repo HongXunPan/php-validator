@@ -33,7 +33,7 @@
 - Composer 子包骨架；
 - PHP `>=5.6` 兼容基线；
 - `RuleInterface + AbstractRule + KEY + of(...)` 公开约定；
-- `Validator` 子类三组扩展数组：
+- `Validator` 子类三组扩展配置：
   - `extraRules`
   - `ruleAliases`
   - `ruleMessages`
@@ -66,12 +66,23 @@ class DemoValidator extends Validator
 }
 ```
 
+当规则、别名、文案配置较多时，推荐按两类场景处理：
+
+- 若只是想把长数组拆文件，优先使用 provider class 常量：
+  - `EXTRA_RULES_PROVIDER_CLASS`
+  - `RULE_ALIASES_PROVIDER_CLASS`
+  - `RULE_MESSAGES_PROVIDER_CLASS`
+- 若确实需要继承合并或动态逻辑，再覆写：
+  - `defineExtraRules()`
+  - `defineRuleAliases()`
+  - `defineRuleMessages()`
+
 规则查找顺序固定为：
 
 1. 先把输入规则名当作真实规则查找；
 2. 只有真实规则不存在时才尝试 alias；
 3. 得到最终规则类；
-4. 执行 `RuleClass::validate($context)`。
+4. 执行 `RuleClass::validate(RuleContext $context)`。
 
 ## 公开 DSL 约定
 
@@ -227,13 +238,14 @@ $legacy = $result->toArray();
 
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Context\RuleContext;
 
 class TrimNameRule extends AbstractValueRule
 {
     const KEY = 'trimName';
     const MESSAGE = '$paramName 必须是字符串';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!is_string($context->value())) {
             return RuleResult::fail($context->value());
@@ -294,6 +306,12 @@ class DemoValidator extends Validator
 - `extraRules`：注册项目自己的真实规则名；
 - `ruleAliases`：把 legacy / 简写映射到最终规则名；
 - `ruleMessages`：按**最终规则名**覆盖错误文案。
+- 当配置规模继续增长时：
+  - 若只是想把长数组拆文件，优先使用 provider class 常量：
+    - `EXTRA_RULES_PROVIDER_CLASS`
+    - `RULE_ALIASES_PROVIDER_CLASS`
+    - `RULE_MESSAGES_PROVIDER_CLASS`
+  - 若确实需要继承合并或动态逻辑，再覆写 `defineExtraRules() / defineRuleAliases() / defineRuleMessages()`。
 
 规则查找顺序固定为：
 
@@ -386,7 +404,7 @@ core 默认返回：
 
 - 需要旧 envelope 时，用 `ValidationResult::toArray()` 显式转换
 - 需要旧 `*OrThrow` 签名时，在项目内封装 facade / helper
-- 需要 legacy 规则或文案时，在项目自己的 `Validator` 子类中补 `extraRules / ruleAliases / ruleMessages`
+- 需要 legacy 规则或文案时，在项目自己的 `Validator` 子类中补 `extraRules / ruleAliases / ruleMessages`；若只是拆分长配置，优先使用 provider class 常量；只有确实需要继承合并或动态逻辑时再覆写 `define*()` 方法
 - 需要 ORM / 业务规则（如 `unique / exists`）时，继续放在项目适配层
 
 不建议：

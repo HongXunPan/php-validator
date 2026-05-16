@@ -6,6 +6,13 @@ use HongXunPan\Validator\Context\PathValue;
 
 class PathAccessor
 {
+    /**
+     * @param array<string, mixed> $data
+     * @param string $path
+     * @param bool $strict
+     *
+     * @return PathValue
+     */
     public function getValue(array $data, $path, $strict)
     {
         $path = (string)$path;
@@ -35,6 +42,13 @@ class PathAccessor
         return new PathValue(true, $current);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param string $path
+     * @param mixed $value
+     *
+     * @return void
+     */
     public function setValue(array &$data, $path, $value)
     {
         $path = (string)$path;
@@ -61,6 +75,12 @@ class PathAccessor
         }
     }
 
+    /**
+     * @param string $prefix
+     * @param string $field
+     *
+     * @return string
+     */
     public function join($prefix, $field)
     {
         $prefix = (string)$prefix;
@@ -77,6 +97,12 @@ class PathAccessor
         return $prefix . '.' . $field;
     }
 
+    /**
+     * @param string $fieldName
+     * @param string $prefix
+     *
+     * @return string
+     */
     public function buildDisplayName($fieldName, $prefix)
     {
         $fieldName = (string)$fieldName;

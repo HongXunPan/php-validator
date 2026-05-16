@@ -16,11 +16,23 @@ class RuleContextFactory
      */
     private $literalValueParser;
 
+    /**
+     * @param LiteralValueParser $literalValueParser
+     */
     public function __construct(LiteralValueParser $literalValueParser)
     {
         $this->literalValueParser = $literalValueParser;
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param string $paramName
+     * @param ParsedRuleToken $parsedRule
+     * @param TargetValueContext $targetValueContext
+     * @param RuleValueReaderInterface $ruleValueReader
+     *
+     * @return RuleContext
+     */
     public function create(
         RuleTarget $ruleTarget,
         $paramName,

@@ -17,6 +17,11 @@ class ResolvedRule
      */
     private $ruleClass;
 
+    /**
+     * @param string $inputRuleKey
+     * @param string $finalRuleKey
+     * @param string $ruleClass
+     */
     public function __construct($inputRuleKey, $finalRuleKey, $ruleClass)
     {
         $this->inputRuleKey = (string)$inputRuleKey;
@@ -24,16 +29,25 @@ class ResolvedRule
         $this->ruleClass = $ruleClass;
     }
 
+    /**
+     * @return string
+     */
     public function inputRuleKey()
     {
         return $this->inputRuleKey;
     }
 
+    /**
+     * @return string
+     */
     public function finalRuleKey()
     {
         return $this->finalRuleKey;
     }
 
+    /**
+     * @return string
+     */
     public function ruleClass()
     {
         return $this->ruleClass;

@@ -37,6 +37,9 @@ class ObjectValidationRunner
      */
     private $unknownTargetDetector;
 
+    /**
+     * @param RuleSet $ruleSet
+     */
     public function __construct(RuleSet $ruleSet)
     {
         $this->pathAccessor = new PathAccessor();
@@ -59,11 +62,27 @@ class ObjectValidationRunner
         $this->unknownTargetDetector = new UnknownTargetDetector($this->pathAccessor);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $rules
+     * @param ValidationOptions $options
+     * @param bool $normalizeOutput
+     *
+     * @return \HongXunPan\Validator\Result\ValidationResult
+     */
     public function run(array $data, array $rules, ValidationOptions $options, $normalizeOutput)
     {
         return $this->runOutput($data, $rules, $options, $normalizeOutput)->toValidationResult();
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $rules
+     * @param ValidationOptions $options
+     * @param bool $normalizeOutput
+     *
+     * @return ValidationOutput
+     */
     public function runOutput(array $data, array $rules, ValidationOptions $options, $normalizeOutput)
     {
         $compiledPlan = $this->targetRulePlanCompiler->compile($rules);
@@ -110,16 +129,25 @@ class ObjectValidationRunner
         return $state->output();
     }
 
+    /**
+     * @return TargetRulePlanCompiler
+     */
     public function targetRulePlanCompiler()
     {
         return $this->targetRulePlanCompiler;
     }
 
+    /**
+     * @return TargetPlanExecutor
+     */
     public function targetPlanExecutor()
     {
         return $this->targetPlanExecutor;
     }
 
+    /**
+     * @return PathAccessor
+     */
     public function pathAccessor()
     {
         return $this->pathAccessor;

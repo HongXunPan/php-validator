@@ -4,6 +4,13 @@ namespace HongXunPan\Validator\Internal\Output;
 
 class ValidationMessageRenderer
 {
+    /**
+     * @param string $template
+     * @param string $paramName
+     * @param string $displayRuleValue
+     *
+     * @return string
+     */
     public function render($template, $paramName, $displayRuleValue)
     {
         $message = (string)$template;

@@ -10,6 +10,9 @@ abstract class AbstractRule implements RuleInterface
     const KEY = '';
     const MESSAGE = '$paramName validate failed';
 
+    /**
+     * @return string
+     */
     final public static function key()
     {
         if (static::KEY === '') {
@@ -19,16 +22,29 @@ abstract class AbstractRule implements RuleInterface
         return static::KEY;
     }
 
+    /**
+     * @param mixed $arg
+     *
+     * @return string
+     */
     final public static function of($arg)
     {
         return static::key() . ':' . $arg;
     }
 
+    /**
+     * @return string
+     */
     public static function defaultMessage()
     {
         return static::MESSAGE;
     }
 
+    /**
+     * @param mixed $rawArg
+     *
+     * @return string
+     */
     public static function displayRuleValue($rawArg, PathLabelMap $pathLabelMap)
     {
         return (string)$rawArg;

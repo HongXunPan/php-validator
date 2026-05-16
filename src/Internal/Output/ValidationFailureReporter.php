@@ -34,6 +34,13 @@ class ValidationFailureReporter
      */
     private $fieldPrefix;
 
+    /**
+     * @param ValidationOutput $output
+     * @param ValidationMessageRenderer $messageRenderer
+     * @param PathAccessor $pathAccessor
+     * @param PathLabelMap $pathLabelMap
+     * @param string $fieldPrefix
+     */
     public function __construct(
         ValidationOutput $output,
         ValidationMessageRenderer $messageRenderer,
@@ -48,6 +55,11 @@ class ValidationFailureReporter
         $this->fieldPrefix = (string)$fieldPrefix;
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     *
+     * @return string
+     */
     public function displayName(RuleTarget $ruleTarget)
     {
         return $this->pathAccessor->buildDisplayName(
@@ -56,6 +68,11 @@ class ValidationFailureReporter
         );
     }
 
+    /**
+     * @param ValidationDetailItem $detailItem
+     *
+     * @return void
+     */
     public function reportUnknownDetailItem(ValidationDetailItem $detailItem)
     {
         $this->output->appendFailure(
@@ -68,6 +85,14 @@ class ValidationFailureReporter
         );
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param ParsedRuleToken $parsedRule
+     * @param TargetValueContext $targetValueContext
+     * @param RuleExecutionOutcome $outcome
+     *
+     * @return void
+     */
     public function reportTargetFailure(
         RuleTarget $ruleTarget,
         ParsedRuleToken $parsedRule,

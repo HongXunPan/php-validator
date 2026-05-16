@@ -6,6 +6,8 @@ use ArrayObject;
 use HongXunPan\Validator\Exception\InvalidValidatedDataTargetException;
 use HongXunPan\Validator\Tests\Fixtures\Validator\ConditionalValidator;
 use HongXunPan\Validator\Tests\Fixtures\Validator\CustomValidator;
+use HongXunPan\Validator\Tests\Fixtures\Validator\MethodConfigValidator;
+use HongXunPan\Validator\Tests\Fixtures\Validator\ProviderConfigValidator;
 use HongXunPan\Validator\ValidationKernel;
 use HongXunPan\Validator\Tests\TestCase;
 
@@ -61,6 +63,32 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isFailed(), '自定义最小长度失败时应返回失败');
         $this->assertContains('长度太短', $result->errors()[0], '文案覆盖应按最终规则名命中');
+    }
+
+    public function testValidateSupportsMethodBasedRuleConfiguration()
+    {
+        $kernel = ValidationKernel::create(MethodConfigValidator::class);
+
+        $result = $kernel->validateAndNormalize(
+            array('name' => '  Al  '),
+            array('name:姓名' => 'trimAlias|minAlias:3')
+        );
+
+        $this->assertTrue($result->isFailed(), '方法式规则配置也应命中 alias 与 message override');
+        $this->assertContains('长度太短', $result->errors()[0], '方法式配置应能覆盖最终规则文案');
+    }
+
+    public function testValidateSupportsProviderClassBasedRuleConfiguration()
+    {
+        $kernel = ValidationKernel::create(ProviderConfigValidator::class);
+
+        $result = $kernel->validateAndNormalize(
+            array('name' => '  Al  '),
+            array('name:姓名' => 'trimAlias|minAlias:3')
+        );
+
+        $this->assertTrue($result->isFailed(), 'provider class 规则配置也应命中 alias 与 message override');
+        $this->assertContains('长度太短', $result->errors()[0], 'provider class 配置应能覆盖最终规则文案');
     }
 
     public function testValidateRejectsUnsupportedRuleOnExistingField()

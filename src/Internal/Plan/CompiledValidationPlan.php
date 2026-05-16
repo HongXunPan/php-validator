@@ -20,6 +20,11 @@ class CompiledValidationPlan
      */
     private $declaredTargetTree;
 
+    /**
+     * @param array<int, CompiledTargetRulePlan> $targetPlans
+     * @param PathLabelMap $pathLabelMap
+     * @param DeclaredTargetTree $declaredTargetTree
+     */
     public function __construct(array $targetPlans, PathLabelMap $pathLabelMap, DeclaredTargetTree $declaredTargetTree)
     {
         $this->targetPlans = $targetPlans;
@@ -27,16 +32,25 @@ class CompiledValidationPlan
         $this->declaredTargetTree = $declaredTargetTree;
     }
 
+    /**
+     * @return array<int, CompiledTargetRulePlan>
+     */
     public function targetPlans()
     {
         return $this->targetPlans;
     }
 
+    /**
+     * @return PathLabelMap
+     */
     public function pathLabelMap()
     {
         return $this->pathLabelMap;
     }
 
+    /**
+     * @return DeclaredTargetTree
+     */
     public function declaredTargetTree()
     {
         return $this->declaredTargetTree;

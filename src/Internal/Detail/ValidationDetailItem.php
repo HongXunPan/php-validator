@@ -37,6 +37,13 @@ class ValidationDetailItem
      */
     private $reason;
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     * @param string $rule
+     * @param string $ruleValue
+     * @param string $reason
+     */
     private function __construct($param, $value, $rule, $ruleValue, $reason)
     {
         $this->param = (string)$param;
@@ -46,11 +53,26 @@ class ValidationDetailItem
         $this->reason = (string)$reason;
     }
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     * @param string $rule
+     * @param string $ruleValue
+     * @param string $reason
+     *
+     * @return static
+     */
     public static function create($param, $value, $rule, $ruleValue, $reason)
     {
         return new static($param, $value, $rule, $ruleValue, $reason);
     }
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     *
+     * @return static
+     */
     public static function unknownField($param, $value)
     {
         return new static(
@@ -62,6 +84,12 @@ class ValidationDetailItem
         );
     }
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     *
+     * @return static
+     */
     public static function listItemNotArray($param, $value)
     {
         return new static(
@@ -73,6 +101,13 @@ class ValidationDetailItem
         );
     }
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     * @param string $ruleValue
+     *
+     * @return static
+     */
     public static function unsupportedRule($param, $value, $ruleValue)
     {
         return new static(
@@ -84,6 +119,14 @@ class ValidationDetailItem
         );
     }
 
+    /**
+     * @param string $param
+     * @param mixed $value
+     * @param string $rule
+     * @param string $ruleValue
+     *
+     * @return static
+     */
     public static function ruleFailed($param, $value, $rule, $ruleValue)
     {
         return new static(
@@ -95,31 +138,49 @@ class ValidationDetailItem
         );
     }
 
+    /**
+     * @return string
+     */
     public function param()
     {
         return $this->param;
     }
 
+    /**
+     * @return mixed
+     */
     public function value()
     {
         return $this->value;
     }
 
+    /**
+     * @return string
+     */
     public function rule()
     {
         return $this->rule;
     }
 
+    /**
+     * @return string
+     */
     public function ruleValue()
     {
         return $this->ruleValue;
     }
 
+    /**
+     * @return string
+     */
     public function reason()
     {
         return $this->reason;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray()
     {
         return array(

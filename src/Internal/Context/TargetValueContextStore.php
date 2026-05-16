@@ -11,16 +11,29 @@ class TargetValueContextStore
      */
     private $contextMap = array();
 
+    /**
+     * @param string $targetPath
+     */
     public function remember($targetPath, TargetValueContext $targetValueContext)
     {
         $this->contextMap[(string)$targetPath] = $targetValueContext;
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return bool
+     */
     public function has($targetPath)
     {
         return array_key_exists((string)$targetPath, $this->contextMap);
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return TargetValueContext|null
+     */
     public function get($targetPath)
     {
         $targetPath = (string)$targetPath;
@@ -31,6 +44,11 @@ class TargetValueContextStore
         return $this->contextMap[$targetPath];
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return bool
+     */
     public function hasMaterialized($targetPath)
     {
         $targetValueContext = $this->get($targetPath);
@@ -39,6 +57,11 @@ class TargetValueContextStore
             && $targetValueContext->isMaterialized();
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return PathValue
+     */
     public function rawPathValue($targetPath)
     {
         $targetValueContext = $this->get($targetPath);
@@ -52,6 +75,11 @@ class TargetValueContextStore
         );
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return PathValue
+     */
     public function materializedPathValue($targetPath)
     {
         $targetValueContext = $this->get($targetPath);
@@ -65,6 +93,11 @@ class TargetValueContextStore
         );
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return PathValue
+     */
     public function dependentPathValue($targetPath)
     {
         $targetValueContext = $this->get($targetPath);

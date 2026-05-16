@@ -52,6 +52,9 @@ class RuleExecutionOutcome
         return new static(self::STATUS_SKIPPED, null, null, null, null);
     }
 
+    /**
+     * @return static
+     */
     public static function unsupported()
     {
         return new static(
@@ -63,6 +66,12 @@ class RuleExecutionOutcome
         );
     }
 
+    /**
+     * @param ResolvedRule $resolvedRule
+     * @param RuleResult $ruleResult
+     *
+     * @return static
+     */
     public static function passed(ResolvedRule $resolvedRule, RuleResult $ruleResult)
     {
         return new static(
@@ -74,6 +83,13 @@ class RuleExecutionOutcome
         );
     }
 
+    /**
+     * @param ResolvedRule $resolvedRule
+     * @param string $messageTemplate
+     * @param RuleResult $ruleResult
+     *
+     * @return static
+     */
     public static function failed(ResolvedRule $resolvedRule, $messageTemplate, RuleResult $ruleResult)
     {
         return new static(
@@ -85,46 +101,73 @@ class RuleExecutionOutcome
         );
     }
 
+    /**
+     * @return bool
+     */
     public function isSkipped()
     {
         return $this->status === self::STATUS_SKIPPED;
     }
 
+    /**
+     * @return bool
+     */
     public function isPassed()
     {
         return $this->status === self::STATUS_PASSED;
     }
 
+    /**
+     * @return bool
+     */
     public function isFailed()
     {
         return $this->status === self::STATUS_FAILED;
     }
 
+    /**
+     * @return bool
+     */
     public function isUnsupported()
     {
         return $this->failureReason === self::REASON_UNSUPPORTED;
     }
 
+    /**
+     * @return string|null
+     */
     public function failureReason()
     {
         return $this->failureReason;
     }
 
+    /**
+     * @return ResolvedRule|null
+     */
     public function resolvedRule()
     {
         return $this->resolvedRule;
     }
 
+    /**
+     * @return string|null
+     */
     public function messageTemplate()
     {
         return $this->messageTemplate;
     }
 
+    /**
+     * @return RuleResult|null
+     */
     public function ruleResult()
     {
         return $this->ruleResult;
     }
 
+    /**
+     * @return bool
+     */
     public function shouldBreak()
     {
         return $this->ruleResult !== null

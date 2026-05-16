@@ -17,11 +17,20 @@ class ValidatedOutputData
      */
     private $data = array();
 
+    /**
+     * @param PathAccessor $pathAccessor
+     */
     public function __construct(PathAccessor $pathAccessor)
     {
         $this->pathAccessor = $pathAccessor;
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param TargetValueContext $targetValueContext
+     *
+     * @return void
+     */
     public function writeTarget(RuleTarget $ruleTarget, TargetValueContext $targetValueContext)
     {
         if (!$targetValueContext->hasOutputValue()) {
@@ -35,21 +44,39 @@ class ValidatedOutputData
         );
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @return void
+     */
     public function appendItem($value)
     {
         $this->data[] = $value;
     }
 
+    /**
+     * @param ValidatedOutputData $validatedOutputData
+     *
+     * @return void
+     */
     public function appendOutputData(ValidatedOutputData $validatedOutputData)
     {
         $this->appendItem($validatedOutputData->toArray());
     }
 
+    /**
+     * @param string $fieldPath
+     *
+     * @return \HongXunPan\Validator\Context\PathValue
+     */
     public function pathValue($fieldPath)
     {
         return $this->pathAccessor->getValue($this->data, $fieldPath, true);
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function toArray()
     {
         return $this->data;

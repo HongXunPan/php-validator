@@ -44,6 +44,13 @@ class ValidationState
      */
     private $failureReporter;
 
+    /**
+     * @param array<string, mixed> $rawData
+     * @param ValidationOptions $options
+     * @param bool $normalizeOutput
+     * @param PathAccessor $pathAccessor
+     * @param PathLabelMap $pathLabelMap
+     */
     public function __construct(
         array $rawData,
         ValidationOptions $options,
@@ -68,66 +75,112 @@ class ValidationState
         );
     }
 
+    /**
+     * @return ValidationOptions
+     */
     public function options()
     {
         return $this->options;
     }
 
+    /**
+     * @return bool
+     */
     public function strict()
     {
         return $this->options->strict();
     }
 
+    /**
+     * @return string
+     */
     public function fieldPrefix()
     {
         return $this->options->fieldPrefix();
     }
 
+    /**
+     * @return bool
+     */
     public function normalizeOutput()
     {
         return $this->normalizeOutput;
     }
 
+    /**
+     * @param string $targetPath
+     * @param TargetValueContext $targetValueContext
+     */
     public function rememberTargetValueContext($targetPath, TargetValueContext $targetValueContext)
     {
         $this->targetValueContextStore->remember($targetPath, $targetValueContext);
     }
 
+    /**
+     * @return TargetValueContextStore
+     */
     public function targetValueContextStore()
     {
         return $this->targetValueContextStore;
     }
 
+    /**
+     * @return TargetValueReader
+     */
     public function targetValueReader()
     {
         return $this->targetValueReader;
     }
 
+    /**
+     * @param ValidationDetailItem $detailItem
+     */
     public function addUnknownDetailItem(ValidationDetailItem $detailItem)
     {
         $this->failureReporter->reportUnknownDetailItem($detailItem);
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param TargetValueContext $targetValueContext
+     */
     public function writeValidatedTarget(RuleTarget $ruleTarget, TargetValueContext $targetValueContext)
     {
         $this->output->writeValidatedTarget($ruleTarget, $targetValueContext);
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     * @param ParsedRuleToken $parsedRule
+     * @param TargetValueContext $targetValueContext
+     * @param RuleExecutionOutcome $outcome
+     */
     public function addTargetFailure(RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetValueContext $targetValueContext, RuleExecutionOutcome $outcome)
     {
         $this->failureReporter->reportTargetFailure($ruleTarget, $parsedRule, $targetValueContext, $outcome);
     }
 
+    /**
+     * @param RuleTarget $ruleTarget
+     *
+     * @return string
+     */
     public function displayName(RuleTarget $ruleTarget)
     {
         return $this->failureReporter->displayName($ruleTarget);
     }
 
+    /**
+     * @return \HongXunPan\Validator\Result\ValidationResult
+     */
     public function toValidationResult()
     {
         return $this->output->toValidationResult();
     }
 
+    /**
+     * @return ValidationOutput
+     */
     public function output()
     {
         return $this->output;

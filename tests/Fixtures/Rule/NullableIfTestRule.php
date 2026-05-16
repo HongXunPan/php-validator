@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Tests\Fixtures\Rule;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresenceRule;
 use HongXunPan\Validator\Rule\ConditionalPresenceRuleInterface;
@@ -11,7 +12,7 @@ class NullableIfTestRule extends AbstractPresenceRule implements ConditionalPres
     const KEY = 'nullableIfTest';
     const MESSAGE = '$paramName nullable';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         list($fieldPath, $expectedValue) = array_pad(explode(',', (string)$context->ruleArg(), 2), 2, '');
         $otherValue = $context->getMaterializedTargetValue($fieldPath);

@@ -26,12 +26,21 @@ class ListValidationOutput
      */
     private $messageRenderer;
 
+    /**
+     * @return void
+     */
     public function __construct()
     {
         $this->validatedOutputData = new ValidatedOutputData(new PathAccessor());
         $this->messageRenderer = new ValidationMessageRenderer();
     }
 
+    /**
+     * @param string $itemPrefix
+     * @param mixed $item
+     *
+     * @return void
+     */
     public function addListItemTypeError($itemPrefix, $item)
     {
         $detailItem = ValidationDetailItem::listItemNotArray($itemPrefix, $item);
@@ -43,6 +52,11 @@ class ListValidationOutput
         $this->detailItems[] = $detailItem;
     }
 
+    /**
+     * @param ValidationOutput $itemOutput
+     *
+     * @return void
+     */
     public function mergeObjectOutput(ValidationOutput $itemOutput)
     {
         $this->errors = array_merge($this->errors, $itemOutput->errors());
@@ -53,6 +67,11 @@ class ListValidationOutput
         }
     }
 
+    /**
+     * @param ScalarValidationOutput $itemOutput
+     *
+     * @return void
+     */
     public function mergeScalarOutput(ScalarValidationOutput $itemOutput)
     {
         $this->errors = array_merge($this->errors, $itemOutput->errors());
@@ -64,6 +83,9 @@ class ListValidationOutput
         }
     }
 
+    /**
+     * @return ValidationResult
+     */
     public function toValidationResult()
     {
         if (empty($this->errors)) {
@@ -77,6 +99,9 @@ class ListValidationOutput
         );
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function detailArray()
     {
         $detail = array();

@@ -25,6 +25,11 @@ class RuleExecutor
      */
     private $ruleResultNormalizer;
 
+    /**
+     * @param RuleSet $ruleSet
+     * @param LiteralValueParser $literalValueParser
+     * @param RuleResultNormalizer $ruleResultNormalizer
+     */
     public function __construct(
         RuleSet $ruleSet,
         LiteralValueParser $literalValueParser,
@@ -35,6 +40,14 @@ class RuleExecutor
         $this->ruleResultNormalizer = $ruleResultNormalizer;
     }
 
+    /**
+     * @param ValidationState $state
+     * @param RuleTarget $ruleTarget
+     * @param CompiledRule $compiledRule
+     * @param TargetValueContext $targetValueContext
+     *
+     * @return RuleExecutionOutcome
+     */
     public function execute(ValidationState $state, RuleTarget $ruleTarget, CompiledRule $compiledRule, TargetValueContext $targetValueContext)
     {
         if ($compiledRule->isUnsupported()) {

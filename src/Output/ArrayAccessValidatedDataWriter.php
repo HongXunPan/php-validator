@@ -8,6 +8,11 @@ use HongXunPan\Validator\Result\ValidationResult;
 
 class ArrayAccessValidatedDataWriter implements ValidatedDataWriterInterface
 {
+    /**
+     * @param mixed $target
+     *
+     * @return ArrayAccess
+     */
     public function write(ValidationResult $result, $target)
     {
         if (!($target instanceof ArrayAccess)) {

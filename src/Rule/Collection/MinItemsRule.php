@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Collection;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\Marker\ListRule;
@@ -11,7 +12,7 @@ class MinItemsRule extends AbstractValueRule implements ListRule
     const KEY = 'minItems';
     const MESSAGE = '$paramName must contain at least $rule items';
 
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         if (!is_array($context->value())) {
             return RuleResult::fail($context->value());

@@ -27,6 +27,11 @@ class ScalarListItemRunner
      */
     private $pathAccessor;
 
+    /**
+     * @param TargetRulePlanCompiler $targetRulePlanCompiler
+     * @param TargetPlanExecutor $targetPlanExecutor
+     * @param PathAccessor $pathAccessor
+     */
     public function __construct(
         TargetRulePlanCompiler $targetRulePlanCompiler,
         TargetPlanExecutor $targetPlanExecutor,
@@ -37,6 +42,13 @@ class ScalarListItemRunner
         $this->pathAccessor = $pathAccessor;
     }
 
+    /**
+     * @param mixed $value
+     * @param string $ruleString
+     * @param string $displayName
+     *
+     * @return ScalarValidationOutput
+     */
     public function runOutput($value, $ruleString, $displayName)
     {
         $targetPlan = $this->targetRulePlanCompiler->compileStandalone(

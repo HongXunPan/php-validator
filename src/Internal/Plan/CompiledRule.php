@@ -27,6 +27,11 @@ class CompiledRule
      */
     private $stage;
 
+    /**
+     * @param ParsedRuleToken $parsedRule
+     * @param ResolvedRule|null $resolvedRule
+     * @param string $stage
+     */
     public function __construct(ParsedRuleToken $parsedRule, $resolvedRule, $stage)
     {
         $this->parsedRule = $parsedRule;
@@ -34,21 +39,33 @@ class CompiledRule
         $this->stage = (string)$stage;
     }
 
+    /**
+     * @return ParsedRuleToken
+     */
     public function parsedRule()
     {
         return $this->parsedRule;
     }
 
+    /**
+     * @return ResolvedRule|null
+     */
     public function resolvedRule()
     {
         return $this->resolvedRule;
     }
 
+    /**
+     * @return string
+     */
     public function stage()
     {
         return $this->stage;
     }
 
+    /**
+     * @return bool
+     */
     public function isUnsupported()
     {
         return $this->stage === self::STAGE_UNSUPPORTED;

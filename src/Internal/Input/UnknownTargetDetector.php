@@ -12,11 +12,21 @@ class UnknownTargetDetector
      */
     private $pathAccessor;
 
+    /**
+     * @param PathAccessor $pathAccessor
+     */
     public function __construct(PathAccessor $pathAccessor)
     {
         $this->pathAccessor = $pathAccessor;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param DeclaredTargetTree $declaredTargetTree
+     * @param string $fieldPrefix
+     *
+     * @return array<int, ValidationDetailItem>
+     */
     public function collect(array $data, DeclaredTargetTree $declaredTargetTree, $fieldPrefix)
     {
         $detailItems = array();
@@ -31,6 +41,14 @@ class UnknownTargetDetector
         return $detailItems;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $allowedRuleTree
+     * @param string $fieldPrefix
+     * @param array<int, ValidationDetailItem> $detailItems
+     *
+     * @return void
+     */
     private function collectRecursive(array $data, array $allowedRuleTree, $fieldPrefix, array &$detailItems)
     {
         foreach ($data as $key => $value) {
@@ -56,6 +74,11 @@ class UnknownTargetDetector
         }
     }
 
+    /**
+     * @param array<string, mixed> $allowedRuleTreeNode
+     *
+     * @return array<string, mixed>
+     */
     private function extractChildren(array $allowedRuleTreeNode)
     {
         $children = array();

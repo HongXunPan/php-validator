@@ -2,6 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Assert\Time;
 
+use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Context\PathLabelMap;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
@@ -10,7 +11,7 @@ use HongXunPan\Validator\Rule\Marker\TimeRule;
 
 abstract class AbstractTimeFieldCompareRule extends AbstractValueRule implements TimeRule, DependentValueRuleInterface
 {
-    public static function validate($context)
+    public static function validate(RuleContext $context)
     {
         $fieldPath = static::parseFieldPath($context->ruleArg());
         $otherValueResult = $context->getDependentTargetValue($fieldPath);

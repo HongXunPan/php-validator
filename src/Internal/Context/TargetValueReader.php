@@ -16,12 +16,22 @@ class TargetValueReader implements RuleValueReaderInterface
      */
     private $targetValueContextStore;
 
+    /**
+     * @param RawInputSource $rawInputSource
+     * @param TargetValueContextStore $targetValueContextStore
+     */
     public function __construct(RawInputSource $rawInputSource, TargetValueContextStore $targetValueContextStore)
     {
         $this->rawInputSource = $rawInputSource;
         $this->targetValueContextStore = $targetValueContextStore;
     }
 
+    /**
+     * @param string $targetPath
+     * @param bool $strict
+     *
+     * @return \HongXunPan\Validator\Context\PathValue
+     */
     public function rawPathValue($targetPath, $strict)
     {
         $rawTargetValue = $this->targetValueContextStore->rawPathValue($targetPath);
@@ -32,11 +42,21 @@ class TargetValueReader implements RuleValueReaderInterface
         return $this->rawInputSource->pathValue($targetPath, $strict);
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return \HongXunPan\Validator\Context\PathValue
+     */
     public function materializedPathValue($targetPath)
     {
         return $this->targetValueContextStore->materializedPathValue($targetPath);
     }
 
+    /**
+     * @param string $targetPath
+     *
+     * @return \HongXunPan\Validator\Context\PathValue
+     */
     public function dependentPathValue($targetPath)
     {
         return $this->targetValueContextStore->dependentPathValue($targetPath);

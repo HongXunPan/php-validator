@@ -6,6 +6,11 @@ use HongXunPan\Validator\Internal\Plan\CompiledTargetRulePlan;
 
 class DeclaredTargetTreeBuilder
 {
+    /**
+     * @param array<int, CompiledTargetRulePlan> $targetPlans
+     *
+     * @return DeclaredTargetTree
+     */
     public function build(array $targetPlans)
     {
         $tree = array();

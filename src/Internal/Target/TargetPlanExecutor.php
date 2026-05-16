@@ -18,12 +18,22 @@ class TargetPlanExecutor
      */
     private $targetLifecycleManager;
 
+    /**
+     * @param PhaseRuleRunner $phaseRuleRunner
+     * @param TargetLifecycleManager $targetLifecycleManager
+     */
     public function __construct(PhaseRuleRunner $phaseRuleRunner, TargetLifecycleManager $targetLifecycleManager)
     {
         $this->phaseRuleRunner = $phaseRuleRunner;
         $this->targetLifecycleManager = $targetLifecycleManager;
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
     public function materialize(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $ruleTarget = $targetPlan->ruleTarget();
@@ -57,6 +67,12 @@ class TargetPlanExecutor
         $this->targetLifecycleManager->finalizeAfterMaterialization($targetValueContext);
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
     public function validateConditionalPresence(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
@@ -72,6 +88,12 @@ class TargetPlanExecutor
         );
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
     public function validatePresence(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
@@ -87,6 +109,12 @@ class TargetPlanExecutor
         );
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
     public function validateLocalValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
@@ -117,6 +145,12 @@ class TargetPlanExecutor
         $this->targetLifecycleManager->finalizeAfterLocalRules($state, $targetPlan, $targetValueContext);
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
     public function validateDependentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->dependentReadableTargetValueContext($state, $targetPlan);
@@ -141,6 +175,12 @@ class TargetPlanExecutor
         $this->targetLifecycleManager->finalizeAfterDependentRules($state, $targetPlan, $targetValueContext);
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return TargetValueContext|null
+     */
     private function activeTargetValueContext(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $state->targetValueContextStore()->get($targetPlan->ruleTarget()->fieldPath());
@@ -151,6 +191,12 @@ class TargetPlanExecutor
         return $targetValueContext;
     }
 
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return TargetValueContext|null
+     */
     private function dependentReadableTargetValueContext(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
