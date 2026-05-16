@@ -29,6 +29,7 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - package-level onboarding README examples
 - public contract and stability boundary document
 - GitHub Actions multi-version test matrix
+- GitHub Actions Node24 runtime readiness for JavaScript-based actions
 - PHPStan static analysis configuration and CI job
 - a dedicated canonical examples document for copy-friendly core scenarios
 - highest-standard pre-release structural refactor plan document in the shared workspace
@@ -50,6 +51,7 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - `RuleSet` was slimmed into a composition facade over registry, alias, and message components
 - list scalar validation no longer reuses object validation through synthetic public rule arrays
 - output aggregation was separated from failure reporting and message rendering
+- GitHub Actions checkout was upgraded from `actions/checkout@v4` to `@v6`, and the workflow now forces JavaScript actions onto Node24 ahead of the platform default switch
 
 ### Fixed
 
