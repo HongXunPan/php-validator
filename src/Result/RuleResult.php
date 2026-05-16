@@ -4,6 +4,8 @@ namespace HongXunPan\Validator\Result;
 
 /**
  * RuleResult 承接单条规则执行结果。
+ *
+ * @phpstan-consistent-constructor
  */
 class RuleResult
 {

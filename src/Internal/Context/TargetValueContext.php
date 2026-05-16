@@ -1,6 +1,6 @@
 <?php
 
-namespace HongXunPan\Validator\Internal\Target;
+namespace HongXunPan\Validator\Internal\Context;
 
 use HongXunPan\Validator\Result\RuleResult;
 

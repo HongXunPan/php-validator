@@ -2,6 +2,8 @@
 
 namespace HongXunPan\Validator\Internal\Path;
 
+use HongXunPan\Validator\Context\PathValue;
+
 class PathAccessor
 {
     public function getValue(array $data, $path, $strict)

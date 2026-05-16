@@ -5,6 +5,9 @@ namespace HongXunPan\Validator\Internal\Execution;
 use HongXunPan\Validator\Internal\Rules\ResolvedRule;
 use HongXunPan\Validator\Result\RuleResult;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class RuleExecutionOutcome
 {
     const STATUS_SKIPPED = 'skipped';

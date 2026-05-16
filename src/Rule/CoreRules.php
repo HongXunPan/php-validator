@@ -38,6 +38,11 @@ use HongXunPan\Validator\Rule\Type\ListOfType;
 use HongXunPan\Validator\Rule\Type\StringType;
 use HongXunPan\Validator\Rule\Type\TimeType;
 
+/**
+ * 仅供 core 规则装配使用，不属于稳定公开扩展契约。
+ *
+ * @internal
+ */
 class CoreRules
 {
     public static function classes()

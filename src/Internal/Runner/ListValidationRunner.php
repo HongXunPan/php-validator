@@ -3,9 +3,7 @@
 namespace HongXunPan\Validator\Internal\Runner;
 
 use HongXunPan\Validator\Context\ValidationOptions;
-use HongXunPan\Validator\Internal\Detail\ValidationDetailItem;
-use HongXunPan\Validator\Result\ValidationResult;
-use HongXunPan\Validator\Rule\Type\ArrayType;
+use HongXunPan\Validator\Internal\Output\ListValidationOutput;
 use HongXunPan\Validator\Internal\Path\PathAccessor;
 
 class ListValidationRunner
@@ -15,6 +13,10 @@ class ListValidationRunner
      */
     private $objectRunner;
     /**
+     * @var ScalarListItemRunner
+     */
+    private $scalarListItemRunner;
+    /**
      * @var PathAccessor
      */
     private $pathAccessor;
@@ -23,13 +25,16 @@ class ListValidationRunner
     {
         $this->objectRunner = $objectRunner;
         $this->pathAccessor = new PathAccessor();
+        $this->scalarListItemRunner = new ScalarListItemRunner(
+            $objectRunner->targetRulePlanCompiler(),
+            $objectRunner->targetPlanExecutor(),
+            $objectRunner->pathAccessor()
+        );
     }
 
     public function run(array $list, $rules, ValidationOptions $options)
     {
-        $errors = array();
-        $detail = array();
-        $validatedData = array();
+        $output = new ListValidationOutput();
         $position = 0;
 
         foreach ($list as $item) {
@@ -38,56 +43,27 @@ class ListValidationRunner
 
             if (is_array($rules)) {
                 if (!is_array($item)) {
-                    $errors[] = str_replace('$paramName', $itemPrefix, ArrayType::defaultMessage());
-                    $detail[] = ValidationDetailItem::listItemNotArray($itemPrefix, $item)->toArray();
+                    $output->addListItemTypeError($itemPrefix, $item);
                     continue;
                 }
 
-                $itemResult = $this->objectRunner->run(
-                    $item,
-                    $rules,
-                    ValidationOptions::fromArray(array_merge($options->toArray(), array(
-                        'field_prefix' => $itemPrefix,
-                    ))),
-                    true
+                $output->mergeObjectOutput(
+                    $this->objectRunner->runOutput(
+                        $item,
+                        $rules,
+                        $options->withFieldPrefix($itemPrefix),
+                        true
+                    )
                 );
-
-                $errors = array_merge($errors, $itemResult->errors());
-                $detail = array_merge($detail, $itemResult->detail());
-
-                if ($itemResult->isPassed()) {
-                    $validatedData[] = $itemResult->validatedData();
-                }
 
                 continue;
             }
 
-            $itemResult = $this->objectRunner->run(
-                array('value' => $item),
-                array('value:' . $itemPrefix => $rules),
-                ValidationOptions::fromArray(array(
-                    'strict' => true,
-                    'reject_unknown' => false,
-                    'field_prefix' => '',
-                )),
-                true
+            $output->mergeScalarOutput(
+                $this->scalarListItemRunner->runOutput($item, $rules, $itemPrefix)
             );
-
-            $errors = array_merge($errors, $itemResult->errors());
-            $detail = array_merge($detail, $itemResult->detail());
-
-            if ($itemResult->isPassed()) {
-                $normalizedData = $itemResult->validatedData();
-                $validatedData[] = array_key_exists('value', $normalizedData)
-                    ? $normalizedData['value']
-                    : null;
-            }
         }
 
-        if (empty($errors)) {
-            return ValidationResult::success($validatedData);
-        }
-
-        return ValidationResult::failure($errors, $detail, $validatedData);
+        return $output->toValidationResult();
     }
 }

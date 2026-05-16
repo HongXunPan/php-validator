@@ -2,10 +2,7 @@
 
 namespace HongXunPan\Validator\Context;
 
-use HongXunPan\Validator\Internal\Path\PathValue;
 use HongXunPan\Validator\Support\LiteralValueParser;
-use HongXunPan\Validator\Internal\Path\PathAccessor;
-use HongXunPan\Validator\Internal\Target\TargetValueContextStore;
 
 class RuleContext
 {
@@ -18,29 +15,29 @@ class RuleContext
      */
     private $paramName;
     /**
-     * @var bool
-     */
-    private $fieldExists;
-    /**
-     * @var mixed
-     */
-    private $value;
-    /**
      * @var mixed
      */
     private $ruleArg;
     /**
-     * @var array
+     * @var bool
      */
-    private $rawData;
+    private $rawExists;
     /**
-     * @var PathAccessor
+     * @var mixed
      */
-    private $pathAccessor;
+    private $rawValue;
     /**
-     * @var TargetValueContextStore
+     * @var bool
      */
-    private $targetValueContextStore;
+    private $currentExists;
+    /**
+     * @var mixed
+     */
+    private $currentValue;
+    /**
+     * @var RuleValueReaderInterface
+     */
+    private $ruleValueReader;
     /**
      * @var LiteralValueParser
      */
@@ -49,22 +46,22 @@ class RuleContext
     public function __construct(
         $fieldPath,
         $paramName,
-        $fieldExists,
-        $value,
         $ruleArg,
-        array $rawData,
-        TargetValueContextStore $targetValueContextStore,
-        PathAccessor $pathAccessor,
+        $rawExists,
+        $rawValue,
+        $currentExists,
+        $currentValue,
+        RuleValueReaderInterface $ruleValueReader,
         LiteralValueParser $literalValueParser
     ) {
         $this->fieldPath = (string)$fieldPath;
         $this->paramName = (string)$paramName;
-        $this->fieldExists = (bool)$fieldExists;
-        $this->value = $value;
         $this->ruleArg = $ruleArg;
-        $this->rawData = $rawData;
-        $this->targetValueContextStore = $targetValueContextStore;
-        $this->pathAccessor = $pathAccessor;
+        $this->rawExists = (bool)$rawExists;
+        $this->rawValue = $rawValue;
+        $this->currentExists = (bool)$currentExists;
+        $this->currentValue = $currentValue;
+        $this->ruleValueReader = $ruleValueReader;
         $this->literalValueParser = $literalValueParser;
     }
 
@@ -80,12 +77,22 @@ class RuleContext
 
     public function fieldExists()
     {
-        return $this->fieldExists;
+        return $this->currentExists;
+    }
+
+    public function rawExists()
+    {
+        return $this->rawExists;
     }
 
     public function value()
     {
-        return $this->value;
+        return $this->currentValue;
+    }
+
+    public function rawValue()
+    {
+        return $this->rawValue;
     }
 
     public function ruleArg()
@@ -105,16 +112,16 @@ class RuleContext
 
     public function getFieldValue($fieldPath, $strict)
     {
-        return $this->pathAccessor->getValue($this->rawData, $fieldPath, $strict);
+        return $this->ruleValueReader->rawPathValue($fieldPath, $strict);
     }
 
     public function getMaterializedTargetValue($fieldPath)
     {
-        return $this->targetValueContextStore->materializedPathValue($fieldPath);
+        return $this->ruleValueReader->materializedPathValue($fieldPath);
     }
 
     public function getDependentTargetValue($fieldPath)
     {
-        return $this->targetValueContextStore->dependentPathValue($fieldPath);
+        return $this->ruleValueReader->dependentPathValue($fieldPath);
     }
 }

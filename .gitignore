@@ -1,5 +1,13 @@
 /vendor/
+
+# IDE / 编辑器
 /.idea/
 /.vscode/
+
+# 系统噪音
 /.DS_Store
+
+# 测试 / 静态分析缓存
 /.phpunit.result.cache
+/.phpstan/
+/.phpstan.cache

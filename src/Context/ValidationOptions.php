@@ -4,6 +4,8 @@ namespace HongXunPan\Validator\Context;
 
 /**
  * ValidationOptions 承接验证选项。
+ *
+ * @phpstan-consistent-constructor
  */
 class ValidationOptions
 {
@@ -67,6 +69,21 @@ class ValidationOptions
     public function get($key, $default = null)
     {
         return array_key_exists($key, $this->extra) ? $this->extra[$key] : $default;
+    }
+
+    public function withFieldPrefix($fieldPrefix)
+    {
+        return new static(
+            $this->strict,
+            $this->rejectUnknown,
+            $fieldPrefix,
+            $this->extra
+        );
+    }
+
+    public static function forScalarListItem()
+    {
+        return new static(true, false, '', array());
     }
 
     public function toArray()

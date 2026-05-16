@@ -1,8 +1,8 @@
 <?php
 
-namespace HongXunPan\Validator\Internal\Target;
+namespace HongXunPan\Validator\Internal\Context;
 
-use HongXunPan\Validator\Internal\Path\PathValue;
+use HongXunPan\Validator\Context\PathValue;
 
 class TargetValueContextStore
 {
@@ -37,6 +37,19 @@ class TargetValueContextStore
 
         return $targetValueContext instanceof TargetValueContext
             && $targetValueContext->isMaterialized();
+    }
+
+    public function rawPathValue($targetPath)
+    {
+        $targetValueContext = $this->get($targetPath);
+        if (!$targetValueContext instanceof TargetValueContext) {
+            return new PathValue(false, null);
+        }
+
+        return new PathValue(
+            $targetValueContext->rawExists(),
+            $targetValueContext->rawValue()
+        );
     }
 
     public function materializedPathValue($targetPath)

@@ -4,6 +4,8 @@ namespace HongXunPan\Validator\Result;
 
 /**
  * ValidationResult 承接对外统一结果。
+ *
+ * @phpstan-consistent-constructor
  */
 class ValidationResult
 {

@@ -2,6 +2,9 @@
 
 namespace HongXunPan\Validator\Internal\Detail;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class ValidationDetailItem
 {
     const RULE_UNKNOWN = 'unknown';

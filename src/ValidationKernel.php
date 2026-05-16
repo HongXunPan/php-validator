@@ -9,6 +9,9 @@ use HongXunPan\Validator\Internal\Runner\ObjectValidationRunner;
 use HongXunPan\Validator\Output\ArrayAccessValidatedDataWriter;
 use HongXunPan\Validator\Result\ValidationResult;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 class ValidationKernel
 {
     /**
@@ -39,11 +42,6 @@ class ValidationKernel
     public static function create($validatorClass)
     {
         return new static(RuleSet::fromValidatorClass($validatorClass));
-    }
-
-    public function catalog()
-    {
-        return $this->ruleSet;
     }
 
     public function validate(array $data, array $rules, array $options = array())

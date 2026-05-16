@@ -18,7 +18,7 @@ class MinLengthRule extends AbstractValueRule implements StringRule
             return RuleResult::fail($value);
         }
 
-        return static::length($value) >= (int)$context->ruleArg()
+        return self::length($value) >= (int)$context->ruleArg()
             ? RuleResult::pass($value)
             : RuleResult::fail($value);
     }

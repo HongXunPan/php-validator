@@ -43,33 +43,6 @@ abstract class Validator
         return static::$ruleMessages;
     }
 
-    public static function resolveExtraRule($finalRuleKey)
-    {
-        $rules = static::extraRules();
-
-        return array_key_exists($finalRuleKey, $rules)
-            ? $rules[$finalRuleKey]
-            : null;
-    }
-
-    public static function resolveAlias($inputRuleKey)
-    {
-        $aliases = static::ruleAliases();
-
-        return array_key_exists($inputRuleKey, $aliases)
-            ? $aliases[$inputRuleKey]
-            : null;
-    }
-
-    public static function resolveRuleMessage($finalRuleKey)
-    {
-        $messages = static::ruleMessages();
-
-        return array_key_exists($finalRuleKey, $messages)
-            ? $messages[$finalRuleKey]
-            : null;
-    }
-
     protected static function kernel()
     {
         if (static::$kernel === null) {

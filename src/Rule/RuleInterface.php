@@ -2,7 +2,7 @@
 
 namespace HongXunPan\Validator\Rule;
 
-use HongXunPan\Validator\Internal\Path\PathLabelMap;
+use HongXunPan\Validator\Context\PathLabelMap;
 
 interface RuleInterface
 {

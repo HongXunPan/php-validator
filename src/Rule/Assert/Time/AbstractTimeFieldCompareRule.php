@@ -2,7 +2,7 @@
 
 namespace HongXunPan\Validator\Rule\Assert\Time;
 
-use HongXunPan\Validator\Internal\Path\PathLabelMap;
+use HongXunPan\Validator\Context\PathLabelMap;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractValueRule;
 use HongXunPan\Validator\Rule\DependentValueRuleInterface;

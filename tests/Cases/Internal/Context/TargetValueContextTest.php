@@ -1,8 +1,8 @@
 <?php
 
-namespace HongXunPan\Validator\Tests\Cases\Internal\Target;
+namespace HongXunPan\Validator\Tests\Cases\Internal\Context;
 
-use HongXunPan\Validator\Internal\Target\TargetValueContext;
+use HongXunPan\Validator\Internal\Context\TargetValueContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Tests\TestCase;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace HongXunPan\Validator\Internal\Path;
+namespace HongXunPan\Validator\Context;
 
 class PathValue
 {
