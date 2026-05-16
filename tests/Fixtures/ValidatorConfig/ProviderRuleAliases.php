@@ -4,7 +4,10 @@ namespace HongXunPan\Validator\Tests\Fixtures\ValidatorConfig;
 
 class ProviderRuleAliases
 {
-    public static function all(): array
+    /**
+     * @return array<string, string>
+     */
+    public static function all()
     {
         return array(
             'trimAlias' => 'trimTest',

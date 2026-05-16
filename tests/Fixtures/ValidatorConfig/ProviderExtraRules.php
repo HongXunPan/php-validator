@@ -7,7 +7,10 @@ use HongXunPan\Validator\Tests\Fixtures\Rule\TrimTestRule;
 
 class ProviderExtraRules
 {
-    public static function all(): array
+    /**
+     * @return array<string, class-string>
+     */
+    public static function all()
     {
         return array(
             'trimTest' => TrimTestRule::class,
