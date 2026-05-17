@@ -34,7 +34,7 @@ class TargetPlanExecutor
      *
      * @return void
      */
-    public function materialize(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    public function prepareMissingValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $ruleTarget = $targetPlan->ruleTarget();
         $rawPathValue = $state->targetValueReader()->rawPathValue($ruleTarget->fieldPath(), $state->strict());
@@ -54,17 +54,15 @@ class TargetPlanExecutor
             }
         }
 
-        $materializationResult = $this->phaseRuleRunner->run(
+        $missingValueCreationResult = $this->phaseRuleRunner->run(
             $state,
             $ruleTarget,
             $targetValueContext,
-            $targetPlan->materializationRules()
+            $targetPlan->missingValueCreationRules()
         );
-        if ($materializationResult->isFailed()) {
+        if ($missingValueCreationResult->isFailed()) {
             return;
         }
-
-        $this->targetLifecycleManager->finalizeAfterMaterialization($targetValueContext);
     }
 
     /**
@@ -73,7 +71,35 @@ class TargetPlanExecutor
      *
      * @return void
      */
-    public function validateConditionalPresence(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    public function preparePresentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    {
+        $targetValueContext = $this->activeTargetValueContextWithoutPreparation($state, $targetPlan);
+        if (!$targetValueContext instanceof TargetValueContext) {
+            return;
+        }
+
+        if ($targetValueContext->currentExists()) {
+            $normalizationResult = $this->phaseRuleRunner->run(
+                $state,
+                $targetPlan->ruleTarget(),
+                $targetValueContext,
+                $targetPlan->presentValueNormalizationRules()
+            );
+            if ($normalizationResult->isFailed()) {
+                return;
+            }
+        }
+
+        $this->targetLifecycleManager->finalizeAfterPreparation($targetValueContext);
+    }
+
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
+    public function assertFieldPresence(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
         if (!$targetValueContext instanceof TargetValueContext) {
@@ -84,7 +110,7 @@ class TargetPlanExecutor
             $state,
             $targetPlan->ruleTarget(),
             $targetValueContext,
-            $targetPlan->conditionalPresenceRules()
+            $targetPlan->fieldPresenceAssertionRules()
         );
     }
 
@@ -94,10 +120,14 @@ class TargetPlanExecutor
      *
      * @return void
      */
-    public function validatePresence(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    public function guardPresentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
         if (!$targetValueContext instanceof TargetValueContext) {
+            return;
+        }
+
+        if (!$targetValueContext->currentExists()) {
             return;
         }
 
@@ -105,7 +135,7 @@ class TargetPlanExecutor
             $state,
             $targetPlan->ruleTarget(),
             $targetValueContext,
-            $targetPlan->presenceRules()
+            $targetPlan->presentValueGuardRules()
         );
     }
 
@@ -115,7 +145,7 @@ class TargetPlanExecutor
      *
      * @return void
      */
-    public function validateLocalValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    public function transformPresentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
         if (!$targetValueContext instanceof TargetValueContext) {
@@ -123,7 +153,39 @@ class TargetPlanExecutor
         }
 
         if ($targetValueContext->shouldSkipValueValidation()) {
-            $this->targetLifecycleManager->finalizeAfterLocalRules($state, $targetPlan, $targetValueContext);
+            return;
+        }
+
+        if (!$targetValueContext->currentExists()) {
+            return;
+        }
+
+        $presentValueTransformResult = $this->phaseRuleRunner->run(
+            $state,
+            $targetPlan->ruleTarget(),
+            $targetValueContext,
+            $targetPlan->presentValueTransformRules()
+        );
+        if ($presentValueTransformResult->isFailed()) {
+            return;
+        }
+    }
+
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return void
+     */
+    public function assertPresentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    {
+        $targetValueContext = $this->activeTargetValueContext($state, $targetPlan);
+        if (!$targetValueContext instanceof TargetValueContext) {
+            return;
+        }
+
+        if ($targetValueContext->shouldSkipValueValidation()) {
+            $this->targetLifecycleManager->finalizeAfterPresentValueAssertions($state, $targetPlan, $targetValueContext);
 
             return;
         }
@@ -132,17 +194,17 @@ class TargetPlanExecutor
             return;
         }
 
-        $localValueResult = $this->phaseRuleRunner->run(
+        $presentValueAssertionResult = $this->phaseRuleRunner->run(
             $state,
             $targetPlan->ruleTarget(),
             $targetValueContext,
-            $targetPlan->localValueRules()
+            $targetPlan->presentValueAssertionRules()
         );
-        if ($localValueResult->isFailed()) {
+        if ($presentValueAssertionResult->isFailed()) {
             return;
         }
 
-        $this->targetLifecycleManager->finalizeAfterLocalRules($state, $targetPlan, $targetValueContext);
+        $this->targetLifecycleManager->finalizeAfterPresentValueAssertions($state, $targetPlan, $targetValueContext);
     }
 
     /**
@@ -151,28 +213,28 @@ class TargetPlanExecutor
      *
      * @return void
      */
-    public function validateDependentValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    public function assertCrossFieldValue(ValidationState $state, CompiledTargetRulePlan $targetPlan)
     {
         $targetValueContext = $this->dependentReadableTargetValueContext($state, $targetPlan);
         if (!$targetValueContext instanceof TargetValueContext) {
             return;
         }
 
-        if (!$targetPlan->hasDependentValueRules()) {
+        if (!$targetPlan->hasCrossFieldAssertionRules()) {
             return;
         }
 
-        $dependentValueResult = $this->phaseRuleRunner->run(
+        $crossFieldAssertionResult = $this->phaseRuleRunner->run(
             $state,
             $targetPlan->ruleTarget(),
             $targetValueContext,
-            $targetPlan->dependentValueRules()
+            $targetPlan->crossFieldAssertionRules()
         );
-        if ($dependentValueResult->isFailed()) {
+        if ($crossFieldAssertionResult->isFailed()) {
             return;
         }
 
-        $this->targetLifecycleManager->finalizeAfterDependentRules($state, $targetPlan, $targetValueContext);
+        $this->targetLifecycleManager->finalizeAfterCrossFieldAssertions($state, $targetPlan, $targetValueContext);
     }
 
     /**
@@ -185,6 +247,22 @@ class TargetPlanExecutor
     {
         $targetValueContext = $state->targetValueContextStore()->get($targetPlan->ruleTarget()->fieldPath());
         if (!$targetValueContext instanceof TargetValueContext || !$targetValueContext->isMaterialized() || $targetValueContext->isFailed()) {
+            return null;
+        }
+
+        return $targetValueContext;
+    }
+
+    /**
+     * @param ValidationState $state
+     * @param CompiledTargetRulePlan $targetPlan
+     *
+     * @return TargetValueContext|null
+     */
+    private function activeTargetValueContextWithoutPreparation(ValidationState $state, CompiledTargetRulePlan $targetPlan)
+    {
+        $targetValueContext = $state->targetValueContextStore()->get($targetPlan->ruleTarget()->fieldPath());
+        if (!$targetValueContext instanceof TargetValueContext || $targetValueContext->isFailed()) {
             return null;
         }
 

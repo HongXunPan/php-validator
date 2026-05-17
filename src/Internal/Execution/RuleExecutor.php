@@ -61,7 +61,7 @@ class RuleExecutor
             $this->ruleContextFactory->create(
                 $ruleTarget,
                 $state->displayName($ruleTarget),
-                $compiledRule->parsedRule(),
+                $compiledRule,
                 $targetValueContext,
                 $state->targetValueReader()
             )

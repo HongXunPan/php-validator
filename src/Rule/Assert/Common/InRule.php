@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Rule\Assert\Common;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 
-class InRule extends AbstractValueRule
+class InRule extends AbstractPresentValueAssertionRule
 {
     const KEY = 'in';
     const MESSAGE = '$paramName must be in $rule';

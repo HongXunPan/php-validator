@@ -24,6 +24,20 @@ use HongXunPan\Validator\Rule\Collection\DistinctRule;
 use HongXunPan\Validator\Rule\Collection\MaxItemsRule;
 use HongXunPan\Validator\Rule\Collection\MinItemsRule;
 use HongXunPan\Validator\Rule\Collection\SortAscRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfEqRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfInRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfNotInRule;
+use HongXunPan\Validator\Rule\Condition\ProhibitedIfEqRule;
+use HongXunPan\Validator\Rule\Condition\ProhibitedIfInRule;
+use HongXunPan\Validator\Rule\Condition\ProhibitedIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\ProhibitedIfNotInRule;
+use HongXunPan\Validator\Rule\Condition\ProhibitedIfPresentRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfInRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfMissingRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfNotInRule;
 use HongXunPan\Validator\Rule\Presence\DefaultRule;
 use HongXunPan\Validator\Rule\Presence\RequiredRule;
 use HongXunPan\Validator\Rule\Transform\Common\NullableRule;
@@ -50,7 +64,21 @@ class CoreRules
         return array(
             RequiredRule::class,
             DefaultRule::class,
+            RequiredIfMissingRule::class,
+            RequiredIfEqRule::class,
+            RequiredIfInRule::class,
+            RequiredIfNotEqRule::class,
+            RequiredIfNotInRule::class,
+            ProhibitedIfPresentRule::class,
+            ProhibitedIfEqRule::class,
+            ProhibitedIfInRule::class,
+            ProhibitedIfNotEqRule::class,
+            ProhibitedIfNotInRule::class,
             NullableRule::class,
+            NullableIfEqRule::class,
+            NullableIfInRule::class,
+            NullableIfNotEqRule::class,
+            NullableIfNotInRule::class,
             StringType::class,
             IntType::class,
             TimeType::class,

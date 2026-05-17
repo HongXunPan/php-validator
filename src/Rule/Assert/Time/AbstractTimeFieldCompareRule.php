@@ -5,15 +5,18 @@ namespace HongXunPan\Validator\Rule\Assert\Time;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Context\PathLabelMap;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
-use HongXunPan\Validator\Rule\DependentValueRuleInterface;
+use HongXunPan\Validator\Rule\AbstractCrossFieldAssertionRule;
+use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
+use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
 use HongXunPan\Validator\Rule\Marker\TimeRule;
 
-abstract class AbstractTimeFieldCompareRule extends AbstractValueRule implements TimeRule, DependentValueRuleInterface
+abstract class AbstractTimeFieldCompareRule extends AbstractCrossFieldAssertionRule implements TimeRule
 {
+    const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;
+
     public static function validate(RuleContext $context)
     {
-        $fieldPath = static::parseFieldPath($context->ruleArg());
+        $fieldPath = static::parseFieldPath($context->parsedRuleArg());
         $otherValueResult = $context->getDependentTargetValue($fieldPath);
 
         if (!$otherValueResult->exists()) {
@@ -40,6 +43,10 @@ abstract class AbstractTimeFieldCompareRule extends AbstractValueRule implements
 
     protected static function parseFieldPath($ruleArg)
     {
+        if ($ruleArg instanceof FieldReferenceArgument) {
+            return $ruleArg->fieldPath();
+        }
+
         return (string)$ruleArg;
     }
 

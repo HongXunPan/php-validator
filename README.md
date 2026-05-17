@@ -178,9 +178,14 @@ The current stable public surface mainly includes:
 - `Validator`
 - `ValidationKernel`
 - `ValidationResult`
-- `RuleInterface / AbstractRule / AbstractPresenceRule / AbstractValueRule`
-- `PresenceRuleInterface / ValueRuleInterface`
-- `ConditionalPresenceRuleInterface / ValueMaterializationRuleInterface / DependentValueRuleInterface`
+- `RuleInterface / AbstractRule`
+- `AbstractFieldPresenceAssertionRule`
+- `AbstractMissingValueCreationRule`
+- `AbstractPresentValueNormalizationRule`
+- `AbstractPresentValueGuardRule`
+- `AbstractPresentValueTransformRule`
+- `AbstractPresentValueAssertionRule`
+- `AbstractCrossFieldAssertionRule`
 - `RuleContext / RuleValueReaderInterface / ValidationOptions / RuleResult`
 - `ValidatedDataWriterInterface / ArrayAccessValidatedDataWriter`
 
@@ -236,10 +241,10 @@ $legacy = $result->toArray();
 <?php
 
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueNormalizationRule;
 use HongXunPan\Validator\Context\RuleContext;
 
-class TrimNameRule extends AbstractValueRule
+class TrimNameRule extends AbstractPresentValueNormalizationRule
 {
     const KEY = 'trimName';
     const MESSAGE = '$paramName must be string';

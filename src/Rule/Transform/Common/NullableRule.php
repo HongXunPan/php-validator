@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Rule\Transform\Common;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueGuardRule;
 
-class NullableRule extends AbstractValueRule
+class NullableRule extends AbstractPresentValueGuardRule
 {
     const KEY = 'nullable';
     const MESSAGE = '$paramName validate failed';

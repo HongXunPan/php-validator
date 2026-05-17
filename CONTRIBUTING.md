@@ -34,9 +34,14 @@
 - `Validator`
 - `ValidationKernel`
 - `ValidationResult`
-- `RuleInterface / AbstractRule / AbstractPresenceRule / AbstractValueRule`
-- `PresenceRuleInterface / ValueRuleInterface`
-- `ConditionalPresenceRuleInterface / ValueMaterializationRuleInterface / DependentValueRuleInterface`
+- `RuleInterface / AbstractRule`
+- `AbstractFieldPresenceAssertionRule`
+- `AbstractMissingValueCreationRule`
+- `AbstractPresentValueNormalizationRule`
+- `AbstractPresentValueGuardRule`
+- `AbstractPresentValueTransformRule`
+- `AbstractPresentValueAssertionRule`
+- `AbstractCrossFieldAssertionRule`
 - `RuleContext / ValidationOptions / RuleResult`
 - `ValidatedDataWriterInterface / ArrayAccessValidatedDataWriter`
 
@@ -106,13 +111,15 @@ composer analyse
 新增 rule 时，优先沿用当前公开扩展模型：
 
 1. 编写 Rule 类；
-2. 确认它实现：
-   - `PresenceRuleInterface`
-   - 或 `ValueRuleInterface`
-3. 如有需要，再补：
-   - `ConditionalPresenceRuleInterface`
-   - `ValueMaterializationRuleInterface`
-   - `DependentValueRuleInterface`
+2. 继承最贴切的 archetype 抽象基类之一：
+   - `AbstractFieldPresenceAssertionRule`
+   - `AbstractMissingValueCreationRule`
+   - `AbstractPresentValueNormalizationRule`
+   - `AbstractPresentValueGuardRule`
+   - `AbstractPresentValueTransformRule`
+   - `AbstractPresentValueAssertionRule`
+   - `AbstractCrossFieldAssertionRule`
+3. 实现 `validate(RuleContext $context)`；
 4. 通过 `Validator` 子类的：
    - `extraRules`
    - `ruleAliases`

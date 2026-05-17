@@ -4,11 +4,10 @@ namespace HongXunPan\Validator\Rule\Transform\String;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueNormalizationRule;
 use HongXunPan\Validator\Rule\Marker\StringRule;
-use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
 
-class TrimRule extends AbstractValueRule implements StringRule, ValueMaterializationRuleInterface
+class TrimRule extends AbstractPresentValueNormalizationRule implements StringRule
 {
     const KEY = 'trim';
     const MESSAGE = '$paramName must be string';

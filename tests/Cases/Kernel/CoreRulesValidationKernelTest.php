@@ -32,6 +32,61 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame(1, $result->validatedData()['page'], '默认值应继续经过归一化');
     }
 
+    public function testMissingFieldSkipsPresentValueTransformRule()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(),
+            array('name:姓名' => 'trim|maxLength:10')
+        );
+
+        $this->assertTrue($result->isPassed(), '未声明 required 时，missing 字段应跳过 trim 等 present-only 规则');
+        $this->assertFalse(
+            array_key_exists('name', $result->validatedData()),
+            'missing 字段被跳过时不应输出 name'
+        );
+    }
+
+    public function testMissingFieldSkipsPresentNumericTransformRule()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(),
+            array('page:页码' => 'nonNegativeInt')
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段不应因 nonNegativeInt 这类 present-only transform 规则失败');
+        $this->assertFalse(
+            array_key_exists('page', $result->validatedData()),
+            'missing 字段跳过 transform 时不应创建 page'
+        );
+    }
+
+    public function testDefaultOnlyCreatesValueForMissingField()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('page' => null),
+            array('page:页码' => 'default:1')
+        );
+
+        $this->assertTrue($result->isPassed(), 'present + null 时 default 不应直接失败');
+        $this->assertTrue(array_key_exists('page', $result->validatedData()), '已传入的 null 字段应继续保留');
+        $this->assertSame(null, $result->validatedData()['page'], 'default 只处理 missing，不应覆盖 null');
+    }
+
+    public function testDefaultCreatedValueContinuesThroughPresentValueTransformRules()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(),
+            array('name:姓名' => 'default:  Alice  |trim')
+        );
+
+        $this->assertTrue($result->isPassed(), 'default 创建的值后续仍应继续经过 trim');
+        $this->assertSame('Alice', $result->validatedData()['name'], 'default 创建的字符串应被后续 trim 归一化');
+    }
+
     public function testRequiredStillRunsAfterMaterializationStage()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

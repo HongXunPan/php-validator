@@ -4,10 +4,10 @@ namespace HongXunPan\Validator\Rule\Collection;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueTransformRule;
 use HongXunPan\Validator\Rule\Marker\ListRule;
 
-class SortAscRule extends AbstractValueRule implements ListRule
+class SortAscRule extends AbstractPresentValueTransformRule implements ListRule
 {
     const KEY = 'sortAsc';
     const MESSAGE = '$paramName must be sortable list';

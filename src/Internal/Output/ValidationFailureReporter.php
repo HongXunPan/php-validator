@@ -5,11 +5,13 @@ namespace HongXunPan\Validator\Internal\Output;
 use HongXunPan\Validator\Context\PathLabelMap;
 use HongXunPan\Validator\Internal\Detail\ValidationDetailItem;
 use HongXunPan\Validator\Internal\Execution\RuleExecutionOutcome;
-use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
+use HongXunPan\Validator\Internal\Plan\CompiledRule;
 use HongXunPan\Validator\Internal\Path\PathAccessor;
 use HongXunPan\Validator\Internal\Rules\RuleMessageTemplates;
 use HongXunPan\Validator\Internal\Target\RuleTarget;
 use HongXunPan\Validator\Internal\Context\TargetValueContext;
+use HongXunPan\Validator\Rule\Argument\NoArgumentParser;
+use HongXunPan\Validator\Rule\Argument\RuleArgumentParserInterface;
 
 class ValidationFailureReporter
 {
@@ -87,7 +89,7 @@ class ValidationFailureReporter
 
     /**
      * @param RuleTarget $ruleTarget
-     * @param ParsedRuleToken $parsedRule
+     * @param CompiledRule $compiledRule
      * @param TargetValueContext $targetValueContext
      * @param RuleExecutionOutcome $outcome
      *
@@ -95,11 +97,12 @@ class ValidationFailureReporter
      */
     public function reportTargetFailure(
         RuleTarget $ruleTarget,
-        ParsedRuleToken $parsedRule,
+        CompiledRule $compiledRule,
         TargetValueContext $targetValueContext,
         RuleExecutionOutcome $outcome
     ) {
         $paramName = $this->displayName($ruleTarget);
+        $parsedRule = $compiledRule->parsedRule();
 
         if ($outcome->isUnsupported()) {
             $detailItem = ValidationDetailItem::unsupportedRule(
@@ -128,11 +131,7 @@ class ValidationFailureReporter
             $parsedRule->rawArgument()
         );
 
-        $displayRuleValue = call_user_func(
-            array($resolvedRule->ruleClass(), 'displayRuleValue'),
-            $parsedRule->rawArgument(),
-            $this->pathLabelMap
-        );
+        $displayRuleValue = $this->displayRuleValue($resolvedRule->ruleClass(), $compiledRule);
 
         $this->output->appendFailure(
             $this->messageRenderer->render(
@@ -141,6 +140,37 @@ class ValidationFailureReporter
                 $displayRuleValue
             ),
             $detailItem
+        );
+    }
+
+    /**
+     * @param string $ruleClass
+     *
+     * @return string
+     */
+    private function displayRuleValue($ruleClass, CompiledRule $compiledRule)
+    {
+        $argumentParserClass = $compiledRule->argumentParserClass();
+        if (
+            is_string($argumentParserClass)
+            && $argumentParserClass !== ''
+            && $argumentParserClass !== NoArgumentParser::class
+            && class_exists($argumentParserClass)
+        ) {
+            $argumentParser = new $argumentParserClass();
+            if ($argumentParser instanceof RuleArgumentParserInterface) {
+                return $argumentParser->display(
+                    $compiledRule->parsedArgument(),
+                    $compiledRule->parsedRule()->rawArgument(),
+                    $this->pathLabelMap
+                );
+            }
+        }
+
+        return call_user_func(
+            array($ruleClass, 'displayRuleValue'),
+            $compiledRule->parsedRule()->rawArgument(),
+            $this->pathLabelMap
         );
     }
 }

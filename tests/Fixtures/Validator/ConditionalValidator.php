@@ -3,6 +3,7 @@
 namespace HongXunPan\Validator\Tests\Fixtures\Validator;
 
 use HongXunPan\Validator\Tests\Fixtures\Rule\NullableIfTestRule;
+use HongXunPan\Validator\Tests\Fixtures\Rule\ParsedPairRule;
 use HongXunPan\Validator\Tests\Fixtures\Rule\RequiredIfTestRule;
 use HongXunPan\Validator\Validator;
 
@@ -13,6 +14,7 @@ class ConditionalValidator extends Validator
      */
     protected static $extraRules = array(
         'nullableIfTest' => NullableIfTestRule::class,
+        'parsedPair' => ParsedPairRule::class,
         'requiredIfTest' => RequiredIfTestRule::class,
     );
 }

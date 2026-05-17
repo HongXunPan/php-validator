@@ -17,49 +17,63 @@ class CompiledTargetRulePlan
     /**
      * @var CompiledRule[]
      */
-    private $materializationRules;
+    private $missingValueCreationRules;
     /**
      * @var CompiledRule[]
      */
-    private $conditionalPresenceRules;
+    private $presentValueNormalizationRules;
     /**
      * @var CompiledRule[]
      */
-    private $presenceRules;
+    private $fieldPresenceAssertionRules;
     /**
      * @var CompiledRule[]
      */
-    private $localValueRules;
+    private $presentValueGuardRules;
     /**
      * @var CompiledRule[]
      */
-    private $dependentValueRules;
+    private $presentValueTransformRules;
+    /**
+     * @var CompiledRule[]
+     */
+    private $presentValueAssertionRules;
+    /**
+     * @var CompiledRule[]
+     */
+    private $crossFieldAssertionRules;
 
     /**
      * @param RuleTarget $ruleTarget
      * @param array<int, CompiledRule> $unsupportedRules
-     * @param array<int, CompiledRule> $materializationRules
-     * @param array<int, CompiledRule> $conditionalPresenceRules
-     * @param array<int, CompiledRule> $presenceRules
-     * @param array<int, CompiledRule> $localValueRules
-     * @param array<int, CompiledRule> $dependentValueRules
+     * @param array<int, CompiledRule> $missingValueCreationRules
+     * @param array<int, CompiledRule> $presentValueNormalizationRules
+     * @param array<int, CompiledRule> $fieldPresenceAssertionRules
+     * @param array<int, CompiledRule> $presentValueGuardRules
+     * @param array<int, CompiledRule> $presentValueTransformRules
+     * @param array<int, CompiledRule> $presentValueAssertionRules
+     * @param array<int, CompiledRule> $crossFieldAssertionRules
      */
     public function __construct(
         RuleTarget $ruleTarget,
         array $unsupportedRules,
-        array $materializationRules,
-        array $conditionalPresenceRules,
-        array $presenceRules,
-        array $localValueRules,
-        array $dependentValueRules
+        array $missingValueCreationRules,
+        array $presentValueNormalizationRules,
+        array $fieldPresenceAssertionRules,
+        array $presentValueGuardRules,
+        array $presentValueTransformRules,
+        array $presentValueAssertionRules,
+        array $crossFieldAssertionRules
     ) {
         $this->ruleTarget = $ruleTarget;
         $this->unsupportedRules = $unsupportedRules;
-        $this->materializationRules = $materializationRules;
-        $this->conditionalPresenceRules = $conditionalPresenceRules;
-        $this->presenceRules = $presenceRules;
-        $this->localValueRules = $localValueRules;
-        $this->dependentValueRules = $dependentValueRules;
+        $this->missingValueCreationRules = $missingValueCreationRules;
+        $this->presentValueNormalizationRules = $presentValueNormalizationRules;
+        $this->fieldPresenceAssertionRules = $fieldPresenceAssertionRules;
+        $this->presentValueGuardRules = $presentValueGuardRules;
+        $this->presentValueTransformRules = $presentValueTransformRules;
+        $this->presentValueAssertionRules = $presentValueAssertionRules;
+        $this->crossFieldAssertionRules = $crossFieldAssertionRules;
     }
 
     /**
@@ -81,49 +95,65 @@ class CompiledTargetRulePlan
     /**
      * @return array<int, CompiledRule>
      */
-    public function materializationRules()
+    public function missingValueCreationRules()
     {
-        return $this->materializationRules;
+        return $this->missingValueCreationRules;
     }
 
     /**
      * @return array<int, CompiledRule>
      */
-    public function conditionalPresenceRules()
+    public function presentValueNormalizationRules()
     {
-        return $this->conditionalPresenceRules;
+        return $this->presentValueNormalizationRules;
     }
 
     /**
      * @return array<int, CompiledRule>
      */
-    public function presenceRules()
+    public function fieldPresenceAssertionRules()
     {
-        return $this->presenceRules;
+        return $this->fieldPresenceAssertionRules;
     }
 
     /**
      * @return array<int, CompiledRule>
      */
-    public function localValueRules()
+    public function presentValueGuardRules()
     {
-        return $this->localValueRules;
+        return $this->presentValueGuardRules;
     }
 
     /**
      * @return array<int, CompiledRule>
      */
-    public function dependentValueRules()
+    public function presentValueTransformRules()
     {
-        return $this->dependentValueRules;
+        return $this->presentValueTransformRules;
+    }
+
+    /**
+     * @return array<int, CompiledRule>
+     */
+    public function presentValueAssertionRules()
+    {
+        return $this->presentValueAssertionRules;
+    }
+
+    /**
+     * @return array<int, CompiledRule>
+     */
+    public function crossFieldAssertionRules()
+    {
+        return $this->crossFieldAssertionRules;
     }
 
     /**
      * @return bool
      */
-    public function hasDependentValueRules()
+    public function hasCrossFieldAssertionRules()
     {
-        return !empty($this->dependentValueRules);
+        return !empty($this->crossFieldAssertionRules);
     }
 
     /**

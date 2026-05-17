@@ -4,10 +4,9 @@ namespace HongXunPan\Validator\Tests\Fixtures\Rule;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractPresenceRule;
-use HongXunPan\Validator\Rule\ConditionalPresenceRuleInterface;
+use HongXunPan\Validator\Rule\AbstractPresentValueGuardRule;
 
-class NullableIfTestRule extends AbstractPresenceRule implements ConditionalPresenceRuleInterface
+class NullableIfTestRule extends AbstractPresentValueGuardRule
 {
     const KEY = 'nullableIfTest';
     const MESSAGE = '$paramName nullable';

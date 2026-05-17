@@ -29,10 +29,29 @@ class TargetRulePlanCompilerTest extends TestCase
         $plans = $compiledPlan->targetPlans();
 
         $this->assertCount(4, $plans, '应为每个 target 生成独立计划');
-        $this->assertCount(1, $plans[0]->materializationRules(), 'trim 应归入 materialization');
-        $this->assertCount(1, $plans[1]->conditionalPresenceRules(), 'nullableIfTest 应归入 conditional presence');
-        $this->assertCount(1, $plans[1]->localValueRules(), 'string 应归入 local value');
-        $this->assertCount(1, $plans[2]->dependentValueRules(), 'timeAfterField 应归入 dependent value');
+        $this->assertCount(1, $plans[0]->presentValueNormalizationRules(), 'trim 应归入 present value normalization');
+        $this->assertCount(1, $plans[1]->presentValueGuardRules(), 'nullableIfTest 应归入 present value guard');
+        $this->assertCount(1, $plans[1]->presentValueAssertionRules(), 'string 应归入 present value assertion');
+        $this->assertCount(1, $plans[2]->crossFieldAssertionRules(), 'timeAfterField 应归入 cross field assertion');
         $this->assertCount(1, $plans[3]->unsupportedRules(), '不存在规则应在编译期标记为 unsupported');
+    }
+
+    public function testCompileCachesParsedRuleArgument()
+    {
+        $compiler = new TargetRulePlanCompiler(
+            new RuleStringParser(),
+            RuleSet::fromValidatorClass(ConditionalValidator::class),
+            new DeclaredTargetTreeBuilder()
+        );
+
+        $compiledPlan = $compiler->compile(array(
+            'name:姓名' => 'parsedPair:left,right',
+        ));
+
+        $plans = $compiledPlan->targetPlans();
+        $rules = $plans[0]->presentValueAssertionRules();
+
+        $this->assertCount(1, $rules, 'parsedPair 应归入 present value assertion');
+        $this->assertSame(array('left', 'right'), $rules[0]->parsedArgument(), '编译期应缓存 parser 输出的结构化参数');
     }
 }

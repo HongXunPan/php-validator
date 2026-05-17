@@ -4,10 +4,10 @@ namespace HongXunPan\Validator\Rule\Assert\Numeric;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
 
-class GtRule extends AbstractValueRule implements NumericRule
+class GtRule extends AbstractPresentValueAssertionRule implements NumericRule
 {
     const KEY = 'gt';
     const MESSAGE = '$paramName must be greater than $rule';

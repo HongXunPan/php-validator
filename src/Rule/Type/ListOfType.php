@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Rule\Type;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 
-class ListOfType extends AbstractValueRule
+class ListOfType extends AbstractPresentValueAssertionRule
 {
     const KEY = 'listOf';
     const MESSAGE = '$paramName must be list';

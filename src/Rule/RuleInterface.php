@@ -25,6 +25,11 @@ interface RuleInterface
     public static function defaultMessage();
 
     /**
+     * @return string
+     */
+    public static function argumentParserClass();
+
+    /**
      * @param mixed $rawArg
      *
      * @return string

@@ -4,11 +4,10 @@ namespace HongXunPan\Validator\Rule\Transform\Numeric;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueTransformRule;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
-use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
 
-class PositiveIntRule extends AbstractValueRule implements NumericRule, ValueMaterializationRuleInterface
+class PositiveIntRule extends AbstractPresentValueTransformRule implements NumericRule
 {
     const KEY = 'positiveInt';
     const MESSAGE = '$paramName must be positive integer';

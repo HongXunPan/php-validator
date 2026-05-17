@@ -107,23 +107,31 @@ class ObjectValidationRunner
         }
 
         foreach ($compiledPlan->targetPlans() as $targetPlan) {
-            $this->targetPlanExecutor->materialize($state, $targetPlan);
+            $this->targetPlanExecutor->prepareMissingValue($state, $targetPlan);
         }
 
         foreach ($compiledPlan->targetPlans() as $targetPlan) {
-            $this->targetPlanExecutor->validateConditionalPresence($state, $targetPlan);
+            $this->targetPlanExecutor->preparePresentValue($state, $targetPlan);
         }
 
         foreach ($compiledPlan->targetPlans() as $targetPlan) {
-            $this->targetPlanExecutor->validatePresence($state, $targetPlan);
+            $this->targetPlanExecutor->assertFieldPresence($state, $targetPlan);
         }
 
         foreach ($compiledPlan->targetPlans() as $targetPlan) {
-            $this->targetPlanExecutor->validateLocalValue($state, $targetPlan);
+            $this->targetPlanExecutor->guardPresentValue($state, $targetPlan);
         }
 
         foreach ($compiledPlan->targetPlans() as $targetPlan) {
-            $this->targetPlanExecutor->validateDependentValue($state, $targetPlan);
+            $this->targetPlanExecutor->transformPresentValue($state, $targetPlan);
+        }
+
+        foreach ($compiledPlan->targetPlans() as $targetPlan) {
+            $this->targetPlanExecutor->assertPresentValue($state, $targetPlan);
+        }
+
+        foreach ($compiledPlan->targetPlans() as $targetPlan) {
+            $this->targetPlanExecutor->assertCrossFieldValue($state, $targetPlan);
         }
 
         return $state->output();

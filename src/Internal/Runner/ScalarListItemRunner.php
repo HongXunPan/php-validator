@@ -68,11 +68,13 @@ class ScalarListItemRunner
             $pathLabelMap
         );
 
-        $this->targetPlanExecutor->materialize($state, $targetPlan);
-        $this->targetPlanExecutor->validateConditionalPresence($state, $targetPlan);
-        $this->targetPlanExecutor->validatePresence($state, $targetPlan);
-        $this->targetPlanExecutor->validateLocalValue($state, $targetPlan);
-        $this->targetPlanExecutor->validateDependentValue($state, $targetPlan);
+        $this->targetPlanExecutor->prepareMissingValue($state, $targetPlan);
+        $this->targetPlanExecutor->preparePresentValue($state, $targetPlan);
+        $this->targetPlanExecutor->assertFieldPresence($state, $targetPlan);
+        $this->targetPlanExecutor->guardPresentValue($state, $targetPlan);
+        $this->targetPlanExecutor->transformPresentValue($state, $targetPlan);
+        $this->targetPlanExecutor->assertPresentValue($state, $targetPlan);
+        $this->targetPlanExecutor->assertCrossFieldValue($state, $targetPlan);
 
         return new ScalarValidationOutput($state->output(), self::ITEM_PATH);
     }

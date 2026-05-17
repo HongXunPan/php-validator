@@ -4,10 +4,10 @@ namespace HongXunPan\Validator\Rule\Collection;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueTransformRule;
 use HongXunPan\Validator\Rule\Marker\ListRule;
 
-class DistinctRule extends AbstractValueRule implements ListRule
+class DistinctRule extends AbstractPresentValueTransformRule implements ListRule
 {
     const KEY = 'distinct';
     const MESSAGE = '$paramName must contain distinct items';

@@ -3,12 +3,14 @@
 namespace HongXunPan\Validator\Rule;
 
 use HongXunPan\Validator\Context\PathLabelMap;
+use HongXunPan\Validator\Rule\Argument\NoArgumentParser;
 use LogicException;
 
 abstract class AbstractRule implements RuleInterface
 {
     const KEY = '';
     const MESSAGE = '$paramName validate failed';
+    const ARGUMENT_PARSER = NoArgumentParser::class;
 
     /**
      * @return string
@@ -38,6 +40,14 @@ abstract class AbstractRule implements RuleInterface
     public static function defaultMessage()
     {
         return static::MESSAGE;
+    }
+
+    /**
+     * @return string
+     */
+    public static function argumentParserClass()
+    {
+        return static::ARGUMENT_PARSER;
     }
 
     /**

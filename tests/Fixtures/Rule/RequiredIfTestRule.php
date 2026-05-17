@@ -4,10 +4,9 @@ namespace HongXunPan\Validator\Tests\Fixtures\Rule;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractPresenceRule;
-use HongXunPan\Validator\Rule\ConditionalPresenceRuleInterface;
+use HongXunPan\Validator\Rule\AbstractFieldPresenceAssertionRule;
 
-class RequiredIfTestRule extends AbstractPresenceRule implements ConditionalPresenceRuleInterface
+class RequiredIfTestRule extends AbstractFieldPresenceAssertionRule
 {
     const KEY = 'requiredIfTest';
     const MESSAGE = '$paramName is required';

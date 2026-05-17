@@ -4,10 +4,10 @@ namespace HongXunPan\Validator\Rule\Assert\Numeric;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 use HongXunPan\Validator\Rule\Marker\NumericRule;
 
-class LteRule extends AbstractValueRule implements NumericRule
+class LteRule extends AbstractPresentValueAssertionRule implements NumericRule
 {
     const KEY = 'lte';
     const MESSAGE = '$paramName must be less than or equal to $rule';

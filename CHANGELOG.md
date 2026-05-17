@@ -15,8 +15,6 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - public `Rule` self-execution model with:
   - `RuleInterface`
   - `AbstractRule`
-  - `AbstractPresenceRule`
-  - `AbstractValueRule`
 - validator subclass extension arrays:
   - `extraRules`
   - `ruleAliases`
@@ -60,6 +58,8 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - public docs now distinguish the two recommended extension paths more clearly:
   - provider-class constants for large static maps
   - `define*()` overrides for inherited merging or dynamic logic
+- the rule model was rebuilt around public archetype base classes instead of mixed marker interfaces
+- execution stages were renamed and split into missing-value creation, present-value normalization, guard, transform, assertion, and cross-field assertion
 
 ### Fixed
 
@@ -67,3 +67,5 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - dependent comparison rules skip gracefully when the referenced target is not dependency-readable
 - field-compare message rendering now resolves referenced field display names from declared path labels
 - internal output/detail construction no longer relies on scattered anonymous array shapes
+- missing fields now skip present-only transform rules by default when `required` is not declared
+- `default` now behaves strictly as a missing-only key creator and its created value continues through later present-value processing stages

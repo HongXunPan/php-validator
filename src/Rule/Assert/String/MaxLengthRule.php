@@ -4,13 +4,16 @@ namespace HongXunPan\Validator\Rule\Assert\String;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
+use HongXunPan\Validator\Rule\Argument\IntArgument;
+use HongXunPan\Validator\Rule\Argument\IntArgumentParser;
 use HongXunPan\Validator\Rule\Marker\StringRule;
 
-class MaxLengthRule extends AbstractValueRule implements StringRule
+class MaxLengthRule extends AbstractPresentValueAssertionRule implements StringRule
 {
     const KEY = 'maxLength';
     const MESSAGE = '$paramName length must be at most $rule';
+    const ARGUMENT_PARSER = IntArgumentParser::class;
 
     public static function validate(RuleContext $context)
     {
@@ -19,9 +22,21 @@ class MaxLengthRule extends AbstractValueRule implements StringRule
             return RuleResult::fail($value);
         }
 
-        return self::length($value) <= (int)$context->ruleArg()
+        return self::length($value) <= self::intValue($context->parsedRuleArg())
             ? RuleResult::pass($value)
             : RuleResult::fail($value);
+    }
+
+    /**
+     * @param mixed $ruleArg
+     *
+     * @return int
+     */
+    private static function intValue($ruleArg)
+    {
+        return $ruleArg instanceof IntArgument
+            ? $ruleArg->value()
+            : (int)$ruleArg;
     }
 
     private static function length($value)

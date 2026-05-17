@@ -3,15 +3,14 @@
 namespace HongXunPan\Validator\Internal\Plan;
 
 use HongXunPan\Validator\Context\PathLabelMap;
+use HongXunPan\Validator\Exception\InvalidRuleArgumentException;
 use HongXunPan\Validator\Internal\Input\DeclaredTargetTreeBuilder;
 use HongXunPan\Validator\Internal\Parsing\RuleStringParser;
 use HongXunPan\Validator\Internal\Rules\ResolvedRule;
+use HongXunPan\Validator\Internal\Rules\RuleArchetypeInspector;
 use HongXunPan\Validator\Internal\Rules\RuleSet;
 use HongXunPan\Validator\Internal\Target\RuleTarget;
-use HongXunPan\Validator\Rule\ConditionalPresenceRuleInterface;
-use HongXunPan\Validator\Rule\DependentValueRuleInterface;
-use HongXunPan\Validator\Rule\PresenceRuleInterface;
-use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
+use HongXunPan\Validator\Rule\Argument\RuleArgumentParserInterface;
 
 class TargetRulePlanCompiler
 {
@@ -90,38 +89,48 @@ class TargetRulePlanCompiler
         $ruleItems = $this->ruleStringParser->parseRuleItems($ruleString);
 
         $unsupportedRules = array();
-        $materializationRules = array();
-        $conditionalPresenceRules = array();
-        $presenceRules = array();
-        $localValueRules = array();
-        $dependentValueRules = array();
+        $missingValueCreationRules = array();
+        $presentValueNormalizationRules = array();
+        $fieldPresenceAssertionRules = array();
+        $presentValueGuardRules = array();
+        $presentValueTransformRules = array();
+        $presentValueAssertionRules = array();
+        $crossFieldAssertionRules = array();
 
         foreach ($ruleItems as $ruleItem) {
             $resolvedRule = $this->ruleSet->resolveRule($ruleItem->inputRuleKey());
             $compiledRule = new CompiledRule(
                 $ruleItem,
                 $resolvedRule,
-                $this->resolveStage($resolvedRule)
+                $this->resolveStage($resolvedRule),
+                $this->parseRuleArgument($resolvedRule, $ruleItem->rawArgument()),
+                $this->resolveArgumentParserClass($resolvedRule)
             );
 
             switch ($compiledRule->stage()) {
                 case CompiledRule::STAGE_UNSUPPORTED:
                     $unsupportedRules[] = $compiledRule;
                     break;
-                case CompiledRule::STAGE_MATERIALIZATION:
-                    $materializationRules[] = $compiledRule;
+                case CompiledRule::STAGE_PREPARE_MISSING_VALUE:
+                    $missingValueCreationRules[] = $compiledRule;
                     break;
-                case CompiledRule::STAGE_CONDITIONAL_PRESENCE:
-                    $conditionalPresenceRules[] = $compiledRule;
+                case CompiledRule::STAGE_PREPARE_PRESENT_VALUE:
+                    $presentValueNormalizationRules[] = $compiledRule;
                     break;
-                case CompiledRule::STAGE_PRESENCE:
-                    $presenceRules[] = $compiledRule;
+                case CompiledRule::STAGE_ASSERT_FIELD_PRESENCE:
+                    $fieldPresenceAssertionRules[] = $compiledRule;
                     break;
-                case CompiledRule::STAGE_DEPENDENT_VALUE:
-                    $dependentValueRules[] = $compiledRule;
+                case CompiledRule::STAGE_GUARD_PRESENT_VALUE:
+                    $presentValueGuardRules[] = $compiledRule;
+                    break;
+                case CompiledRule::STAGE_TRANSFORM_PRESENT_VALUE:
+                    $presentValueTransformRules[] = $compiledRule;
+                    break;
+                case CompiledRule::STAGE_ASSERT_CROSS_FIELD_VALUE:
+                    $crossFieldAssertionRules[] = $compiledRule;
                     break;
                 default:
-                    $localValueRules[] = $compiledRule;
+                    $presentValueAssertionRules[] = $compiledRule;
                     break;
             }
         }
@@ -129,11 +138,13 @@ class TargetRulePlanCompiler
         return new CompiledTargetRulePlan(
             $ruleTarget,
             $unsupportedRules,
-            $materializationRules,
-            $conditionalPresenceRules,
-            $presenceRules,
-            $localValueRules,
-            $dependentValueRules
+            $missingValueCreationRules,
+            $presentValueNormalizationRules,
+            $fieldPresenceAssertionRules,
+            $presentValueGuardRules,
+            $presentValueTransformRules,
+            $presentValueAssertionRules,
+            $crossFieldAssertionRules
         );
     }
 
@@ -148,24 +159,53 @@ class TargetRulePlanCompiler
             return CompiledRule::STAGE_UNSUPPORTED;
         }
 
-        $ruleClass = $resolvedRule->ruleClass();
+        $stage = RuleArchetypeInspector::resolveCompiledStage($resolvedRule->ruleClass());
 
-        if (is_subclass_of($ruleClass, ValueMaterializationRuleInterface::class)) {
-            return CompiledRule::STAGE_MATERIALIZATION;
+        return $stage === null
+            ? CompiledRule::STAGE_UNSUPPORTED
+            : $stage;
+    }
+
+    /**
+     * @param ResolvedRule|null $resolvedRule
+     * @param string $rawArgument
+     *
+     * @return mixed
+     */
+    private function parseRuleArgument($resolvedRule, $rawArgument)
+    {
+        if (!$resolvedRule instanceof ResolvedRule) {
+            return null;
         }
 
-        if (is_subclass_of($ruleClass, ConditionalPresenceRuleInterface::class)) {
-            return CompiledRule::STAGE_CONDITIONAL_PRESENCE;
+        $parserClass = $this->resolveArgumentParserClass($resolvedRule);
+        if (!is_string($parserClass) || $parserClass === '') {
+            throw new InvalidRuleArgumentException('规则参数解析器非法：' . $resolvedRule->ruleClass());
         }
 
-        if (is_subclass_of($ruleClass, PresenceRuleInterface::class)) {
-            return CompiledRule::STAGE_PRESENCE;
+        if (!class_exists($parserClass)) {
+            throw new InvalidRuleArgumentException('规则参数解析器不存在：' . $parserClass);
         }
 
-        if (is_subclass_of($ruleClass, DependentValueRuleInterface::class)) {
-            return CompiledRule::STAGE_DEPENDENT_VALUE;
+        $parser = new $parserClass();
+        if (!$parser instanceof RuleArgumentParserInterface) {
+            throw new InvalidRuleArgumentException('规则参数解析器未实现契约：' . $parserClass);
         }
 
-        return CompiledRule::STAGE_LOCAL_VALUE;
+        return $parser->parse($rawArgument);
+    }
+
+    /**
+     * @param ResolvedRule|null $resolvedRule
+     *
+     * @return string|null
+     */
+    private function resolveArgumentParserClass($resolvedRule)
+    {
+        if (!$resolvedRule instanceof ResolvedRule) {
+            return null;
+        }
+
+        return call_user_func(array($resolvedRule->ruleClass(), 'argumentParserClass'));
     }
 }

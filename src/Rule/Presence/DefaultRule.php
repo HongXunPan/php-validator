@@ -4,10 +4,9 @@ namespace HongXunPan\Validator\Rule\Presence;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractPresenceRule;
-use HongXunPan\Validator\Rule\ValueMaterializationRuleInterface;
+use HongXunPan\Validator\Rule\AbstractMissingValueCreationRule;
 
-class DefaultRule extends AbstractPresenceRule implements ValueMaterializationRuleInterface
+class DefaultRule extends AbstractMissingValueCreationRule
 {
     const KEY = 'default';
     const MESSAGE = '$paramName default failed';

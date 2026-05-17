@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Rule\Type;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 
-class IntType extends AbstractValueRule
+class IntType extends AbstractPresentValueAssertionRule
 {
     const KEY = 'int';
     const MESSAGE = '$paramName must be integer';

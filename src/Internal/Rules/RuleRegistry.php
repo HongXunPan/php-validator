@@ -4,9 +4,7 @@ namespace HongXunPan\Validator\Internal\Rules;
 
 use HongXunPan\Validator\Exception\InvalidRuleClassException;
 use HongXunPan\Validator\Exception\RuleNameReservedException;
-use HongXunPan\Validator\Rule\PresenceRuleInterface;
 use HongXunPan\Validator\Rule\RuleInterface;
-use HongXunPan\Validator\Rule\ValueRuleInterface;
 
 class RuleRegistry
 {
@@ -95,10 +93,8 @@ class RuleRegistry
             throw new InvalidRuleClassException('规则 KEY 与声明 key 不一致：' . $declaredRuleKey);
         }
 
-        $isPresence = is_subclass_of($ruleClass, PresenceRuleInterface::class);
-        $isValue = is_subclass_of($ruleClass, ValueRuleInterface::class);
-        if ($isPresence === $isValue) {
-            throw new InvalidRuleClassException('规则必须且只能属于一个阶段：' . $ruleClass);
+        if (RuleArchetypeInspector::resolveCompiledStage($ruleClass) === null) {
+            throw new InvalidRuleClassException('规则必须继承受支持的 archetype 基类：' . $ruleClass);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace HongXunPan\Validator\Internal\Execution;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Context\RuleValueReaderInterface;
 use HongXunPan\Validator\Internal\Context\TargetValueContext;
-use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
+use HongXunPan\Validator\Internal\Plan\CompiledRule;
 use HongXunPan\Validator\Internal\Target\RuleTarget;
 use HongXunPan\Validator\Support\LiteralValueParser;
 
@@ -27,7 +27,7 @@ class RuleContextFactory
     /**
      * @param RuleTarget $ruleTarget
      * @param string $paramName
-     * @param ParsedRuleToken $parsedRule
+     * @param CompiledRule $compiledRule
      * @param TargetValueContext $targetValueContext
      * @param RuleValueReaderInterface $ruleValueReader
      *
@@ -36,14 +36,15 @@ class RuleContextFactory
     public function create(
         RuleTarget $ruleTarget,
         $paramName,
-        ParsedRuleToken $parsedRule,
+        CompiledRule $compiledRule,
         TargetValueContext $targetValueContext,
         RuleValueReaderInterface $ruleValueReader
     ) {
         return new RuleContext(
             $ruleTarget->fieldPath(),
             $paramName,
-            $parsedRule->rawArgument(),
+            $compiledRule->parsedRule()->rawArgument(),
+            $compiledRule->parsedArgument(),
             $targetValueContext->rawExists(),
             $targetValueContext->rawValue(),
             $targetValueContext->currentExists(),

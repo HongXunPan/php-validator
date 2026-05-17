@@ -19,6 +19,10 @@ class RuleContext
      */
     private $ruleArg;
     /**
+     * @var mixed
+     */
+    private $parsedRuleArg;
+    /**
      * @var bool
      */
     private $rawExists;
@@ -47,6 +51,7 @@ class RuleContext
      * @param string $fieldPath
      * @param string $paramName
      * @param mixed $ruleArg
+     * @param mixed $parsedRuleArg
      * @param bool $rawExists
      * @param mixed $rawValue
      * @param bool $currentExists
@@ -56,6 +61,7 @@ class RuleContext
         $fieldPath,
         $paramName,
         $ruleArg,
+        $parsedRuleArg,
         $rawExists,
         $rawValue,
         $currentExists,
@@ -66,6 +72,7 @@ class RuleContext
         $this->fieldPath = (string)$fieldPath;
         $this->paramName = (string)$paramName;
         $this->ruleArg = $ruleArg;
+        $this->parsedRuleArg = $parsedRuleArg;
         $this->rawExists = (bool)$rawExists;
         $this->rawValue = $rawValue;
         $this->currentExists = (bool)$currentExists;
@@ -128,6 +135,14 @@ class RuleContext
     public function ruleArg()
     {
         return $this->ruleArg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function parsedRuleArg()
+    {
+        return $this->parsedRuleArg;
     }
 
     /**

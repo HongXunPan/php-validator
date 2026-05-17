@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Internal\Execution;
 
 use HongXunPan\Validator\Internal\Context\TargetValueContext;
 use HongXunPan\Validator\Internal\Plan\CompiledRule;
+use HongXunPan\Validator\Internal\Rules\RuleArchetypeInspector;
 use HongXunPan\Validator\Internal\State\ValidationState;
 use HongXunPan\Validator\Internal\Target\RuleTarget;
-use HongXunPan\Validator\Rule\ConditionalPresenceRuleInterface;
 
 class PhaseRuleRunner
 {
@@ -53,7 +53,7 @@ class PhaseRuleRunner
                 $targetValueContext->markFailed();
                 $state->addTargetFailure(
                     $ruleTarget,
-                    $compiledRule->parsedRule(),
+                    $compiledRule,
                     $targetValueContext,
                     $outcome
                 );
@@ -66,7 +66,7 @@ class PhaseRuleRunner
                 $resolvedRule = $outcome->resolvedRule();
                 if (
                     $resolvedRule !== null
-                    && is_subclass_of($resolvedRule->ruleClass(), ConditionalPresenceRuleInterface::class)
+                    && RuleArchetypeInspector::isPresentValueGuardRule($resolvedRule->ruleClass())
                 ) {
                     $targetValueContext->skipValueValidation();
                 }

@@ -24,7 +24,7 @@ class TargetLifecycleManager
      *
      * @return void
      */
-    public function finalizeAfterMaterialization(TargetValueContext $targetValueContext)
+    public function finalizeAfterPreparation(TargetValueContext $targetValueContext)
     {
         $targetValueContext->useCurrentAsMaterialized();
     }
@@ -36,12 +36,12 @@ class TargetLifecycleManager
      *
      * @return void
      */
-    public function finalizeAfterLocalRules(ValidationState $state, CompiledTargetRulePlan $targetPlan, TargetValueContext $targetValueContext)
+    public function finalizeAfterPresentValueAssertions(ValidationState $state, CompiledTargetRulePlan $targetPlan, TargetValueContext $targetValueContext)
     {
         $targetValueContext->markDependentReadable();
         $targetValueContext->commitOutputValue($state->normalizeOutput());
 
-        if (!$targetPlan->hasDependentValueRules()) {
+        if (!$targetPlan->hasCrossFieldAssertionRules()) {
             $state->writeValidatedTarget($targetPlan->ruleTarget(), $targetValueContext);
         }
     }
@@ -53,7 +53,7 @@ class TargetLifecycleManager
      *
      * @return void
      */
-    public function finalizeAfterDependentRules(ValidationState $state, CompiledTargetRulePlan $targetPlan, TargetValueContext $targetValueContext)
+    public function finalizeAfterCrossFieldAssertions(ValidationState $state, CompiledTargetRulePlan $targetPlan, TargetValueContext $targetValueContext)
     {
         $targetValueContext->commitOutputValue($state->normalizeOutput());
         $state->writeValidatedTarget($targetPlan->ruleTarget(), $targetValueContext);

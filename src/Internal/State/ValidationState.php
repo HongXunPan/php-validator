@@ -13,7 +13,7 @@ use HongXunPan\Validator\Internal\Input\RawInputSource;
 use HongXunPan\Validator\Internal\Output\ValidationFailureReporter;
 use HongXunPan\Validator\Internal\Output\ValidationMessageRenderer;
 use HongXunPan\Validator\Internal\Output\ValidationOutput;
-use HongXunPan\Validator\Internal\Parsing\ParsedRuleToken;
+use HongXunPan\Validator\Internal\Plan\CompiledRule;
 use HongXunPan\Validator\Internal\Path\PathAccessor;
 use HongXunPan\Validator\Internal\Target\RuleTarget;
 
@@ -151,13 +151,13 @@ class ValidationState
 
     /**
      * @param RuleTarget $ruleTarget
-     * @param ParsedRuleToken $parsedRule
+     * @param CompiledRule $compiledRule
      * @param TargetValueContext $targetValueContext
      * @param RuleExecutionOutcome $outcome
      */
-    public function addTargetFailure(RuleTarget $ruleTarget, ParsedRuleToken $parsedRule, TargetValueContext $targetValueContext, RuleExecutionOutcome $outcome)
+    public function addTargetFailure(RuleTarget $ruleTarget, CompiledRule $compiledRule, TargetValueContext $targetValueContext, RuleExecutionOutcome $outcome)
     {
-        $this->failureReporter->reportTargetFailure($ruleTarget, $parsedRule, $targetValueContext, $outcome);
+        $this->failureReporter->reportTargetFailure($ruleTarget, $compiledRule, $targetValueContext, $outcome);
     }
 
     /**

@@ -4,9 +4,9 @@ namespace HongXunPan\Validator\Rule\Assert\Common;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractValueRule;
+use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 
-class EqRule extends AbstractValueRule
+class EqRule extends AbstractPresentValueAssertionRule
 {
     const KEY = 'eq';
     const MESSAGE = '$paramName must equal $rule';
