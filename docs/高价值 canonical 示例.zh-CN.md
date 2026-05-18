@@ -171,7 +171,161 @@ if ($result->isPassed()) {
 
 ---
 
-## 6. 何时该补到这份文档
+## 6. 布尔归一化与接受 / 拒绝确认
+
+适用场景：
+
+- HTTP 表单里布尔值可能来自字符串；
+- 业务希望最终拿到真实 `bool`；
+- 同意条款、拒绝选项只做断言，不一定改变原始输出值。
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'newsletter_enabled' => 'on',
+        'terms' => 'yes',
+        'marketing_declined' => 'no',
+    ),
+    array(
+        'newsletter_enabled:订阅开关' => 'toBool|boolean',
+        'terms:服务条款' => 'accepted',
+        'marketing_declined:营销拒绝确认' => 'declined',
+    )
+);
+
+if ($result->isPassed()) {
+    var_dump($result->validatedData());
+    // array(
+    //     'newsletter_enabled' => true,
+    //     'terms' => 'yes',
+    //     'marketing_declined' => 'no',
+    // )
+}
+```
+
+要点：
+
+- `boolean` 是严格断言，只接受真实 `bool`；
+- 字符串布尔值请先用 `toBool` 归一化；
+- `accepted / declined` 适合“必须同意 / 必须拒绝”这类确认语义，本身不负责把值转成 `bool`。
+
+---
+
+## 7. 格式校验与范围规则
+
+适用场景：
+
+- 注册或资料表单需要常见格式校验；
+- 字符串长度、列表数量、数值范围需要用明确规则表达；
+- 希望避免一个多义 `between` 同时承载字符串、数组、数字三种语义。
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'email' => 'alice@example.com',
+        'homepage' => 'https://example.com/profile/alice',
+        'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
+        'metadata' => '{"source":"form"}',
+        'username' => 'alice_2026',
+        'tags' => array('alumni', 'event'),
+        'score' => 98,
+    ),
+    array(
+        'email:邮箱' => 'email',
+        'homepage:主页链接' => 'url',
+        'trace_id:追踪ID' => 'uuid',
+        'metadata:扩展信息' => 'json',
+        'username:用户名' => 'regex:/^[A-Za-z0-9_]+$/|notIn:["root","admin"]|lengthBetween:[3,20]',
+        'tags:标签' => 'listOf|itemsBetween:[1,3]',
+        'score:分数' => 'int|numericBetween:[0,100]',
+    )
+);
+
+if ($result->isPassed()) {
+    var_dump($result->validatedData());
+    // array(
+    //     'email' => 'alice@example.com',
+    //     'homepage' => 'https://example.com/profile/alice',
+    //     'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
+    //     'metadata' => '{"source":"form"}',
+    //     'username' => 'alice_2026',
+    //     'tags' => array('alumni', 'event'),
+    //     'score' => 98,
+    // )
+}
+```
+
+要点：
+
+- `email / url / uuid / json` 都是低依赖 core 格式断言；
+- `json` 只判断字符串是否为合法 JSON，不自动 decode；
+- `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
+- `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；
+- 当前竖线 DSL 会用 `|` 切分规则，复杂正则若包含 `|`，应等待后续 DSL 转义或数组规则声明能力，不建议直接硬写进字符串规则。
+
+---
+
+## 8. 字段关系与条件 presence
+
+适用场景：
+
+- 确认字段需要与原字段一致；
+- 新旧字段不能相同；
+- 某个字段出现 / 缺失会影响另一个字段是否必填或禁止出现。
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+        'email' => 'alice@example.com',
+        'email_confirmation' => 'alice@example.com',
+        'old_password' => 'old-secret',
+        'new_password' => 'new-secret',
+        'profile' => array('name' => '  Alice  '),
+        'nickname' => 'Alice',
+    ),
+    array(
+        'password:密码' => 'string|minLength:8|confirmed',
+        'password_confirmation:确认密码' => 'string',
+        'email:邮箱' => 'email',
+        'email_confirmation:确认邮箱' => 'string|sameField:email',
+        'old_password:旧密码' => 'string',
+        'new_password:新密码' => 'string|differentField:old_password',
+        'profile.name:姓名' => 'trim|string',
+        'nickname:昵称' => 'requiredIfPresent:profile.name|string',
+        'invite_code:邀请码' => 'string',
+        'referral_reason:推荐说明' => 'prohibitedIfMissing:invite_code|string',
+    )
+);
+
+if ($result->isPassed()) {
+    var_dump($result->validatedData());
+    // array(
+    //     'password' => 'secret123',
+    //     'password_confirmation' => 'secret123',
+    //     'email' => 'alice@example.com',
+    //     'email_confirmation' => 'alice@example.com',
+    //     'old_password' => 'old-secret',
+    //     'new_password' => 'new-secret',
+    //     'profile' => array('name' => 'Alice'),
+    //     'nickname' => 'Alice',
+    // )
+}
+```
+
+要点：
+
+- `confirmed` 默认比较 `<field>_confirmation`，也可以写成 `confirmed:repeat_password` 指定字段；
+- `sameField / differentField / confirmed` 都读取被依赖字段的 prepared value；
+- 被依赖字段应在 rule map 中声明，否则比较规则无法稳定读取归一化后的依赖值；
+- `requiredIfPresent` 是 core canonical，不把 `requiredWith` 作为主规则名；
+- `prohibitedIfMissing` 是 core canonical，不把 `prohibitedWithout` 作为主规则名；
+- Laravel-like `requiredWith / requiredWithout / prohibitedWith / prohibitedWithout` 更适合作为 adapter alias 或迁移层写法。
+
+---
+
+## 9. 何时该补到这份文档
 
 建议在以下场景补这份文档：
 

@@ -14,6 +14,12 @@ use HongXunPan\Validator\Rule\Argument\FormatStringArgument;
 use HongXunPan\Validator\Rule\Argument\FormatStringArgumentParser;
 use HongXunPan\Validator\Rule\Argument\IntArgument;
 use HongXunPan\Validator\Rule\Argument\IntArgumentParser;
+use HongXunPan\Validator\Rule\Argument\IntRangeArgument;
+use HongXunPan\Validator\Rule\Argument\IntRangeArgumentParser;
+use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
+use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
+use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
+use HongXunPan\Validator\Rule\Argument\NumericRangeArgumentParser;
 use HongXunPan\Validator\Tests\TestCase;
 
 class RuleArgumentParserTest extends TestCase
@@ -93,6 +99,75 @@ class RuleArgumentParserTest extends TestCase
                 $parser->parse('status,1');
             },
             '必须是数组 literal'
+        );
+    }
+
+
+    public function testLiteralSetArgumentParser()
+    {
+        $parser = new LiteralSetArgumentParser();
+        $argument = $parser->parse('[1,"active",null]');
+
+        $this->assertInstanceOf(LiteralSetArgument::class, $argument, 'literal set parser 应返回集合参数');
+        $this->assertSame(array(1, 'active', null), $argument->values(), 'literal set parser 应解析 JSON array literal');
+    }
+
+    public function testLiteralSetArgumentParserRejectsScalar()
+    {
+        $parser = new LiteralSetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('1');
+            },
+            '数组 literal'
+        );
+    }
+
+    public function testIntRangeArgumentParser()
+    {
+        $parser = new IntRangeArgumentParser();
+        $argument = $parser->parse('[2,5]');
+
+        $this->assertInstanceOf(IntRangeArgument::class, $argument, '整数范围 parser 应返回范围参数');
+        $this->assertSame(2, $argument->min(), '整数范围 parser 应解析 min');
+        $this->assertSame(5, $argument->max(), '整数范围 parser 应解析 max');
+    }
+
+    public function testIntRangeArgumentParserRejectsFloat()
+    {
+        $parser = new IntRangeArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('[1,2.5]');
+            },
+            'JSON integer literal'
+        );
+    }
+
+    public function testNumericRangeArgumentParser()
+    {
+        $parser = new NumericRangeArgumentParser();
+        $argument = $parser->parse('[1,2.5]');
+
+        $this->assertInstanceOf(NumericRangeArgument::class, $argument, '数值范围 parser 应返回范围参数');
+        $this->assertSame(1, $argument->min(), '数值范围 parser 应解析 int min');
+        $this->assertSame(2.5, $argument->max(), '数值范围 parser 应解析 float max');
+    }
+
+    public function testRangeArgumentParserRejectsReversedRange()
+    {
+        $parser = new NumericRangeArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('[5,2]');
+            },
+            'min 不能大于 max'
         );
     }
 

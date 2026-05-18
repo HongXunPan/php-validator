@@ -175,6 +175,332 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame(3, $result->validatedData()['current_value'], '比较通过后当前字段应正常输出');
     }
 
+    public function testBooleanRuleRequiresActualBoolean()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array('enabled' => true),
+            array('enabled:是否启用' => 'boolean')
+        );
+        $failed = $kernel->validate(
+            array('enabled' => 'true'),
+            array('enabled:是否启用' => 'boolean')
+        );
+        $missing = $kernel->validate(
+            array(),
+            array('enabled:是否启用' => 'boolean')
+        );
+
+        $this->assertTrue($passed->isPassed(), 'boolean 应接受真实 bool 值');
+        $this->assertFalse($failed->isPassed(), 'boolean 不应把字符串 true 当作真实 bool');
+        $this->assertTrue($missing->isPassed(), 'missing 字段未声明 required 时应跳过 boolean');
+    }
+
+    public function testToBoolNormalizesCommonBooleanLikeValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'enabled' => 'true',
+                'disabled' => '0',
+                'confirmed' => ' YES ',
+                'closed' => 'off',
+            ),
+            array(
+                'enabled:是否启用' => 'toBool|boolean',
+                'disabled:是否停用' => 'toBool|boolean',
+                'confirmed:是否确认' => 'toBool|boolean',
+                'closed:是否关闭' => 'toBool|boolean',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'toBool 应归一化常见布尔形态');
+        $this->assertSame(true, $result->validatedData()['enabled'], 'true 字符串应归一化为 true');
+        $this->assertSame(false, $result->validatedData()['disabled'], '0 字符串应归一化为 false');
+        $this->assertSame(true, $result->validatedData()['confirmed'], 'YES 字符串应归一化为 true');
+        $this->assertSame(false, $result->validatedData()['closed'], 'off 字符串应归一化为 false');
+    }
+
+    public function testToBoolRejectsInvalidBooleanLikeValue()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('enabled' => 'maybe'),
+            array('enabled:是否启用' => 'toBool')
+        );
+
+        $this->assertFalse($result->isPassed(), 'toBool 遇到无法识别的布尔形态应失败');
+        $this->assertSame('toBool', $result->detail()[0]['rule'], '失败规则应为 toBool');
+    }
+
+    public function testAcceptedAndDeclinedRules()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array(
+                'terms' => 'on',
+                'marketing' => 'no',
+            ),
+            array(
+                'terms:协议' => 'accepted',
+                'marketing:营销订阅' => 'declined',
+            )
+        );
+        $failed = $kernel->validate(
+            array(
+                'terms' => 'off',
+                'marketing' => 'yes',
+            ),
+            array(
+                'terms:协议' => 'accepted',
+                'marketing:营销订阅' => 'declined',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), 'accepted / declined 应接受常见确认与拒绝值');
+        $this->assertFalse($failed->isPassed(), 'accepted / declined 遇到反向值应失败');
+        $this->assertCount(2, $failed->errors(), '两个字段都应产生错误');
+    }
+
+
+    public function testStringFormatRulesCanValidateCommonFormats()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'code' => 'ABC-123',
+                'blocked' => 'ABC-123',
+                'email' => 'alice@example.com',
+                'url' => 'https://example.com/path?foo=bar',
+                'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+                'payload' => '{"name":"Alice"}',
+            ),
+            array(
+                'code:编码' => 'regex:/^[A-Z]+-[0-9]+$/',
+                'blocked:屏蔽值' => 'notRegex:/^admin$/',
+                'email:邮箱' => 'email',
+                'url:链接' => 'url',
+                'uuid:UUID' => 'uuid',
+                'payload:JSON' => 'json',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '格式规则应通过常见合法输入');
+    }
+
+    public function testStringFormatRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'code' => 'abc',
+                'blocked' => 'admin',
+                'email' => 'not-email',
+                'url' => 'not-url',
+                'uuid' => 'not-uuid',
+                'payload' => '{bad-json}',
+            ),
+            array(
+                'code:编码' => 'regex:/^[A-Z]+-[0-9]+$/',
+                'blocked:屏蔽值' => 'notRegex:/^admin$/',
+                'email:邮箱' => 'email',
+                'url:链接' => 'url',
+                'uuid:UUID' => 'uuid',
+                'payload:JSON' => 'json',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '格式规则应拒绝非法输入');
+        $this->assertCount(6, $result->errors(), '每个非法字段都应产生错误');
+    }
+
+    public function testRegexKeepsColonInsidePatternArgument()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array('time' => '10:30'),
+            array('time:时间' => 'regex:/^[0-9]{2}:[0-9]{2}$/')
+        );
+
+        $this->assertTrue($result->isPassed(), 'regex 参数应保留第一个冒号之后的内容');
+    }
+
+    public function testStringFormatRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'email:邮箱' => 'email',
+                'url:链接' => 'url',
+                'payload:JSON' => 'json',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过格式规则');
+    }
+
+
+    public function testSetAndRangeRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'status' => 'archived',
+                'name' => 'Alice',
+                'ids' => array(1, 2, 3),
+                'score' => 9.5,
+            ),
+            array(
+                'status:状态' => 'notIn:["draft","disabled"]',
+                'name:姓名' => 'lengthBetween:[2,10]',
+                'ids:ID列表' => 'itemsBetween:[1,3]',
+                'score:分数' => 'numericBetween:[0,10]',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'notIn 与范围规则应通过合法输入');
+    }
+
+    public function testSetAndRangeRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'status' => 'draft',
+                'name' => 'A',
+                'ids' => array(1, 2, 3, 4),
+                'score' => 11,
+            ),
+            array(
+                'status:状态' => 'notIn:["draft","disabled"]',
+                'name:姓名' => 'lengthBetween:[2,10]',
+                'ids:ID列表' => 'itemsBetween:[1,3]',
+                'score:分数' => 'numericBetween:[0,10]',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'notIn 与范围规则应拒绝非法输入');
+        $this->assertCount(4, $result->errors(), '每个非法字段都应产生错误');
+    }
+
+    public function testSetAndRangeRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'status:状态' => 'notIn:["draft"]',
+                'name:姓名' => 'lengthBetween:[2,10]',
+                'ids:ID列表' => 'itemsBetween:[1,3]',
+                'score:分数' => 'numericBetween:[0,10]',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过集合与范围规则');
+    }
+
+
+    public function testSameDifferentAndConfirmedRulesUsePreparedDependentValue()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'email' => ' alice@example.com ',
+                'email_confirmation' => 'alice@example.com',
+                'old_password' => 'secret-old',
+                'new_password' => 'secret-new',
+                'nickname' => ' Alice ',
+                'display_name' => 'Alice',
+            ),
+            array(
+                'email:邮箱' => 'trim|confirmed',
+                'email_confirmation:确认邮箱' => 'trim',
+                'old_password:旧密码' => 'differentField:new_password',
+                'new_password:新密码' => 'string',
+                'nickname:昵称' => 'trim|sameField:display_name',
+                'display_name:展示名' => 'trim',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'sameField / differentField / confirmed 应读取 prepared dependent value');
+        $this->assertSame('alice@example.com', $result->validatedData()['email'], 'confirmed 通过后应保留归一化后的当前值');
+    }
+
+    public function testSameDifferentAndConfirmedRulesRejectMismatchedValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'email' => 'alice@example.com',
+                'email_confirmation' => 'bob@example.com',
+                'old_password' => 'same-secret',
+                'new_password' => 'same-secret',
+                'nickname' => 'Alice',
+                'display_name' => 'Bob',
+            ),
+            array(
+                'email:邮箱' => 'confirmed',
+                'email_confirmation:确认邮箱' => 'string',
+                'old_password:旧密码' => 'differentField:new_password',
+                'new_password:新密码' => 'string',
+                'nickname:昵称' => 'sameField:display_name',
+                'display_name:展示名' => 'string',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '字段关系规则应拒绝不匹配值');
+        $this->assertCount(3, $result->errors(), '三个字段关系错误都应被收集');
+    }
+
+    public function testConfirmedSupportsExplicitConfirmationField()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'password' => 'secret',
+                'repeat_password' => 'secret',
+            ),
+            array(
+                'password:密码' => 'confirmed:repeat_password',
+                'repeat_password:重复密码' => 'string',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'confirmed 应支持显式确认字段路径');
+    }
+
+    public function testRequiredIfPresentAndProhibitedIfMissingRules()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array(
+                'profile' => array('name' => 'Alice'),
+                'profile_name' => 'Alice',
+            ),
+            array(
+                'profile.name:档案原姓名' => 'string',
+                'profile_name:档案姓名' => 'requiredIfPresent:profile.name',
+                'guest_note:来宾备注' => 'prohibitedIfMissing:profile.mobile',
+            )
+        );
+        $failed = $kernel->validate(
+            array(
+                'profile' => array('name' => 'Alice'),
+                'guest_note' => 'should-not-exist',
+            ),
+            array(
+                'profile.name:档案原姓名' => 'string',
+                'profile_name:档案姓名' => 'requiredIfPresent:profile.name',
+                'guest_note:来宾备注' => 'prohibitedIfMissing:profile.mobile',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), 'requiredIfPresent / prohibitedIfMissing 应通过合法组合');
+        $this->assertFalse($failed->isPassed(), 'requiredIfPresent / prohibitedIfMissing 应拒绝非法组合');
+        $this->assertCount(2, $failed->errors(), '两个条件 presence 错误都应被收集');
+    }
+
     public function testCanonicalListRulesCanCompose()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

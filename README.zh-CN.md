@@ -28,6 +28,15 @@
 
 - [高价值 canonical 示例](./docs/高价值 canonical 示例.zh-CN.md)
 
+规则能力、规划状态与不受理原因请见：
+
+- [规则能力矩阵](./docs/规则能力矩阵.zh-CN.md)
+
+如果你正在评估是否从 Laravel Validator、Symfony Validator、Respect、Valitron 或 Rakit 等验证库迁移，请先阅读：
+
+- [与同类验证库对比](./docs/与同类验证库对比.zh-CN.md)
+- [从其他验证库迁移](./docs/从其他验证库迁移.zh-CN.md)
+
 已完成：
 
 - Composer 子包骨架；
@@ -44,6 +53,25 @@
 - 更完整的 canonical core 规则覆盖；
 - backend 适配层接回；
 - README 示例与发布收口。
+
+## 选型摘要
+
+这个包不是 Laravel Validator 或 Symfony Validator 的完整替代品，而是一个低依赖、框架无关、面向数组输入的验证与归一化内核。
+
+优先选择它的典型理由：
+
+- 你需要在非 Laravel 项目、共享 Composer 包或旧 PHP 环境中复用验证内核；
+- 你希望把自定义规则作为第一优先级，用结构化 `Rule` 类承接业务规则，而不是长期堆回调或数组黑盒；
+- 你需要让校验、归一化、默认值、条件规则和跨字段依赖读取处于同一条可测试流水线里；
+- 你希望 core 保持低依赖，把 ORM、HTTP 响应、上传文件等项目能力放到 adapter 层。
+
+不建议选择它的典型场景：
+
+- Laravel 项目只需要常规表单验证、FormRequest、`unique / exists` 或文件上传规则；
+- Symfony 项目主要围绕 Entity / DTO / Attribute Constraint 建模；
+- 你优先需要上百条开箱即用规则，而不是优先建设自定义规则扩展面。
+
+简要对比与迁移成本请见上方两份 docs，README 只保留入口级判断，避免首页继续膨胀。
 
 ## 默认扩展方式
 

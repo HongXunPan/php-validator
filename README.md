@@ -26,7 +26,16 @@ For current performance notes, see:
 
 For richer canonical usage scenarios, see:
 
-- [High-value Canonical Examples (Chinese)](./docs/高价值 canonical 示例.zh-CN.md)
+- [High-value Canonical Examples](./docs/high-value-canonical-examples.md)
+
+For rule capabilities, planning status, and rejection reasons, see:
+
+- [Rule Capability Matrix](./docs/rule-capability-matrix.md)
+
+If you are evaluating migration from Laravel Validator, Symfony Validator, Respect, Valitron, Rakit, or similar packages, read:
+
+- [Comparison With Other Validator Libraries](./docs/comparison-with-other-validators.md)
+- [Migration From Other Validator Libraries](./docs/migration-from-other-validators.md)
 
 Already in place:
 
@@ -44,6 +53,25 @@ Still in progress:
 - broader core canonical rule coverage;
 - backend adapter integration;
 - README examples and release hardening.
+
+## Selection Summary
+
+This package is not a full replacement for Laravel Validator or Symfony Validator. It is a low-dependency, framework-agnostic validation and normalization core for array-like input.
+
+Typical reasons to choose it:
+
+- you need a reusable validation core for non-Laravel projects, shared Composer packages, or older PHP runtimes;
+- you want custom rules to be the first-class design priority, represented by structured `Rule` classes instead of long-lived callbacks or opaque arrays;
+- you need validation, normalization, default value creation, conditional rules, and cross-field dependency reads in one testable pipeline;
+- you want the core to stay low-dependency while keeping ORM, HTTP responses, file uploads, and framework-specific behavior in adapter layers.
+
+Typical reasons not to choose it:
+
+- your Laravel project only needs regular form validation, FormRequest, `unique / exists`, or file upload rules;
+- your Symfony project is mainly modeled around Entity / DTO / Attribute constraints;
+- you need hundreds of built-in rules first, rather than a long-term custom-rule extension surface.
+
+The detailed comparison and migration cost are documented in the two docs linked above. README only keeps this decision-level summary to avoid turning the landing page into a long essay.
 
 ## Public Extension Model
 
@@ -368,7 +396,7 @@ copy-friendly core scenarios, such as:
 
 see:
 
-- [High-value Canonical Examples (Chinese)](./docs/高价值 canonical 示例.zh-CN.md)
+- [High-value Canonical Examples](./docs/high-value-canonical-examples.md)
 
 ## Adapter Layer for Legacy Projects
 
