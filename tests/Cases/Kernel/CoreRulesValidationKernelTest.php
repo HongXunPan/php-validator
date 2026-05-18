@@ -99,6 +99,40 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertTrue($missing->isPassed(), 'missing 字段未声明 required 时应跳过 numeric / number');
     }
 
+    public function testFloatRuleRequiresRealFloat()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array(
+                'ratio' => 0.75,
+            ),
+            array(
+                'ratio:比例' => 'float',
+            )
+        );
+        $failed = $kernel->validate(
+            array(
+                'count' => 3,
+                'numeric_string' => '0.75',
+            ),
+            array(
+                'count:数量' => 'float',
+                'numeric_string:数字字符串' => 'float',
+            )
+        );
+        $missing = $kernel->validate(
+            array(),
+            array(
+                'ratio:比例' => 'float',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), 'float 应接受真实 float');
+        $this->assertFalse($failed->isPassed(), 'float 不应接受 int 或 numeric string');
+        $this->assertCount(2, $failed->errors(), 'int 与 numeric string 都应产生错误');
+        $this->assertTrue($missing->isPassed(), 'missing 字段未声明 required 时应跳过 float');
+    }
+
     public function testMultipleOfAndDecimalPlacesCanValidateValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

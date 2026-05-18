@@ -301,7 +301,7 @@ $result = DemoValidator::validateAndNormalize(
         'profile:资料' => 'requiredKeys:["id","name"]|arrayKeysIn:["id","name","status"]',
         'payload:载荷' => 'prohibitedKeys:["password","token"]',
         'score:分数' => 'int|numericBetween:[0,100]',
-        'ratio:比例' => 'number|numericBetween:[0,1]',
+        'ratio:比例' => 'float|numericBetween:[0,1]',
         'quantity:数量' => 'number|multipleOf:3',
         'amount:金额' => 'number|decimalPlaces:2',
         'delta:变化量' => 'negativeInt',
@@ -344,6 +344,7 @@ if ($result->isPassed()) {
 - `requiredKeys / prohibitedKeys / arrayKeysIn` 校验当前数组内部 key，不替代全局 unknown-field 拒绝能力；
 - `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
 - `numeric / number` 是严格数值断言，只接受真实 `int / float`，不接受 numeric string；
+- `float` 比 `number` 更严格，只接受真实 `float` 值，不归一化 numeric string；
 - `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；
 - `multipleOf` 参数必须是正数 JSON number，`decimalPlaces` 参数必须是非负 JSON integer；两者都只校验真实 `int / float` 值；
 - `negativeInt / nonPositiveInt` 与 `positiveInt / nonNegativeInt` 一样属于整数 transform，成功后输出 `int`；

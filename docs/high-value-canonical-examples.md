@@ -299,7 +299,7 @@ $result = DemoValidator::validateAndNormalize(
         'profile:Profile' => 'requiredKeys:["id","name"]|arrayKeysIn:["id","name","status"]',
         'payload:Payload' => 'prohibitedKeys:["password","token"]',
         'score:Score' => 'int|numericBetween:[0,100]',
-        'ratio:Ratio' => 'number|numericBetween:[0,1]',
+        'ratio:Ratio' => 'float|numericBetween:[0,1]',
         'quantity:Quantity' => 'number|multipleOf:3',
         'amount:Amount' => 'number|decimalPlaces:2',
         'delta:Delta' => 'negativeInt',
@@ -342,6 +342,7 @@ Notes:
 - `requiredKeys / prohibitedKeys / arrayKeysIn` validate keys inside the current array. They are not a replacement for global unknown-field rejection.
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
 - `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
+- `float` is stricter than `number`; it only accepts real `float` values and does not normalize numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.
 - `multipleOf` expects a positive JSON number argument, and `decimalPlaces` expects a non-negative JSON integer argument; both validate real `int / float` values only.
 - `negativeInt / nonPositiveInt`, like `positiveInt / nonNegativeInt`, are integer transforms and output `int` values on success.
