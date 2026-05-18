@@ -21,7 +21,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
      */
     protected static function passCurrent(RuleContext $context)
     {
-        return RuleResult::pass($context->value(), $context->fieldExists());
+        return RuleResult::passPath($context->current());
     }
 
     /**
@@ -30,7 +30,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedEq(RuleContext $context)
     {
         $argument = static::expectedLiteralArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if (!$otherValue->exists() || !ConditionValueMatcher::eq($otherValue->value(), $argument->expectedValue())) {
             return static::passCurrent($context);
@@ -45,7 +45,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedIn(RuleContext $context)
     {
         $argument = static::expectedLiteralSetArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if (!$otherValue->exists() || !ConditionValueMatcher::in($otherValue->value(), $argument->expectedValues())) {
             return static::passCurrent($context);
@@ -60,7 +60,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedNotEq(RuleContext $context)
     {
         $argument = static::expectedLiteralArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if (!$otherValue->exists() || !ConditionValueMatcher::notEq($otherValue->value(), $argument->expectedValue())) {
             return static::passCurrent($context);
@@ -75,7 +75,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedNotIn(RuleContext $context)
     {
         $argument = static::expectedLiteralSetArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if (!$otherValue->exists() || !ConditionValueMatcher::notIn($otherValue->value(), $argument->expectedValues())) {
             return static::passCurrent($context);
@@ -90,7 +90,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedPresent(RuleContext $context)
     {
         $argument = static::fieldReferenceArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if (!$otherValue->exists()) {
             return static::passCurrent($context);
@@ -105,7 +105,7 @@ abstract class AbstractConditionalFieldPresenceRule extends AbstractFieldPresenc
     protected static function skipUnlessReferencedMissing(RuleContext $context)
     {
         $argument = static::fieldReferenceArgument($context);
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
+        $otherValue = $context->materialized($argument->fieldPath());
 
         if ($otherValue->exists()) {
             return static::passCurrent($context);

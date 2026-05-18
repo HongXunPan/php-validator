@@ -19,9 +19,9 @@ class NullableIfNotEqRule extends AbstractConditionalPresentValueGuardRule
         }
 
         if ($context->value() === null) {
-            return RuleResult::passAndBreak(null, $context->fieldExists());
+            return RuleResult::passAndBreakPath($context->current());
         }
 
-        return RuleResult::pass($context->value(), $context->fieldExists());
+        return RuleResult::passPath($context->current());
     }
 }

@@ -13,8 +13,8 @@ class DefaultRule extends AbstractMissingValueCreationRule
 
     public static function validate(RuleContext $context)
     {
-        if ($context->fieldExists()) {
-            return RuleResult::pass($context->value(), true);
+        if ($context->current()->exists()) {
+            return RuleResult::passPath($context->current());
         }
 
         return RuleResult::passAndBreak($context->parseRuleArg(), true);

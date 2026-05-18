@@ -2,64 +2,20 @@
 
 namespace HongXunPan\Validator\Rule\Assert\Time;
 
-use HongXunPan\Validator\Context\RuleContext;
-use HongXunPan\Validator\Context\PathLabelMap;
-use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractCrossFieldAssertionRule;
-use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
-use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
 use HongXunPan\Validator\Rule\Marker\TimeRule;
+use HongXunPan\Validator\Rule\AbstractReferencedFieldCompareRule;
 
-abstract class AbstractTimeFieldCompareRule extends AbstractCrossFieldAssertionRule implements TimeRule
+abstract class AbstractTimeFieldCompareRule extends AbstractReferencedFieldCompareRule implements TimeRule
 {
-    const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;
-
-    public static function validate(RuleContext $context)
+    protected static function normalizeComparablePair($currentValue, $otherValue)
     {
-        $fieldPath = static::parseFieldPath($context->parsedRuleArg());
-        $otherValueResult = $context->getDependentTargetValue($fieldPath);
-
-        if (!$otherValueResult->exists()) {
-            return RuleResult::pass($context->value());
-        }
-
-        $currentValue = $context->value();
-        $otherValue = $otherValueResult->value();
-
-        if (static::isBlankComparableValue($currentValue) || static::isBlankComparableValue($otherValue)) {
-            return RuleResult::pass($currentValue);
-        }
-
         $currentTimestamp = strtotime((string)$currentValue);
         $otherTimestamp = strtotime((string)$otherValue);
         if ($currentTimestamp === false || $otherTimestamp === false) {
-            return RuleResult::fail($currentValue);
+            return null;
         }
 
-        return static::compare($currentTimestamp, $otherTimestamp)
-            ? RuleResult::pass($currentValue)
-            : RuleResult::fail($currentValue);
-    }
-
-    protected static function parseFieldPath($ruleArg)
-    {
-        if ($ruleArg instanceof FieldReferenceArgument) {
-            return $ruleArg->fieldPath();
-        }
-
-        return (string)$ruleArg;
-    }
-
-    public static function displayRuleValue($rawArg, PathLabelMap $pathLabelMap)
-    {
-        $fieldPath = static::parseFieldPath($rawArg);
-
-        return $pathLabelMap->resolve($fieldPath, $fieldPath);
-    }
-
-    protected static function isBlankComparableValue($value)
-    {
-        return $value === null || $value === '';
+        return array($currentTimestamp, $otherTimestamp);
     }
 
     protected static function compare($currentValue, $otherValue)

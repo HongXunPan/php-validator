@@ -2,6 +2,8 @@
 
 namespace HongXunPan\Validator\Result;
 
+use HongXunPan\Validator\Context\PathValue;
+
 /**
  * RuleResult 承接单条规则执行结果。
  *
@@ -52,6 +54,14 @@ class RuleResult
     }
 
     /**
+     * @return static
+     */
+    public static function passPath(PathValue $value)
+    {
+        return static::pass($value->value(), $value->exists());
+    }
+
+    /**
      * @param mixed $value
      * @param bool|null $exists
      *
@@ -63,6 +73,14 @@ class RuleResult
     }
 
     /**
+     * @return static
+     */
+    public static function failPath(PathValue $value)
+    {
+        return static::fail($value->value(), $value->exists());
+    }
+
+    /**
      * @param mixed $value
      * @param bool|null $exists
      *
@@ -71,6 +89,14 @@ class RuleResult
     public static function passAndBreak($value, $exists = null)
     {
         return new static(true, $value, true, $exists);
+    }
+
+    /**
+     * @return static
+     */
+    public static function passAndBreakPath(PathValue $value)
+    {
+        return static::passAndBreak($value->value(), $value->exists());
     }
 
     /**

@@ -18,10 +18,10 @@ class ProhibitedIfInRule extends AbstractConditionalFieldPresenceRule
             return $result;
         }
 
-        if ($context->fieldExists()) {
-            return RuleResult::fail($context->value(), true);
+        if ($context->current()->exists()) {
+            return RuleResult::failPath($context->current());
         }
 
-        return RuleResult::pass($context->value(), false);
+        return RuleResult::passPath($context->current());
     }
 }

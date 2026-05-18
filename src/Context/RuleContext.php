@@ -130,6 +130,22 @@ class RuleContext
     }
 
     /**
+     * @return PathValue
+     */
+    public function current()
+    {
+        return new PathValue($this->currentExists, $this->currentValue);
+    }
+
+    /**
+     * @return PathValue
+     */
+    public function raw()
+    {
+        return new PathValue($this->rawExists, $this->rawValue);
+    }
+
+    /**
      * @return mixed
      */
     public function ruleArg()
@@ -189,8 +205,28 @@ class RuleContext
      *
      * @return PathValue
      */
+    public function materialized($fieldPath)
+    {
+        return $this->getMaterializedTargetValue($fieldPath);
+    }
+
+    /**
+     * @param string $fieldPath
+     *
+     * @return PathValue
+     */
     public function getDependentTargetValue($fieldPath)
     {
         return $this->ruleValueReader->dependentPathValue($fieldPath);
+    }
+
+    /**
+     * @param string $fieldPath
+     *
+     * @return PathValue
+     */
+    public function dependent($fieldPath)
+    {
+        return $this->getDependentTargetValue($fieldPath);
     }
 }

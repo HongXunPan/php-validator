@@ -185,6 +185,9 @@ var_dump($result->validatedData());
 - `AbstractPresentValueTransformRule`
 - `AbstractPresentValueAssertionRule`
 - `AbstractCrossFieldAssertionRule`
+- `AbstractConditionalFieldPresenceRule`
+- `AbstractConditionalPresentValueGuardRule`
+- `AbstractReferencedFieldCompareRule`
 - `RuleContext / RuleValueReaderInterface / ValidationOptions / RuleResult`
 - `ValidatedDataWriterInterface / ArrayAccessValidatedDataWriter`
 
@@ -284,6 +287,122 @@ $result = DemoValidator::validateAndNormalize(
     array('name:姓名' => 'trimName')
 );
 ```
+
+## 引用字段条件规则扩展
+
+如果你的自定义规则属于“**引用其他字段作为触发条件**”这一类，推荐直接继承：
+
+- `HongXunPan\Validator\Rule\Condition\AbstractConditionalFieldPresenceRule`
+- `HongXunPan\Validator\Rule\Condition\AbstractConditionalPresentValueGuardRule`
+
+这两个基类公开了一组 `protected` 前置判断 helper，例如：
+
+- `skipUnlessReferencedEq(...)`
+- `skipUnlessReferencedIn(...)`
+- `skipUnlessReferencedNotEq(...)`
+- `skipUnlessReferencedNotIn(...)`
+- `skipUnlessReferencedPresent(...)`
+- `skipUnlessReferencedMissing(...)`
+
+它们的语义是：
+
+- 条件未命中：直接返回当前字段的 `pass` 结果；
+- 条件命中：返回 `null`，由具体规则继续处理后半段语义。
+
+`requiredIfXxx` 风格示例：
+
+```php
+<?php
+
+use HongXunPan\Validator\Context\RuleContext;
+use HongXunPan\Validator\Result\RuleResult;
+use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralArgumentParser;
+use HongXunPan\Validator\Rule\Condition\AbstractConditionalFieldPresenceRule;
+
+class RequiredIfFlagRule extends AbstractConditionalFieldPresenceRule
+{
+    const KEY = 'requiredIfFlag';
+    const MESSAGE = '$paramName is required';
+    const ARGUMENT_PARSER = FieldExpectedLiteralArgumentParser::class;
+
+    public static function validate(RuleContext $context)
+    {
+        if ($result = static::skipUnlessReferencedEq($context)) {
+            return $result;
+        }
+
+        if (!$context->current()->exists()) {
+            return RuleResult::failPath($context->current());
+        }
+
+        return RuleResult::passPath($context->current());
+    }
+}
+```
+
+`nullableIfXxx` 风格示例：
+
+```php
+<?php
+
+use HongXunPan\Validator\Context\RuleContext;
+use HongXunPan\Validator\Result\RuleResult;
+use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
+use HongXunPan\Validator\Rule\Condition\AbstractConditionalPresentValueGuardRule;
+
+class NullableIfProfilePresentRule extends AbstractConditionalPresentValueGuardRule
+{
+    const KEY = 'nullableIfProfilePresent';
+    const MESSAGE = '$paramName nullable';
+    const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;
+
+    public static function validate(RuleContext $context)
+    {
+        if ($result = static::skipUnlessReferencedPresent($context)) {
+            return $result;
+        }
+
+        if ($context->value() === null) {
+            return RuleResult::passAndBreakPath($context->current());
+        }
+
+        return RuleResult::passPath($context->current());
+    }
+}
+```
+
+## 引用字段比较规则扩展
+
+如果你的规则属于“**当前字段与引用字段做数值 / 时间比较**”，推荐继承：
+
+- `HongXunPan\Validator\Rule\AbstractReferencedFieldCompareRule`
+
+它会统一处理：
+
+- 解析引用字段路径；
+- 读取 dependent target value；
+- 引用字段缺失时直接 `pass`；
+- 当前值或引用值为空时直接 `pass`；
+- `displayRuleValue(...)` 的字段显示。
+
+具体子类只需要关心：
+
+- 如何把两个值归一化成可比较值；
+- 最终比较关系是否成立。
+
+## `RuleContext / RuleResult` 便捷 API
+
+当前公开的便捷 API 包括：
+
+- `RuleContext::current()`
+- `RuleContext::raw()`
+- `RuleContext::materialized($fieldPath)`
+- `RuleContext::dependent($fieldPath)`
+- `RuleResult::passPath(PathValue $value)`
+- `RuleResult::failPath(PathValue $value)`
+- `RuleResult::passAndBreakPath(PathValue $value)`
+
+这些方法的目的不是替代现有 `value()/fieldExists()` 用法，而是让“需要同时关心 value + exists”的规则写法更短、更直观。
 
 ## `extraRules / ruleAliases / ruleMessages` 示例
 

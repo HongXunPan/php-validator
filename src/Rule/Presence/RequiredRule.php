@@ -13,10 +13,10 @@ class RequiredRule extends AbstractFieldPresenceAssertionRule
 
     public static function validate(RuleContext $context)
     {
-        if (!$context->fieldExists()) {
-            return RuleResult::fail($context->value(), false);
+        if (!$context->current()->exists()) {
+            return RuleResult::failPath($context->current());
         }
 
-        return RuleResult::pass($context->value(), true);
+        return RuleResult::passPath($context->current());
     }
 }
