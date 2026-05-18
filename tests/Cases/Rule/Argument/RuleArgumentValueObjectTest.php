@@ -8,6 +8,7 @@ use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FormatStringArgument;
 use HongXunPan\Validator\Rule\Argument\IntArgument;
+use HongXunPan\Validator\Rule\Argument\StringSetArgument;
 use HongXunPan\Validator\Tests\TestCase;
 
 class RuleArgumentValueObjectTest extends TestCase
@@ -64,6 +65,24 @@ class RuleArgumentValueObjectTest extends TestCase
         $argument = new FormatStringArgument('Y-m-d H:i:s');
 
         $this->assertSame('Y-m-d H:i:s', $argument->format(), '格式字符串参数应保存原始格式');
+    }
+
+    public function testStringSetArgumentStoresStringValues()
+    {
+        $argument = new StringSetArgument(array('api-', 'web-'));
+
+        $this->assertSame(array('api-', 'web-'), $argument->values(), '字符串集合参数应保存非空字符串集合');
+    }
+
+    public function testStringSetArgumentRejectsEmptyString()
+    {
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () {
+                new StringSetArgument(array('api-', ''));
+            },
+            '非空字符串成员'
+        );
     }
 
     public function testIntArgumentStoresValue()

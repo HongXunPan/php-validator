@@ -539,6 +539,61 @@ class CoreRulesValidationKernelTest extends TestCase
     }
 
 
+    public function testStringNeedleRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'url' => 'https://example.com/profile/alice',
+                'code' => 'event-2026',
+                'title' => 'Alumni Event 2026',
+            ),
+            array(
+                'url:链接' => 'startsWith:["http://","https://"]',
+                'code:编码' => 'endsWith:"2026"',
+                'title:标题' => 'contains:"Event"',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '字符串参数规则应支持 JSON string 与 JSON string array 参数');
+    }
+
+    public function testStringNeedleRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'url' => 'ftp://example.com/profile/alice',
+                'code' => 'event-2025',
+                'title' => 'Alumni Meetup 2026',
+            ),
+            array(
+                'url:链接' => 'startsWith:["http://","https://"]',
+                'code:编码' => 'endsWith:"2026"',
+                'title:标题' => 'contains:"Event"',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '字符串参数规则应拒绝不匹配的输入');
+        $this->assertCount(3, $result->errors(), '每个不匹配字段都应产生错误');
+    }
+
+    public function testStringNeedleRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'url:链接' => 'startsWith:["http://","https://"]',
+                'code:编码' => 'endsWith:"2026"',
+                'title:标题' => 'contains:"Event"',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过字符串参数规则');
+    }
+
+
     public function testSetAndRangeRulesCanValidateValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

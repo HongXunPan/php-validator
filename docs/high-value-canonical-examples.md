@@ -264,6 +264,9 @@ $result = DemoValidator::validateAndNormalize(
         'username' => 'alice_2026',
         'slug' => 'alumni-2026',
         'env_code' => 'PROD_2026',
+        'redirect_url' => 'https://example.com/callback',
+        'tracking_code' => 'promo-2026',
+        'description' => 'Alumni Event 2026',
         'tags' => array('alumni', 'event'),
         'score' => 98,
         'ratio' => 0.75,
@@ -278,6 +281,9 @@ $result = DemoValidator::validateAndNormalize(
         'username:Username' => 'alphaDash|notIn:["root","admin"]|lengthBetween:[3,20]',
         'slug:Slug' => 'ascii|lowercase|alphaDash|lengthBetween:[3,40]',
         'env_code:Environment code' => 'ascii|uppercase|alphaDash',
+        'redirect_url:Redirect URL' => 'startsWith:["http://","https://"]',
+        'tracking_code:Tracking code' => 'endsWith:"2026"',
+        'description:Description' => 'contains:["Event","Meetup"]',
         'tags:Tags' => 'listOf|itemsBetween:[1,3]',
         'score:Score' => 'int|numericBetween:[0,100]',
         'ratio:Ratio' => 'number|numericBetween:[0,1]',
@@ -296,6 +302,9 @@ if ($result->isPassed()) {
     //     'username' => 'alice_2026',
     //     'slug' => 'alumni-2026',
     //     'env_code' => 'PROD_2026',
+    //     'redirect_url' => 'https://example.com/callback',
+    //     'tracking_code' => 'promo-2026',
+    //     'description' => 'Alumni Event 2026',
     //     'tags' => array('alumni', 'event'),
     //     'score' => 98,
     //     'ratio' => 0.75,
@@ -310,6 +319,7 @@ Notes:
 - `email / url / uuid / json` are low-dependency core format assertions.
 - `json` only validates that the value is a valid JSON string; it does not decode the value.
 - `ascii / alpha / alphaNum / alphaDash / lowercase / uppercase` cover common ASCII string content assertions without adding Unicode dependencies.
+- `startsWith / endsWith / contains` accept strict JSON string literals or JSON string array literals, for example `startsWith:"api-"` or `startsWith:["http://","https://"]`; bare strings are rejected.
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
 - `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.

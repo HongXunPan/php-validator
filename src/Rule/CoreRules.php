@@ -26,14 +26,17 @@ use HongXunPan\Validator\Rule\Assert\String\AlphaDashRule;
 use HongXunPan\Validator\Rule\Assert\String\AlphaNumRule;
 use HongXunPan\Validator\Rule\Assert\String\AlphaRule;
 use HongXunPan\Validator\Rule\Assert\String\AsciiRule;
+use HongXunPan\Validator\Rule\Assert\String\ContainsRule;
 use HongXunPan\Validator\Rule\Assert\String\EmailRule;
 use HongXunPan\Validator\Rule\Assert\String\JsonRule;
 use HongXunPan\Validator\Rule\Assert\String\LengthBetweenRule;
 use HongXunPan\Validator\Rule\Assert\String\LowercaseRule;
+use HongXunPan\Validator\Rule\Assert\String\EndsWithRule;
 use HongXunPan\Validator\Rule\Assert\String\MaxLengthRule;
 use HongXunPan\Validator\Rule\Assert\String\MinLengthRule;
 use HongXunPan\Validator\Rule\Assert\String\NotRegexRule;
 use HongXunPan\Validator\Rule\Assert\String\RegexRule;
+use HongXunPan\Validator\Rule\Assert\String\StartsWithRule;
 use HongXunPan\Validator\Rule\Assert\String\UppercaseRule;
 use HongXunPan\Validator\Rule\Assert\String\UrlRule;
 use HongXunPan\Validator\Rule\Assert\String\UuidRule;
@@ -135,6 +138,9 @@ class CoreRules
             AlphaDashRule::class,
             LowercaseRule::class,
             UppercaseRule::class,
+            StartsWithRule::class,
+            EndsWithRule::class,
+            ContainsRule::class,
             RegexRule::class,
             NotRegexRule::class,
             EmailRule::class,

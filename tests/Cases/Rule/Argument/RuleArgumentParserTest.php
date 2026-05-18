@@ -20,6 +20,8 @@ use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgumentParser;
+use HongXunPan\Validator\Rule\Argument\StringSetArgument;
+use HongXunPan\Validator\Rule\Argument\StringSetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\TimeLiteralArgument;
 use HongXunPan\Validator\Rule\Argument\TimeLiteralArgumentParser;
 use HongXunPan\Validator\Tests\TestCase;
@@ -124,6 +126,63 @@ class RuleArgumentParserTest extends TestCase
                 $parser->parse('1');
             },
             '数组 literal'
+        );
+    }
+
+    public function testStringSetArgumentParserAcceptsStringLiteral()
+    {
+        $parser = new StringSetArgumentParser();
+        $argument = $parser->parse('"api-"');
+
+        $this->assertInstanceOf(StringSetArgument::class, $argument, '字符串集合 parser 应返回字符串集合参数');
+        $this->assertSame(array('api-'), $argument->values(), 'JSON string literal 应归一化为单元素集合');
+    }
+
+    public function testStringSetArgumentParserAcceptsStringArrayLiteral()
+    {
+        $parser = new StringSetArgumentParser();
+        $argument = $parser->parse('["http://","https://"]');
+
+        $this->assertInstanceOf(StringSetArgument::class, $argument, '字符串集合 parser 应返回字符串集合参数');
+        $this->assertSame(array('http://', 'https://'), $argument->values(), 'JSON string array literal 应保留字符串集合');
+    }
+
+    public function testStringSetArgumentParserRejectsBareString()
+    {
+        $parser = new StringSetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('api-');
+            },
+            '合法 JSON literal'
+        );
+    }
+
+    public function testStringSetArgumentParserRejectsInvalidMembers()
+    {
+        $parser = new StringSetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('["api-",1]');
+            },
+            '非空字符串成员'
+        );
+    }
+
+    public function testStringSetArgumentParserRejectsEmptyString()
+    {
+        $parser = new StringSetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('""');
+            },
+            '非空字符串成员'
         );
     }
 

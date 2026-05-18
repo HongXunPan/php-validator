@@ -68,6 +68,9 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `alphaDash` | assertion | none | no | no | skipped by default | Supported | ASCII letters, numbers, dashes, and underscores only |
 | ✅ Supported | `lowercase` | assertion | none | no | no | skipped by default | Supported | ASCII lowercase assertion; does not transform |
 | ✅ Supported | `uppercase` | assertion | none | no | no | skipped by default | Supported | ASCII uppercase assertion; does not transform |
+| ✅ Supported | `startsWith` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Prefix assertion; parameters must be strict JSON string literal or string array literal |
+| ✅ Supported | `endsWith` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Suffix assertion; parameters must be strict JSON string literal or string array literal |
+| ✅ Supported | `contains` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Substring assertion; parameters must be strict JSON string literal or string array literal |
 | ✅ Supported | `regex` | assertion | pattern | no | no | skipped by default | Supported | Pure PHP format rule; complex patterns containing `|` need a future escaping strategy in the DSL |
 | ✅ Supported | `notRegex` | assertion | pattern | no | no | skipped by default | Supported | Negative regex rule; complex patterns containing `|` need a future escaping strategy in the DSL |
 | ✅ Supported | `email` | assertion | none | no | no | skipped by default | Supported | Based on PHP built-in filter without new dependency |
@@ -143,9 +146,6 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | 🟡 Planned | `decimalPlaces` | assertion | integer | no | no | skipped by default | P1 | Decimal-place validation without BCMath dependency |
 | 🟡 Planned | `date` | assertion | none | no | no | skipped by default | P1 | Must clarify boundary with `time` |
 | 🟡 Planned | `dateFormat` | assertion | format | no | no | skipped by default | P1 | Format assertion only; does not mutate output |
-| 🟡 Planned | `startsWith` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
-| 🟡 Planned | `endsWith` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
-| 🟡 Planned | `contains` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
 | 🟡 Planned | `requiredKeys` | assertion | key set | no | no | skipped by default | P1 | Array key presence |
 | 🟡 Planned | `prohibitedKeys` | assertion | key set | no | no | skipped by default | P1 | Array key prohibition |
 | 🟡 Planned | `arrayKeysIn` | assertion | key set | no | no | skipped by default | P1 | Array key allowlist; must differ from `reject_unknown` |
