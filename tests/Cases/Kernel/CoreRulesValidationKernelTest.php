@@ -99,6 +99,65 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertTrue($missing->isPassed(), 'missing 字段未声明 required 时应跳过 numeric / number');
     }
 
+    public function testMultipleOfAndDecimalPlacesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'quantity' => 12,
+                'step_ratio' => 1.5,
+                'amount' => 12.34,
+                'count' => 10,
+            ),
+            array(
+                'quantity:数量' => 'multipleOf:3',
+                'step_ratio:比例步长' => 'multipleOf:0.5',
+                'amount:金额' => 'decimalPlaces:2',
+                'count:计数' => 'decimalPlaces:0',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'multipleOf / decimalPlaces 应通过合法数值输入');
+    }
+
+    public function testMultipleOfAndDecimalPlacesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'quantity' => 10,
+                'step_ratio' => 1.3,
+                'amount' => 12.345,
+                'count' => 10.5,
+                'numeric_string' => '12.30',
+            ),
+            array(
+                'quantity:数量' => 'multipleOf:3',
+                'step_ratio:比例步长' => 'multipleOf:0.5',
+                'amount:金额' => 'decimalPlaces:2',
+                'count:计数' => 'decimalPlaces:0',
+                'numeric_string:数字字符串' => 'multipleOf:0.1',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'multipleOf / decimalPlaces 应拒绝非法数值输入');
+        $this->assertCount(5, $result->errors(), '每个非法字段都应产生错误');
+    }
+
+    public function testMultipleOfAndDecimalPlacesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'quantity:数量' => 'multipleOf:3',
+                'amount:金额' => 'decimalPlaces:2',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过 multipleOf / decimalPlaces');
+    }
+
     public function testNegativeIntAndNonPositiveIntNormalizeIntegerValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

@@ -272,6 +272,8 @@ $result = DemoValidator::validateAndNormalize(
         'payload' => array('title' => 'Event', 'visible' => true),
         'score' => 98,
         'ratio' => 0.75,
+        'quantity' => 12,
+        'amount' => 19.95,
         'delta' => '-2',
         'offset' => '0',
     ),
@@ -291,6 +293,8 @@ $result = DemoValidator::validateAndNormalize(
         'payload:Payload' => 'prohibitedKeys:["password","token"]',
         'score:Score' => 'int|numericBetween:[0,100]',
         'ratio:Ratio' => 'number|numericBetween:[0,1]',
+        'quantity:Quantity' => 'number|multipleOf:3',
+        'amount:Amount' => 'number|decimalPlaces:2',
         'delta:Delta' => 'negativeInt',
         'offset:Offset' => 'nonPositiveInt',
     )
@@ -314,6 +318,8 @@ if ($result->isPassed()) {
     //     'payload' => array('title' => 'Event', 'visible' => true),
     //     'score' => 98,
     //     'ratio' => 0.75,
+    //     'quantity' => 12,
+    //     'amount' => 19.95,
     //     'delta' => -2,
     //     'offset' => 0,
     // )
@@ -330,6 +336,7 @@ Notes:
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
 - `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.
+- `multipleOf` expects a positive JSON number argument, and `decimalPlaces` expects a non-negative JSON integer argument; both validate real `int / float` values only.
 - `negativeInt / nonPositiveInt`, like `positiveInt / nonNegativeInt`, are integer transforms and output `int` values on success.
 - The current pipe-based DSL splits rules by `|`. Complex regex patterns containing `|` should wait for a future DSL escaping or array rule declaration capability instead of being hard-coded into a string rule.
 

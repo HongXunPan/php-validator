@@ -9,6 +9,8 @@ use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FormatStringArgument;
 use HongXunPan\Validator\Rule\Argument\IntArgument;
 use HongXunPan\Validator\Rule\Argument\KeySetArgument;
+use HongXunPan\Validator\Rule\Argument\NonNegativeIntArgument;
+use HongXunPan\Validator\Rule\Argument\PositiveNumericArgument;
 use HongXunPan\Validator\Rule\Argument\StringSetArgument;
 use HongXunPan\Validator\Tests\TestCase;
 
@@ -101,6 +103,42 @@ class RuleArgumentValueObjectTest extends TestCase
                 new KeySetArgument(array('id', ''));
             },
             '非空字符串成员'
+        );
+    }
+
+    public function testPositiveNumericArgumentStoresValue()
+    {
+        $argument = new PositiveNumericArgument(0.5);
+
+        $this->assertSame(0.5, $argument->value(), '正数参数应保存 int / float 值');
+    }
+
+    public function testPositiveNumericArgumentRejectsZero()
+    {
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () {
+                new PositiveNumericArgument(0);
+            },
+            '必须大于 0'
+        );
+    }
+
+    public function testNonNegativeIntArgumentStoresValue()
+    {
+        $argument = new NonNegativeIntArgument(2);
+
+        $this->assertSame(2, $argument->value(), '非负整数参数应保存 int 值');
+    }
+
+    public function testNonNegativeIntArgumentRejectsNegativeValue()
+    {
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () {
+                new NonNegativeIntArgument(-1);
+            },
+            '不能小于 0'
         );
     }
 

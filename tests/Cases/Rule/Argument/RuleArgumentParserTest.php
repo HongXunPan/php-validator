@@ -20,8 +20,12 @@ use HongXunPan\Validator\Rule\Argument\KeySetArgument;
 use HongXunPan\Validator\Rule\Argument\KeySetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
+use HongXunPan\Validator\Rule\Argument\NonNegativeIntArgument;
+use HongXunPan\Validator\Rule\Argument\NonNegativeIntArgumentParser;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgumentParser;
+use HongXunPan\Validator\Rule\Argument\PositiveNumericArgument;
+use HongXunPan\Validator\Rule\Argument\PositiveNumericArgumentParser;
 use HongXunPan\Validator\Rule\Argument\StringSetArgument;
 use HongXunPan\Validator\Rule\Argument\StringSetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\TimeLiteralArgument;
@@ -263,6 +267,76 @@ class RuleArgumentParserTest extends TestCase
         $this->assertInstanceOf(NumericRangeArgument::class, $argument, '数值范围 parser 应返回范围参数');
         $this->assertSame(1, $argument->min(), '数值范围 parser 应解析 int min');
         $this->assertSame(2.5, $argument->max(), '数值范围 parser 应解析 float max');
+    }
+
+    public function testPositiveNumericArgumentParser()
+    {
+        $parser = new PositiveNumericArgumentParser();
+        $argument = $parser->parse('0.5');
+
+        $this->assertInstanceOf(PositiveNumericArgument::class, $argument, '正数 parser 应返回正数参数');
+        $this->assertSame(0.5, $argument->value(), '正数 parser 应解析 JSON number literal');
+    }
+
+    public function testPositiveNumericArgumentParserRejectsNonPositiveNumber()
+    {
+        $parser = new PositiveNumericArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('0');
+            },
+            '必须大于 0'
+        );
+    }
+
+    public function testPositiveNumericArgumentParserRejectsStringLiteral()
+    {
+        $parser = new PositiveNumericArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('"0.5"');
+            },
+            'JSON number literal'
+        );
+    }
+
+    public function testNonNegativeIntArgumentParser()
+    {
+        $parser = new NonNegativeIntArgumentParser();
+        $argument = $parser->parse('2');
+
+        $this->assertInstanceOf(NonNegativeIntArgument::class, $argument, '非负整数 parser 应返回非负整数参数');
+        $this->assertSame(2, $argument->value(), '非负整数 parser 应解析 JSON integer literal');
+    }
+
+    public function testNonNegativeIntArgumentParserRejectsNegativeInteger()
+    {
+        $parser = new NonNegativeIntArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('-1');
+            },
+            '不能小于 0'
+        );
+    }
+
+    public function testNonNegativeIntArgumentParserRejectsFloatLiteral()
+    {
+        $parser = new NonNegativeIntArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('1.5');
+            },
+            'JSON integer literal'
+        );
     }
 
     public function testRangeArgumentParserRejectsReversedRange()

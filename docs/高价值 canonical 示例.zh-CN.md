@@ -274,6 +274,8 @@ $result = DemoValidator::validateAndNormalize(
         'payload' => array('title' => 'Event', 'visible' => true),
         'score' => 98,
         'ratio' => 0.75,
+        'quantity' => 12,
+        'amount' => 19.95,
         'delta' => '-2',
         'offset' => '0',
     ),
@@ -293,6 +295,8 @@ $result = DemoValidator::validateAndNormalize(
         'payload:载荷' => 'prohibitedKeys:["password","token"]',
         'score:分数' => 'int|numericBetween:[0,100]',
         'ratio:比例' => 'number|numericBetween:[0,1]',
+        'quantity:数量' => 'number|multipleOf:3',
+        'amount:金额' => 'number|decimalPlaces:2',
         'delta:变化量' => 'negativeInt',
         'offset:偏移量' => 'nonPositiveInt',
     )
@@ -316,6 +320,8 @@ if ($result->isPassed()) {
     //     'payload' => array('title' => 'Event', 'visible' => true),
     //     'score' => 98,
     //     'ratio' => 0.75,
+    //     'quantity' => 12,
+    //     'amount' => 19.95,
     //     'delta' => -2,
     //     'offset' => 0,
     // )
@@ -332,6 +338,7 @@ if ($result->isPassed()) {
 - `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
 - `numeric / number` 是严格数值断言，只接受真实 `int / float`，不接受 numeric string；
 - `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；
+- `multipleOf` 参数必须是正数 JSON number，`decimalPlaces` 参数必须是非负 JSON integer；两者都只校验真实 `int / float` 值；
 - `negativeInt / nonPositiveInt` 与 `positiveInt / nonNegativeInt` 一样属于整数 transform，成功后输出 `int`；
 - 当前竖线 DSL 会用 `|` 切分规则，复杂正则若包含 `|`，应等待后续 DSL 转义或数组规则声明能力，不建议直接硬写进字符串规则。
 

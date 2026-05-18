@@ -11,6 +11,7 @@ use HongXunPan\Validator\Rule\Assert\Common\InRule;
 use HongXunPan\Validator\Rule\Assert\Common\NeqRule;
 use HongXunPan\Validator\Rule\Assert\Common\NotInRule;
 use HongXunPan\Validator\Rule\Assert\Common\SameFieldRule;
+use HongXunPan\Validator\Rule\Assert\Numeric\DecimalPlacesRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\GtFieldRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\GtRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\GteFieldRule;
@@ -19,6 +20,7 @@ use HongXunPan\Validator\Rule\Assert\Numeric\LtFieldRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LtRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LteFieldRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LteRule;
+use HongXunPan\Validator\Rule\Assert\Numeric\MultipleOfRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumberRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumericBetweenRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumericRule;
@@ -167,6 +169,8 @@ class CoreRules
             NumericRule::class,
             NumberRule::class,
             NumericBetweenRule::class,
+            MultipleOfRule::class,
+            DecimalPlacesRule::class,
             InRule::class,
             NotInRule::class,
             GtFieldRule::class,
