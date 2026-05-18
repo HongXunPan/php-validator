@@ -264,6 +264,8 @@ $result = DemoValidator::validateAndNormalize(
         'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
         'metadata' => '{"source":"form"}',
         'username' => 'alice_2026',
+        'slug' => 'alumni-2026',
+        'env_code' => 'PROD_2026',
         'tags' => array('alumni', 'event'),
         'score' => 98,
         'ratio' => 0.75,
@@ -275,7 +277,9 @@ $result = DemoValidator::validateAndNormalize(
         'homepage:主页链接' => 'url',
         'trace_id:追踪ID' => 'uuid',
         'metadata:扩展信息' => 'json',
-        'username:用户名' => 'regex:/^[A-Za-z0-9_]+$/|notIn:["root","admin"]|lengthBetween:[3,20]',
+        'username:用户名' => 'alphaDash|notIn:["root","admin"]|lengthBetween:[3,20]',
+        'slug:短标识' => 'ascii|lowercase|alphaDash|lengthBetween:[3,40]',
+        'env_code:环境编码' => 'ascii|uppercase|alphaDash',
         'tags:标签' => 'listOf|itemsBetween:[1,3]',
         'score:分数' => 'int|numericBetween:[0,100]',
         'ratio:比例' => 'number|numericBetween:[0,1]',
@@ -292,6 +296,8 @@ if ($result->isPassed()) {
     //     'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
     //     'metadata' => '{"source":"form"}',
     //     'username' => 'alice_2026',
+    //     'slug' => 'alumni-2026',
+    //     'env_code' => 'PROD_2026',
     //     'tags' => array('alumni', 'event'),
     //     'score' => 98,
     //     'ratio' => 0.75,
@@ -305,6 +311,7 @@ if ($result->isPassed()) {
 
 - `email / url / uuid / json` 都是低依赖 core 格式断言；
 - `json` 只判断字符串是否为合法 JSON，不自动 decode；
+- `ascii / alpha / alphaNum / alphaDash / lowercase / uppercase` 覆盖常见 ASCII 字符内容断言，不引入 Unicode 依赖；
 - `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
 - `numeric / number` 是严格数值断言，只接受真实 `int / float`，不接受 numeric string；
 - `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；

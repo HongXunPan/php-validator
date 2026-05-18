@@ -262,6 +262,8 @@ $result = DemoValidator::validateAndNormalize(
         'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
         'metadata' => '{"source":"form"}',
         'username' => 'alice_2026',
+        'slug' => 'alumni-2026',
+        'env_code' => 'PROD_2026',
         'tags' => array('alumni', 'event'),
         'score' => 98,
         'ratio' => 0.75,
@@ -273,7 +275,9 @@ $result = DemoValidator::validateAndNormalize(
         'homepage:Homepage' => 'url',
         'trace_id:Trace ID' => 'uuid',
         'metadata:Metadata' => 'json',
-        'username:Username' => 'regex:/^[A-Za-z0-9_]+$/|notIn:["root","admin"]|lengthBetween:[3,20]',
+        'username:Username' => 'alphaDash|notIn:["root","admin"]|lengthBetween:[3,20]',
+        'slug:Slug' => 'ascii|lowercase|alphaDash|lengthBetween:[3,40]',
+        'env_code:Environment code' => 'ascii|uppercase|alphaDash',
         'tags:Tags' => 'listOf|itemsBetween:[1,3]',
         'score:Score' => 'int|numericBetween:[0,100]',
         'ratio:Ratio' => 'number|numericBetween:[0,1]',
@@ -290,6 +294,8 @@ if ($result->isPassed()) {
     //     'trace_id' => '550e8400-e29b-41d4-a716-446655440000',
     //     'metadata' => '{"source":"form"}',
     //     'username' => 'alice_2026',
+    //     'slug' => 'alumni-2026',
+    //     'env_code' => 'PROD_2026',
     //     'tags' => array('alumni', 'event'),
     //     'score' => 98,
     //     'ratio' => 0.75,
@@ -303,6 +309,7 @@ Notes:
 
 - `email / url / uuid / json` are low-dependency core format assertions.
 - `json` only validates that the value is a valid JSON string; it does not decode the value.
+- `ascii / alpha / alphaNum / alphaDash / lowercase / uppercase` cover common ASCII string content assertions without adding Unicode dependencies.
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
 - `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.

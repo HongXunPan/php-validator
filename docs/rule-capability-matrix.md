@@ -62,6 +62,12 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `timeBefore` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before fixed absolute time literal |
 | ✅ Supported | `timeBeforeOrEqual` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before or equal to fixed absolute time literal |
 | ✅ Supported | `nonBlank` | assertion | none | no | no | skipped by default | Supported | Non-blank string assertion |
+| ✅ Supported | `ascii` | assertion | none | no | no | skipped by default | Supported | ASCII-only string content assertion |
+| ✅ Supported | `alpha` | assertion | none | no | no | skipped by default | Supported | ASCII letters only |
+| ✅ Supported | `alphaNum` | assertion | none | no | no | skipped by default | Supported | ASCII letters and numbers only |
+| ✅ Supported | `alphaDash` | assertion | none | no | no | skipped by default | Supported | ASCII letters, numbers, dashes, and underscores only |
+| ✅ Supported | `lowercase` | assertion | none | no | no | skipped by default | Supported | ASCII lowercase assertion; does not transform |
+| ✅ Supported | `uppercase` | assertion | none | no | no | skipped by default | Supported | ASCII uppercase assertion; does not transform |
 | ✅ Supported | `regex` | assertion | pattern | no | no | skipped by default | Supported | Pure PHP format rule; complex patterns containing `|` need a future escaping strategy in the DSL |
 | ✅ Supported | `notRegex` | assertion | pattern | no | no | skipped by default | Supported | Negative regex rule; complex patterns containing `|` need a future escaping strategy in the DSL |
 | ✅ Supported | `email` | assertion | none | no | no | skipped by default | Supported | Based on PHP built-in filter without new dependency |
@@ -137,15 +143,9 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | 🟡 Planned | `decimalPlaces` | assertion | integer | no | no | skipped by default | P1 | Decimal-place validation without BCMath dependency |
 | 🟡 Planned | `date` | assertion | none | no | no | skipped by default | P1 | Must clarify boundary with `time` |
 | 🟡 Planned | `dateFormat` | assertion | format | no | no | skipped by default | P1 | Format assertion only; does not mutate output |
-| 🟡 Planned | `alpha` | assertion | none | no | no | skipped by default | P1 | String content rule; ASCII boundary should be evaluated first |
-| 🟡 Planned | `alphaNum` | assertion | none | no | no | skipped by default | P1 | String content rule |
-| 🟡 Planned | `alphaDash` | assertion | none | no | no | skipped by default | P1 | String content rule |
-| 🟡 Planned | `ascii` | assertion | none | no | no | skipped by default | P1 | Keep initial scope ASCII-friendly under PHP 5.6 |
 | 🟡 Planned | `startsWith` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
 | 🟡 Planned | `endsWith` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
 | 🟡 Planned | `contains` | assertion | string / string set | no | no | skipped by default | P1 | Common string rule |
-| 🟡 Planned | `lowercase` | assertion | none | no | no | skipped by default | P1 | Assertion only; does not transform |
-| 🟡 Planned | `uppercase` | assertion | none | no | no | skipped by default | P1 | Assertion only; does not transform |
 | 🟡 Planned | `requiredKeys` | assertion | key set | no | no | skipped by default | P1 | Array key presence |
 | 🟡 Planned | `prohibitedKeys` | assertion | key set | no | no | skipped by default | P1 | Array key prohibition |
 | 🟡 Planned | `arrayKeysIn` | assertion | key set | no | no | skipped by default | P1 | Array key allowlist; must differ from `reject_unknown` |

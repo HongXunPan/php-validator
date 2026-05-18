@@ -469,6 +469,76 @@ class CoreRulesValidationKernelTest extends TestCase
     }
 
 
+    public function testAsciiStringContentRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'ascii' => 'hello-123_',
+                'alpha' => 'Alice',
+                'alpha_num' => 'Alice2026',
+                'alpha_dash' => 'Alice_2026-ok',
+                'lowercase' => 'alice-2026',
+                'uppercase' => 'ALICE-2026',
+            ),
+            array(
+                'ascii:ASCII' => 'ascii',
+                'alpha:字母' => 'alpha',
+                'alpha_num:字母数字' => 'alphaNum',
+                'alpha_dash:字母数字横线' => 'alphaDash',
+                'lowercase:小写' => 'lowercase',
+                'uppercase:大写' => 'uppercase',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'ASCII 字符内容规则应通过合法输入');
+    }
+
+    public function testAsciiStringContentRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'ascii' => '你好',
+                'alpha' => 'Alice2026',
+                'alpha_num' => 'Alice-2026',
+                'alpha_dash' => 'Alice.2026',
+                'lowercase' => 'Alice-2026',
+                'uppercase' => 'ALIce-2026',
+            ),
+            array(
+                'ascii:ASCII' => 'ascii',
+                'alpha:字母' => 'alpha',
+                'alpha_num:字母数字' => 'alphaNum',
+                'alpha_dash:字母数字横线' => 'alphaDash',
+                'lowercase:小写' => 'lowercase',
+                'uppercase:大写' => 'uppercase',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'ASCII 字符内容规则应拒绝非法输入');
+        $this->assertCount(6, $result->errors(), '每个非法字段都应产生错误');
+    }
+
+    public function testAsciiStringContentRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'ascii:ASCII' => 'ascii',
+                'alpha:字母' => 'alpha',
+                'alpha_num:字母数字' => 'alphaNum',
+                'alpha_dash:字母数字横线' => 'alphaDash',
+                'lowercase:小写' => 'lowercase',
+                'uppercase:大写' => 'uppercase',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过 ASCII 字符内容规则');
+    }
+
+
     public function testSetAndRangeRulesCanValidateValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

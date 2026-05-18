@@ -22,13 +22,19 @@ use HongXunPan\Validator\Rule\Assert\Numeric\LteRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumberRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumericBetweenRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumericRule;
+use HongXunPan\Validator\Rule\Assert\String\AlphaDashRule;
+use HongXunPan\Validator\Rule\Assert\String\AlphaNumRule;
+use HongXunPan\Validator\Rule\Assert\String\AlphaRule;
+use HongXunPan\Validator\Rule\Assert\String\AsciiRule;
 use HongXunPan\Validator\Rule\Assert\String\EmailRule;
 use HongXunPan\Validator\Rule\Assert\String\JsonRule;
 use HongXunPan\Validator\Rule\Assert\String\LengthBetweenRule;
+use HongXunPan\Validator\Rule\Assert\String\LowercaseRule;
 use HongXunPan\Validator\Rule\Assert\String\MaxLengthRule;
 use HongXunPan\Validator\Rule\Assert\String\MinLengthRule;
 use HongXunPan\Validator\Rule\Assert\String\NotRegexRule;
 use HongXunPan\Validator\Rule\Assert\String\RegexRule;
+use HongXunPan\Validator\Rule\Assert\String\UppercaseRule;
 use HongXunPan\Validator\Rule\Assert\String\UrlRule;
 use HongXunPan\Validator\Rule\Assert\String\UuidRule;
 use HongXunPan\Validator\Rule\Assert\String\NonBlankRule;
@@ -123,6 +129,12 @@ class CoreRules
             NegativeIntRule::class,
             NonPositiveIntRule::class,
             NonBlankRule::class,
+            AsciiRule::class,
+            AlphaRule::class,
+            AlphaNumRule::class,
+            AlphaDashRule::class,
+            LowercaseRule::class,
+            UppercaseRule::class,
             RegexRule::class,
             NotRegexRule::class,
             EmailRule::class,
