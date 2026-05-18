@@ -270,6 +270,8 @@ $result = DemoValidator::validateAndNormalize(
         'tracking_code' => 'promo-2026',
         'description' => 'Alumni Event 2026',
         'tags' => array('alumni', 'event'),
+        'profile' => array('id' => 1, 'name' => 'Alice'),
+        'payload' => array('title' => 'Event', 'visible' => true),
         'score' => 98,
         'ratio' => 0.75,
         'delta' => '-2',
@@ -287,6 +289,8 @@ $result = DemoValidator::validateAndNormalize(
         'tracking_code:追踪编码' => 'endsWith:"2026"',
         'description:说明' => 'contains:["Event","Meetup"]',
         'tags:标签' => 'listOf|itemsBetween:[1,3]',
+        'profile:资料' => 'requiredKeys:["id","name"]|arrayKeysIn:["id","name","status"]',
+        'payload:载荷' => 'prohibitedKeys:["password","token"]',
         'score:分数' => 'int|numericBetween:[0,100]',
         'ratio:比例' => 'number|numericBetween:[0,1]',
         'delta:变化量' => 'negativeInt',
@@ -308,6 +312,8 @@ if ($result->isPassed()) {
     //     'tracking_code' => 'promo-2026',
     //     'description' => 'Alumni Event 2026',
     //     'tags' => array('alumni', 'event'),
+    //     'profile' => array('id' => 1, 'name' => 'Alice'),
+    //     'payload' => array('title' => 'Event', 'visible' => true),
     //     'score' => 98,
     //     'ratio' => 0.75,
     //     'delta' => -2,
@@ -322,6 +328,7 @@ if ($result->isPassed()) {
 - `json` 只判断字符串是否为合法 JSON，不自动 decode；
 - `ascii / alpha / alphaNum / alphaDash / lowercase / uppercase` 覆盖常见 ASCII 字符内容断言，不引入 Unicode 依赖；
 - `startsWith / endsWith / contains` 接受严格 JSON string literal 或 JSON string array literal，例如 `startsWith:"api-"` 或 `startsWith:["http://","https://"]`；裸字符串会被拒绝；
+- `requiredKeys / prohibitedKeys / arrayKeysIn` 校验当前数组内部 key，不替代全局 unknown-field 拒绝能力；
 - `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
 - `numeric / number` 是严格数值断言，只接受真实 `int / float`，不接受 numeric string；
 - `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；

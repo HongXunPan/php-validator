@@ -16,6 +16,8 @@ use HongXunPan\Validator\Rule\Argument\IntArgument;
 use HongXunPan\Validator\Rule\Argument\IntArgumentParser;
 use HongXunPan\Validator\Rule\Argument\IntRangeArgument;
 use HongXunPan\Validator\Rule\Argument\IntRangeArgumentParser;
+use HongXunPan\Validator\Rule\Argument\KeySetArgument;
+use HongXunPan\Validator\Rule\Argument\KeySetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
@@ -181,6 +183,50 @@ class RuleArgumentParserTest extends TestCase
             InvalidRuleArgumentException::class,
             function () use ($parser) {
                 $parser->parse('""');
+            },
+            '非空字符串成员'
+        );
+    }
+
+    public function testKeySetArgumentParserAcceptsStringLiteral()
+    {
+        $parser = new KeySetArgumentParser();
+        $argument = $parser->parse('"id"');
+
+        $this->assertInstanceOf(KeySetArgument::class, $argument, 'key set parser 应返回 key set 参数');
+        $this->assertSame(array('id'), $argument->keys(), 'JSON string literal 应归一化为单 key 集合');
+    }
+
+    public function testKeySetArgumentParserAcceptsStringArrayLiteral()
+    {
+        $parser = new KeySetArgumentParser();
+        $argument = $parser->parse('["id","name","status"]');
+
+        $this->assertInstanceOf(KeySetArgument::class, $argument, 'key set parser 应返回 key set 参数');
+        $this->assertSame(array('id', 'name', 'status'), $argument->keys(), 'JSON string array literal 应保留 key 集合');
+    }
+
+    public function testKeySetArgumentParserRejectsBareString()
+    {
+        $parser = new KeySetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('id');
+            },
+            '合法 JSON literal'
+        );
+    }
+
+    public function testKeySetArgumentParserRejectsInvalidMembers()
+    {
+        $parser = new KeySetArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('["id",1]');
             },
             '非空字符串成员'
         );

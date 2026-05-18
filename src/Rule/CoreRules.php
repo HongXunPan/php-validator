@@ -49,10 +49,13 @@ use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeFieldRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeOrEqualRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeOrEqualFieldRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeRule;
+use HongXunPan\Validator\Rule\Collection\ArrayKeysInRule;
 use HongXunPan\Validator\Rule\Collection\DistinctRule;
 use HongXunPan\Validator\Rule\Collection\ItemsBetweenRule;
 use HongXunPan\Validator\Rule\Collection\MaxItemsRule;
+use HongXunPan\Validator\Rule\Collection\ProhibitedKeysRule;
 use HongXunPan\Validator\Rule\Collection\MinItemsRule;
+use HongXunPan\Validator\Rule\Collection\RequiredKeysRule;
 use HongXunPan\Validator\Rule\Collection\SortAscRule;
 use HongXunPan\Validator\Rule\Condition\NullableIfEqRule;
 use HongXunPan\Validator\Rule\Condition\NullableIfInRule;
@@ -183,6 +186,9 @@ class CoreRules
             ItemsBetweenRule::class,
             MinItemsRule::class,
             MaxItemsRule::class,
+            RequiredKeysRule::class,
+            ProhibitedKeysRule::class,
+            ArrayKeysInRule::class,
         );
     }
 

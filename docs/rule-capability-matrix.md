@@ -104,6 +104,9 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `sortAsc` | transform | none | yes | no | skipped by default | Supported | Sorts list ascending |
 | ✅ Supported | `minItems` | assertion | integer | no | no | skipped by default | Supported | Minimum item count |
 | ✅ Supported | `maxItems` | assertion | integer | no | no | skipped by default | Supported | Maximum item count |
+| ✅ Supported | `requiredKeys` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key presence; parameters must be strict JSON string literal or string array literal |
+| ✅ Supported | `prohibitedKeys` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key prohibition; parameters must be strict JSON string literal or string array literal |
+| ✅ Supported | `arrayKeysIn` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key allowlist; differs from global unknown-field rejection |
 | ✅ Supported | `requiredIfEq` | presence | field path + JSON literal | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with strict literal |
 | ✅ Supported | `requiredIfIn` | presence | field path + JSON literal array | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with set match |
 | ✅ Supported | `requiredIfNotEq` | presence | field path + JSON literal | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with strict not-equal |
@@ -146,9 +149,6 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | 🟡 Planned | `decimalPlaces` | assertion | integer | no | no | skipped by default | P1 | Decimal-place validation without BCMath dependency |
 | 🟡 Planned | `date` | assertion | none | no | no | skipped by default | P1 | Must clarify boundary with `time` |
 | 🟡 Planned | `dateFormat` | assertion | format | no | no | skipped by default | P1 | Format assertion only; does not mutate output |
-| 🟡 Planned | `requiredKeys` | assertion | key set | no | no | skipped by default | P1 | Array key presence |
-| 🟡 Planned | `prohibitedKeys` | assertion | key set | no | no | skipped by default | P1 | Array key prohibition |
-| 🟡 Planned | `arrayKeysIn` | assertion | key set | no | no | skipped by default | P1 | Array key allowlist; must differ from `reject_unknown` |
 
 ---
 

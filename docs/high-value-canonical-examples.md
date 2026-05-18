@@ -268,6 +268,8 @@ $result = DemoValidator::validateAndNormalize(
         'tracking_code' => 'promo-2026',
         'description' => 'Alumni Event 2026',
         'tags' => array('alumni', 'event'),
+        'profile' => array('id' => 1, 'name' => 'Alice'),
+        'payload' => array('title' => 'Event', 'visible' => true),
         'score' => 98,
         'ratio' => 0.75,
         'delta' => '-2',
@@ -285,6 +287,8 @@ $result = DemoValidator::validateAndNormalize(
         'tracking_code:Tracking code' => 'endsWith:"2026"',
         'description:Description' => 'contains:["Event","Meetup"]',
         'tags:Tags' => 'listOf|itemsBetween:[1,3]',
+        'profile:Profile' => 'requiredKeys:["id","name"]|arrayKeysIn:["id","name","status"]',
+        'payload:Payload' => 'prohibitedKeys:["password","token"]',
         'score:Score' => 'int|numericBetween:[0,100]',
         'ratio:Ratio' => 'number|numericBetween:[0,1]',
         'delta:Delta' => 'negativeInt',
@@ -306,6 +310,8 @@ if ($result->isPassed()) {
     //     'tracking_code' => 'promo-2026',
     //     'description' => 'Alumni Event 2026',
     //     'tags' => array('alumni', 'event'),
+    //     'profile' => array('id' => 1, 'name' => 'Alice'),
+    //     'payload' => array('title' => 'Event', 'visible' => true),
     //     'score' => 98,
     //     'ratio' => 0.75,
     //     'delta' => -2,
@@ -320,6 +326,7 @@ Notes:
 - `json` only validates that the value is a valid JSON string; it does not decode the value.
 - `ascii / alpha / alphaNum / alphaDash / lowercase / uppercase` cover common ASCII string content assertions without adding Unicode dependencies.
 - `startsWith / endsWith / contains` accept strict JSON string literals or JSON string array literals, for example `startsWith:"api-"` or `startsWith:["http://","https://"]`; bare strings are rejected.
+- `requiredKeys / prohibitedKeys / arrayKeysIn` validate keys inside the current array. They are not a replacement for global unknown-field rejection.
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
 - `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.

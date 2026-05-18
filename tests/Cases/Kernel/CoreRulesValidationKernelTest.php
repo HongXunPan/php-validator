@@ -594,6 +594,79 @@ class CoreRulesValidationKernelTest extends TestCase
     }
 
 
+    public function testArrayKeyRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'profile' => array(
+                    'id' => 1,
+                    'name' => 'Alice',
+                    'status' => 'active',
+                ),
+                'payload' => array(
+                    'title' => 'Event',
+                    'visible' => true,
+                ),
+                'safe' => array(
+                    'id' => 1,
+                    'name' => 'Alice',
+                ),
+            ),
+            array(
+                'profile:资料' => 'requiredKeys:["id","name"]',
+                'payload:载荷' => 'prohibitedKeys:["password","token"]',
+                'safe:安全字段' => 'arrayKeysIn:["id","name"]',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '数组 key 规则应通过合法输入');
+    }
+
+    public function testArrayKeyRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'profile' => array(
+                    'id' => 1,
+                ),
+                'payload' => array(
+                    'title' => 'Event',
+                    'token' => 'secret',
+                ),
+                'safe' => array(
+                    'id' => 1,
+                    'extra' => true,
+                ),
+            ),
+            array(
+                'profile:资料' => 'requiredKeys:["id","name"]',
+                'payload:载荷' => 'prohibitedKeys:["password","token"]',
+                'safe:安全字段' => 'arrayKeysIn:["id","name"]',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '数组 key 规则应拒绝非法输入');
+        $this->assertCount(3, $result->errors(), '每个非法字段都应产生错误');
+    }
+
+    public function testArrayKeyRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'profile:资料' => 'requiredKeys:["id","name"]',
+                'payload:载荷' => 'prohibitedKeys:["password","token"]',
+                'safe:安全字段' => 'arrayKeysIn:["id","name"]',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过数组 key 规则');
+    }
+
+
     public function testSetAndRangeRulesCanValidateValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

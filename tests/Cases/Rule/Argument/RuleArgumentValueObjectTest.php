@@ -8,6 +8,7 @@ use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FormatStringArgument;
 use HongXunPan\Validator\Rule\Argument\IntArgument;
+use HongXunPan\Validator\Rule\Argument\KeySetArgument;
 use HongXunPan\Validator\Rule\Argument\StringSetArgument;
 use HongXunPan\Validator\Tests\TestCase;
 
@@ -80,6 +81,24 @@ class RuleArgumentValueObjectTest extends TestCase
             InvalidRuleArgumentException::class,
             function () {
                 new StringSetArgument(array('api-', ''));
+            },
+            '非空字符串成员'
+        );
+    }
+
+    public function testKeySetArgumentStoresKeys()
+    {
+        $argument = new KeySetArgument(array('id', 'name'));
+
+        $this->assertSame(array('id', 'name'), $argument->keys(), 'key set 参数应保存非空字符串 key 集合');
+    }
+
+    public function testKeySetArgumentRejectsInvalidKey()
+    {
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () {
+                new KeySetArgument(array('id', ''));
             },
             '非空字符串成员'
         );
