@@ -227,6 +227,9 @@ $result = DemoValidator::validateAndNormalize(
         'username' => 'alice_2026',
         'tags' => array('alumni', 'event'),
         'score' => 98,
+        'ratio' => 0.75,
+        'delta' => '-2',
+        'offset' => '0',
     ),
     array(
         'email:Email' => 'email',
@@ -236,6 +239,9 @@ $result = DemoValidator::validateAndNormalize(
         'username:Username' => 'regex:/^[A-Za-z0-9_]+$/|notIn:["root","admin"]|lengthBetween:[3,20]',
         'tags:Tags' => 'listOf|itemsBetween:[1,3]',
         'score:Score' => 'int|numericBetween:[0,100]',
+        'ratio:Ratio' => 'number|numericBetween:[0,1]',
+        'delta:Delta' => 'negativeInt',
+        'offset:Offset' => 'nonPositiveInt',
     )
 );
 
@@ -249,6 +255,9 @@ if ($result->isPassed()) {
     //     'username' => 'alice_2026',
     //     'tags' => array('alumni', 'event'),
     //     'score' => 98,
+    //     'ratio' => 0.75,
+    //     'delta' => -2,
+    //     'offset' => 0,
     // )
 }
 ```
@@ -258,7 +267,9 @@ Notes:
 - `email / url / uuid / json` are low-dependency core format assertions.
 - `json` only validates that the value is a valid JSON string; it does not decode the value.
 - `lengthBetween / itemsBetween / numericBetween` separately cover string length, list count, and numeric range.
+- `numeric / number` are strict numeric assertions; they only accept real `int / float` values, not numeric strings.
 - `numericBetween` expects the current value to already be a numeric type. If the input is a string, normalize it first with an appropriate numeric rule.
+- `negativeInt / nonPositiveInt`, like `positiveInt / nonNegativeInt`, are integer transforms and output `int` values on success.
 - The current pipe-based DSL splits rules by `|`. Complex regex patterns containing `|` should wait for a future DSL escaping or array rule declaration capability instead of being hard-coded into a string rule.
 
 ---

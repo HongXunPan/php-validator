@@ -62,6 +62,80 @@ class CoreRulesValidationKernelTest extends TestCase
         );
     }
 
+    public function testNumericAndNumberRequireRealNumbers()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array(
+                'ratio' => 0.75,
+                'count' => 3,
+            ),
+            array(
+                'ratio:比例' => 'numeric',
+                'count:数量' => 'number',
+            )
+        );
+        $failed = $kernel->validate(
+            array(
+                'ratio' => '0.75',
+                'count' => '3',
+            ),
+            array(
+                'ratio:比例' => 'numeric',
+                'count:数量' => 'number',
+            )
+        );
+        $missing = $kernel->validate(
+            array(),
+            array(
+                'ratio:比例' => 'numeric',
+                'count:数量' => 'number',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), 'numeric / number 应接受真实 int 或 float');
+        $this->assertFalse($failed->isPassed(), 'numeric / number 不应接受 numeric string');
+        $this->assertCount(2, $failed->errors(), '两个 numeric string 字段都应产生错误');
+        $this->assertTrue($missing->isPassed(), 'missing 字段未声明 required 时应跳过 numeric / number');
+    }
+
+    public function testNegativeIntAndNonPositiveIntNormalizeIntegerValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'delta' => '-3',
+                'offset' => '0',
+            ),
+            array(
+                'delta:变化量' => 'negativeInt',
+                'offset:偏移量' => 'nonPositiveInt',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'negativeInt / nonPositiveInt 应接受合法整数字符串');
+        $this->assertSame(-3, $result->validatedData()['delta'], 'negativeInt 应归一化为 int');
+        $this->assertSame(0, $result->validatedData()['offset'], 'nonPositiveInt 应归一化为 int');
+    }
+
+    public function testNegativeIntAndNonPositiveIntRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'delta' => '0',
+                'offset' => '1',
+            ),
+            array(
+                'delta:变化量' => 'negativeInt',
+                'offset:偏移量' => 'nonPositiveInt',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'negativeInt / nonPositiveInt 应拒绝边界外值');
+        $this->assertCount(2, $result->errors(), '两个非法数字字段都应产生错误');
+    }
+
     public function testDefaultOnlyCreatesValueForMissingField()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

@@ -19,7 +19,9 @@ use HongXunPan\Validator\Rule\Assert\Numeric\LtFieldRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LtRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LteFieldRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\LteRule;
+use HongXunPan\Validator\Rule\Assert\Numeric\NumberRule;
 use HongXunPan\Validator\Rule\Assert\Numeric\NumericBetweenRule;
+use HongXunPan\Validator\Rule\Assert\Numeric\NumericRule;
 use HongXunPan\Validator\Rule\Assert\String\EmailRule;
 use HongXunPan\Validator\Rule\Assert\String\JsonRule;
 use HongXunPan\Validator\Rule\Assert\String\LengthBetweenRule;
@@ -59,7 +61,9 @@ use HongXunPan\Validator\Rule\Presence\DefaultRule;
 use HongXunPan\Validator\Rule\Presence\RequiredRule;
 use HongXunPan\Validator\Rule\Transform\Common\NullableRule;
 use HongXunPan\Validator\Rule\Transform\Common\ToBoolRule;
+use HongXunPan\Validator\Rule\Transform\Numeric\NegativeIntRule;
 use HongXunPan\Validator\Rule\Transform\Numeric\NonNegativeIntRule;
+use HongXunPan\Validator\Rule\Transform\Numeric\NonPositiveIntRule;
 use HongXunPan\Validator\Rule\Transform\Numeric\PositiveIntRule;
 use HongXunPan\Validator\Rule\Transform\String\BlankToNullRule;
 use HongXunPan\Validator\Rule\Transform\String\TrimRule;
@@ -112,6 +116,8 @@ class CoreRules
             FormatTimeRule::class,
             PositiveIntRule::class,
             NonNegativeIntRule::class,
+            NegativeIntRule::class,
+            NonPositiveIntRule::class,
             NonBlankRule::class,
             RegexRule::class,
             NotRegexRule::class,
@@ -133,6 +139,8 @@ class CoreRules
             GteRule::class,
             LtRule::class,
             LteRule::class,
+            NumericRule::class,
+            NumberRule::class,
             NumericBetweenRule::class,
             InRule::class,
             NotInRule::class,

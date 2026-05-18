@@ -49,6 +49,8 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `blankToNull` | normalization | none | yes | no | skipped by default | Supported | Converts blank string to null |
 | ✅ Supported | `positiveInt` | transform | none | yes | no | skipped by default | Supported | Positive integer transform / validation |
 | ✅ Supported | `nonNegativeInt` | transform | none | yes | no | skipped by default | Supported | Non-negative integer transform / validation |
+| ✅ Supported | `negativeInt` | transform | none | yes | no | skipped by default | Supported | Negative integer transform / validation |
+| ✅ Supported | `nonPositiveInt` | transform | none | yes | no | skipped by default | Supported | Non-positive integer transform / validation |
 | ✅ Supported | `formatTime` | transform | time format | yes | no | skipped by default | Supported | Formats time output |
 | ✅ Supported | `string` | assertion | none | no | no | skipped by default | Supported | String type assertion |
 | ✅ Supported | `int` | assertion | none | no | no | skipped by default | Supported | Integer type assertion |
@@ -75,6 +77,8 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `gte` | assertion | number | no | no | skipped by default | Supported | Current value is greater than or equal to number |
 | ✅ Supported | `lt` | assertion | number | no | no | skipped by default | Supported | Current value is less than number |
 | ✅ Supported | `lte` | assertion | number | no | no | skipped by default | Supported | Current value is less than or equal to number |
+| ✅ Supported | `numeric` | assertion | none | no | no | skipped by default | Supported | Strict numeric type assertion; accepts real int / float only, not numeric strings |
+| ✅ Supported | `number` | assertion | none | no | no | skipped by default | Supported | Same strict numeric type boundary as `numeric`; kept as clearer alias-like canonical name |
 | ✅ Supported | `gtField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
 | ✅ Supported | `gteField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
 | ✅ Supported | `ltField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
@@ -124,10 +128,7 @@ README should only link to this document. Rule capabilities, statuses, and plann
 
 | Status | Rule | Category | Argument | Mutates value | Reads dependency | Missing behavior | Batch | Reason / notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 🟡 Planned | `numeric` | assertion | none | no | no | skipped by default | P1 | Must define whether numeric strings pass |
-| 🟡 Planned | `number` / `float` | assertion / transform | none | TBD | no | skipped by default | P1 | Numeric type completion; canonical name must be decided |
-| 🟡 Planned | `negativeInt` | transform | none | yes | no | skipped by default | P1 | Symmetric with positiveInt |
-| 🟡 Planned | `nonPositiveInt` | transform | none | yes | no | skipped by default | P1 | Symmetric with nonNegativeInt |
+| 🟡 Planned | `float` | assertion / transform | none | TBD | no | skipped by default | P1 | Still needs a separate boundary decision; `numeric` / `number` already cover strict int / float assertion |
 | 🟡 Planned | `multipleOf` | assertion | number | no | no | skipped by default | P1 | Step, quantity, and money-minor-unit scenarios |
 | 🟡 Planned | `decimalPlaces` | assertion | integer | no | no | skipped by default | P1 | Decimal-place validation without BCMath dependency |
 | 🟡 Planned | `timeAfter` | assertion | time literal | no | no | skipped by default | P1 | Compare against fixed time |

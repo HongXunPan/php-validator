@@ -5,10 +5,10 @@ namespace HongXunPan\Validator\Rule\Transform\Numeric;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 
-class NonNegativeIntRule extends AbstractIntegerTransformRule
+class NonPositiveIntRule extends AbstractIntegerTransformRule
 {
-    const KEY = 'nonNegativeInt';
-    const MESSAGE = '$paramName must be non-negative integer';
+    const KEY = 'nonPositiveInt';
+    const MESSAGE = '$paramName must be non-positive integer';
 
     public static function validate(RuleContext $context)
     {
@@ -18,7 +18,7 @@ class NonNegativeIntRule extends AbstractIntegerTransformRule
 
         $value = static::toInteger($context->value());
 
-        return $value >= 0
+        return $value <= 0
             ? RuleResult::pass($value)
             : RuleResult::fail($value);
     }

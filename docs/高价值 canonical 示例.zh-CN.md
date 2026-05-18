@@ -229,6 +229,9 @@ $result = DemoValidator::validateAndNormalize(
         'username' => 'alice_2026',
         'tags' => array('alumni', 'event'),
         'score' => 98,
+        'ratio' => 0.75,
+        'delta' => '-2',
+        'offset' => '0',
     ),
     array(
         'email:邮箱' => 'email',
@@ -238,6 +241,9 @@ $result = DemoValidator::validateAndNormalize(
         'username:用户名' => 'regex:/^[A-Za-z0-9_]+$/|notIn:["root","admin"]|lengthBetween:[3,20]',
         'tags:标签' => 'listOf|itemsBetween:[1,3]',
         'score:分数' => 'int|numericBetween:[0,100]',
+        'ratio:比例' => 'number|numericBetween:[0,1]',
+        'delta:变化量' => 'negativeInt',
+        'offset:偏移量' => 'nonPositiveInt',
     )
 );
 
@@ -251,6 +257,9 @@ if ($result->isPassed()) {
     //     'username' => 'alice_2026',
     //     'tags' => array('alumni', 'event'),
     //     'score' => 98,
+    //     'ratio' => 0.75,
+    //     'delta' => -2,
+    //     'offset' => 0,
     // )
 }
 ```
@@ -260,7 +269,9 @@ if ($result->isPassed()) {
 - `email / url / uuid / json` 都是低依赖 core 格式断言；
 - `json` 只判断字符串是否为合法 JSON，不自动 decode；
 - `lengthBetween / itemsBetween / numericBetween` 分别对应字符串长度、列表数量、数值范围，避免 `between` 语义混杂；
+- `numeric / number` 是严格数值断言，只接受真实 `int / float`，不接受 numeric string；
 - `numericBetween` 要求当前值已经是数字类型；如果输入来自字符串，先用合适的数字归一化规则；
+- `negativeInt / nonPositiveInt` 与 `positiveInt / nonNegativeInt` 一样属于整数 transform，成功后输出 `int`；
 - 当前竖线 DSL 会用 `|` 切分规则，复杂正则若包含 `|`，应等待后续 DSL 转义或数组规则声明能力，不建议直接硬写进字符串规则。
 
 ---
