@@ -4,11 +4,9 @@ namespace HongXunPan\Validator\Rule\Condition;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractFieldPresenceAssertionRule;
-use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralArgument;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralArgumentParser;
 
-class RequiredIfNotEqRule extends AbstractFieldPresenceAssertionRule
+class RequiredIfNotEqRule extends AbstractConditionalFieldPresenceRule
 {
     const KEY = 'requiredIfNotEq';
     const MESSAGE = '$paramName is required';
@@ -16,14 +14,8 @@ class RequiredIfNotEqRule extends AbstractFieldPresenceAssertionRule
 
     public static function validate(RuleContext $context)
     {
-        $argument = $context->parsedRuleArg();
-        if (!$argument instanceof FieldExpectedLiteralArgument) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
-        }
-
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
-        if (!$otherValue->exists() || !ConditionValueMatcher::notEq($otherValue->value(), $argument->expectedValue())) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
+        if ($result = static::skipUnlessReferencedNotEq($context)) {
+            return $result;
         }
 
         if (!$context->fieldExists()) {

@@ -4,11 +4,9 @@ namespace HongXunPan\Validator\Rule\Condition;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractFieldPresenceAssertionRule;
-use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgumentParser;
 
-class RequiredIfInRule extends AbstractFieldPresenceAssertionRule
+class RequiredIfInRule extends AbstractConditionalFieldPresenceRule
 {
     const KEY = 'requiredIfIn';
     const MESSAGE = '$paramName is required';
@@ -16,14 +14,8 @@ class RequiredIfInRule extends AbstractFieldPresenceAssertionRule
 
     public static function validate(RuleContext $context)
     {
-        $argument = $context->parsedRuleArg();
-        if (!$argument instanceof FieldExpectedLiteralSetArgument) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
-        }
-
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
-        if (!$otherValue->exists() || !ConditionValueMatcher::in($otherValue->value(), $argument->expectedValues())) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
+        if ($result = static::skipUnlessReferencedIn($context)) {
+            return $result;
         }
 
         if (!$context->fieldExists()) {

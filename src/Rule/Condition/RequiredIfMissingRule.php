@@ -4,11 +4,9 @@ namespace HongXunPan\Validator\Rule\Condition;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractFieldPresenceAssertionRule;
-use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
 
-class RequiredIfMissingRule extends AbstractFieldPresenceAssertionRule
+class RequiredIfMissingRule extends AbstractConditionalFieldPresenceRule
 {
     const KEY = 'requiredIfMissing';
     const MESSAGE = '$paramName is required';
@@ -16,14 +14,8 @@ class RequiredIfMissingRule extends AbstractFieldPresenceAssertionRule
 
     public static function validate(RuleContext $context)
     {
-        $argument = $context->parsedRuleArg();
-        if (!$argument instanceof FieldReferenceArgument) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
-        }
-
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
-        if ($otherValue->exists()) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
+        if ($result = static::skipUnlessReferencedMissing($context)) {
+            return $result;
         }
 
         if (!$context->fieldExists()) {

@@ -4,11 +4,9 @@ namespace HongXunPan\Validator\Rule\Condition;
 
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
-use HongXunPan\Validator\Rule\AbstractPresentValueGuardRule;
-use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgumentParser;
 
-class NullableIfNotInRule extends AbstractPresentValueGuardRule
+class NullableIfNotInRule extends AbstractConditionalPresentValueGuardRule
 {
     const KEY = 'nullableIfNotIn';
     const MESSAGE = '$paramName nullable';
@@ -16,14 +14,8 @@ class NullableIfNotInRule extends AbstractPresentValueGuardRule
 
     public static function validate(RuleContext $context)
     {
-        $argument = $context->parsedRuleArg();
-        if (!$argument instanceof FieldExpectedLiteralSetArgument) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
-        }
-
-        $otherValue = $context->getMaterializedTargetValue($argument->fieldPath());
-        if (!$otherValue->exists() || !ConditionValueMatcher::notIn($otherValue->value(), $argument->expectedValues())) {
-            return RuleResult::pass($context->value(), $context->fieldExists());
+        if ($result = static::skipUnlessReferencedNotIn($context)) {
+            return $result;
         }
 
         if ($context->value() === null) {
