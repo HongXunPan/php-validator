@@ -117,10 +117,14 @@ $result = DemoValidator::validateAndNormalize(
     array(
         'publish_at' => '2026-05-14 10:00:01',
         'close_at' => '2026-05-14 09:59:59',
+        'event_date' => '2026-05-14',
+        'display_date' => '2026/05/14',
     ),
     array(
         'publish_at:Publish time' => 'timeAfter:2026-05-14 10:00:00',
         'close_at:Close time' => 'timeBefore:2026-05-14 10:00:00',
+        'event_date:Event date' => 'date',
+        'display_date:Display date' => 'dateFormat:Y/m/d',
     )
 );
 
@@ -129,6 +133,8 @@ if ($result->isPassed()) {
     // array(
     //     'publish_at' => '2026-05-14 10:00:01',
     //     'close_at' => '2026-05-14 09:59:59',
+    //     'event_date' => '2026-05-14',
+    //     'display_date' => '2026/05/14',
     // )
 }
 ```
@@ -138,6 +144,7 @@ Notes:
 - `timeAfter / timeAfterOrEqual / timeBefore / timeBeforeOrEqual` compare the current field with a fixed time literal.
 - The argument must be an explicit absolute time, for example `2026-05-14 10:00:00`; natural language such as `tomorrow / next monday` is rejected.
 - Use `timeAfterField / timeBeforeField` variants when you need to read another field's prepared value.
+- `date` is a strict `Y-m-d` calendar-date assertion; `dateFormat` checks an exact format and does not normalize output.
 
 ---
 

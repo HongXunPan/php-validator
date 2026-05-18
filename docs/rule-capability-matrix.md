@@ -61,6 +61,8 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `timeAfterOrEqual` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time after or equal to fixed absolute time literal |
 | ✅ Supported | `timeBefore` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before fixed absolute time literal |
 | ✅ Supported | `timeBeforeOrEqual` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before or equal to fixed absolute time literal |
+| ✅ Supported | `date` | assertion | none | no | no | skipped by default | Supported | Strict `Y-m-d` calendar date assertion; does not mutate output |
+| ✅ Supported | `dateFormat` | assertion | date format | no | no | skipped by default | Supported | Exact date format assertion; does not mutate output |
 | ✅ Supported | `nonBlank` | assertion | none | no | no | skipped by default | Supported | Non-blank string assertion |
 | ✅ Supported | `ascii` | assertion | none | no | no | skipped by default | Supported | ASCII-only string content assertion |
 | ✅ Supported | `alpha` | assertion | none | no | no | skipped by default | Supported | ASCII letters only |
@@ -147,8 +149,6 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | Status | Rule | Category | Argument | Mutates value | Reads dependency | Missing behavior | Batch | Reason / notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 🟡 Planned | `float` | assertion / transform | none | TBD | no | skipped by default | P1 | Still needs a separate boundary decision; `numeric` / `number` already cover strict int / float assertion |
-| 🟡 Planned | `date` | assertion | none | no | no | skipped by default | P1 | Must clarify boundary with `time` |
-| 🟡 Planned | `dateFormat` | assertion | format | no | no | skipped by default | P1 | Format assertion only; does not mutate output |
 
 ---
 

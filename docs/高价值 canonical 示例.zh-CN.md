@@ -119,10 +119,14 @@ $result = DemoValidator::validateAndNormalize(
     array(
         'publish_at' => '2026-05-14 10:00:01',
         'close_at' => '2026-05-14 09:59:59',
+        'event_date' => '2026-05-14',
+        'display_date' => '2026/05/14',
     ),
     array(
         'publish_at:发布时间' => 'timeAfter:2026-05-14 10:00:00',
         'close_at:关闭时间' => 'timeBefore:2026-05-14 10:00:00',
+        'event_date:活动日期' => 'date',
+        'display_date:展示日期' => 'dateFormat:Y/m/d',
     )
 );
 
@@ -131,6 +135,8 @@ if ($result->isPassed()) {
     // array(
     //     'publish_at' => '2026-05-14 10:00:01',
     //     'close_at' => '2026-05-14 09:59:59',
+    //     'event_date' => '2026-05-14',
+    //     'display_date' => '2026/05/14',
     // )
 }
 ```
@@ -140,6 +146,7 @@ if ($result->isPassed()) {
 - `timeAfter / timeAfterOrEqual / timeBefore / timeBeforeOrEqual` 比较当前字段与固定时间字面量；
 - 时间参数要求是明确绝对时间，例如 `2026-05-14 10:00:00`，不接受 `tomorrow / next monday` 这类自然语言；
 - 若需要读取另一个字段的 prepared value，请继续使用 `timeAfterField / timeBeforeField` 系列。
+- `date` 是严格 `Y-m-d` 日历日期断言；`dateFormat` 只做精确格式断言，不归一化输出；
 
 ---
 

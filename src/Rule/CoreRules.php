@@ -42,6 +42,8 @@ use HongXunPan\Validator\Rule\Assert\String\StartsWithRule;
 use HongXunPan\Validator\Rule\Assert\String\UppercaseRule;
 use HongXunPan\Validator\Rule\Assert\String\UrlRule;
 use HongXunPan\Validator\Rule\Assert\String\UuidRule;
+use HongXunPan\Validator\Rule\Assert\Time\DateFormatRule;
+use HongXunPan\Validator\Rule\Assert\Time\DateRule;
 use HongXunPan\Validator\Rule\Assert\String\NonBlankRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeAfterFieldRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeAfterOrEqualRule;
@@ -181,6 +183,8 @@ class CoreRules
             TimeAfterOrEqualRule::class,
             TimeBeforeRule::class,
             TimeBeforeOrEqualRule::class,
+            DateRule::class,
+            DateFormatRule::class,
             TimeAfterFieldRule::class,
             TimeAfterOrEqualFieldRule::class,
             TimeBeforeFieldRule::class,

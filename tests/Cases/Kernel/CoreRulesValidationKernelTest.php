@@ -251,6 +251,61 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame('2026-05-14 12:00:00', $result->validatedData()['end_at'], 'formatTime 应完成时间归一化');
     }
 
+    public function testDateAndDateFormatRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'date' => '2026-05-14',
+                'slash_date' => '2026/05/14',
+                'minute_time' => '2026-05-14 10:30',
+            ),
+            array(
+                'date:日期' => 'date',
+                'slash_date:斜杠日期' => 'dateFormat:Y/m/d',
+                'minute_time:分钟时间' => 'dateFormat:Y-m-d H:i',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'date / dateFormat 应通过严格匹配的合法日期输入');
+    }
+
+    public function testDateAndDateFormatRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'date' => '2026-02-30',
+                'date_with_time' => '2026-05-14 10:30:00',
+                'slash_date' => '2026-05-14',
+                'natural' => 'next monday',
+            ),
+            array(
+                'date:日期' => 'date',
+                'date_with_time:带时间日期' => 'date',
+                'slash_date:斜杠日期' => 'dateFormat:Y/m/d',
+                'natural:自然语言' => 'dateFormat:Y-m-d',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'date / dateFormat 应拒绝非法或不严格匹配的日期输入');
+        $this->assertCount(4, $result->errors(), '每个非法日期字段都应产生错误');
+    }
+
+    public function testDateAndDateFormatRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'date:日期' => 'date',
+                'slash_date:斜杠日期' => 'dateFormat:Y/m/d',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过 date / dateFormat');
+    }
+
     public function testTimeLiteralCompareRulesCanValidateValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);
