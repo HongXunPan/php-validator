@@ -33,9 +33,13 @@ use HongXunPan\Validator\Rule\Assert\String\UrlRule;
 use HongXunPan\Validator\Rule\Assert\String\UuidRule;
 use HongXunPan\Validator\Rule\Assert\String\NonBlankRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeAfterFieldRule;
+use HongXunPan\Validator\Rule\Assert\Time\TimeAfterOrEqualRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeAfterOrEqualFieldRule;
+use HongXunPan\Validator\Rule\Assert\Time\TimeAfterRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeFieldRule;
+use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeOrEqualRule;
 use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeOrEqualFieldRule;
+use HongXunPan\Validator\Rule\Assert\Time\TimeBeforeRule;
 use HongXunPan\Validator\Rule\Collection\DistinctRule;
 use HongXunPan\Validator\Rule\Collection\ItemsBetweenRule;
 use HongXunPan\Validator\Rule\Collection\MaxItemsRule;
@@ -148,6 +152,10 @@ class CoreRules
             GteFieldRule::class,
             LtFieldRule::class,
             LteFieldRule::class,
+            TimeAfterRule::class,
+            TimeAfterOrEqualRule::class,
+            TimeBeforeRule::class,
+            TimeBeforeOrEqualRule::class,
             TimeAfterFieldRule::class,
             TimeAfterOrEqualFieldRule::class,
             TimeBeforeFieldRule::class,

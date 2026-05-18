@@ -104,7 +104,44 @@ Notes:
 
 ---
 
-## 4. Numeric field comparison reads normalized dependency values
+## 4. Fixed time literal comparison
+
+Use when:
+
+- A field must be compared with a fixed publish time, deadline, or configured time.
+- No referenced field is needed.
+- The time argument should be an explicit absolute time, not natural language such as `next monday`.
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'publish_at' => '2026-05-14 10:00:01',
+        'close_at' => '2026-05-14 09:59:59',
+    ),
+    array(
+        'publish_at:Publish time' => 'timeAfter:2026-05-14 10:00:00',
+        'close_at:Close time' => 'timeBefore:2026-05-14 10:00:00',
+    )
+);
+
+if ($result->isPassed()) {
+    var_dump($result->validatedData());
+    // array(
+    //     'publish_at' => '2026-05-14 10:00:01',
+    //     'close_at' => '2026-05-14 09:59:59',
+    // )
+}
+```
+
+Notes:
+
+- `timeAfter / timeAfterOrEqual / timeBefore / timeBeforeOrEqual` compare the current field with a fixed time literal.
+- The argument must be an explicit absolute time, for example `2026-05-14 10:00:00`; natural language such as `tomorrow / next monday` is rejected.
+- Use `timeAfterField / timeBeforeField` variants when you need to read another field's prepared value.
+
+---
+
+## 5. Numeric field comparison reads normalized dependency values
 
 Use when:
 
@@ -140,7 +177,7 @@ Notes:
 
 ---
 
-## 5. List rule composition
+## 6. List rule composition
 
 Use when:
 
@@ -169,7 +206,7 @@ Notes:
 
 ---
 
-## 6. Boolean normalization and accepted / declined confirmations
+## 7. Boolean normalization and accepted / declined confirmations
 
 Use when:
 
@@ -209,7 +246,7 @@ Notes:
 
 ---
 
-## 7. Format assertions and range rules
+## 8. Format assertions and range rules
 
 Use when:
 
@@ -274,7 +311,7 @@ Notes:
 
 ---
 
-## 8. Field relationships and conditional presence
+## 9. Field relationships and conditional presence
 
 Use when:
 
@@ -334,7 +371,7 @@ Notes:
 
 ---
 
-## 9. When to add examples here
+## 10. When to add examples here
 
 Add to this document when:
 

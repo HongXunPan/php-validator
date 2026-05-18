@@ -106,7 +106,44 @@ if ($result->isPassed()) {
 
 ---
 
-## 4. 数字字段比较读取归一化后的依赖值
+## 4. 固定时间字面量比较
+
+适用场景：
+
+- 字段需要与一个固定发布时间、截止时间或系统配置时间比较；
+- 不需要读取另一个字段；
+- 希望时间参数是明确的绝对时间，而不是 `next monday` 这类自然语言。
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'publish_at' => '2026-05-14 10:00:01',
+        'close_at' => '2026-05-14 09:59:59',
+    ),
+    array(
+        'publish_at:发布时间' => 'timeAfter:2026-05-14 10:00:00',
+        'close_at:关闭时间' => 'timeBefore:2026-05-14 10:00:00',
+    )
+);
+
+if ($result->isPassed()) {
+    var_dump($result->validatedData());
+    // array(
+    //     'publish_at' => '2026-05-14 10:00:01',
+    //     'close_at' => '2026-05-14 09:59:59',
+    // )
+}
+```
+
+要点：
+
+- `timeAfter / timeAfterOrEqual / timeBefore / timeBeforeOrEqual` 比较当前字段与固定时间字面量；
+- 时间参数要求是明确绝对时间，例如 `2026-05-14 10:00:00`，不接受 `tomorrow / next monday` 这类自然语言；
+- 若需要读取另一个字段的 prepared value，请继续使用 `timeAfterField / timeBeforeField` 系列。
+
+---
+
+## 5. 数字字段比较读取归一化后的依赖值
 
 适用场景：
 
@@ -142,7 +179,7 @@ if ($result->isPassed()) {
 
 ---
 
-## 5. 列表规则组合
+## 6. 列表规则组合
 
 适用场景：
 
@@ -171,7 +208,7 @@ if ($result->isPassed()) {
 
 ---
 
-## 6. 布尔归一化与接受 / 拒绝确认
+## 7. 布尔归一化与接受 / 拒绝确认
 
 适用场景：
 
@@ -211,7 +248,7 @@ if ($result->isPassed()) {
 
 ---
 
-## 7. 格式校验与范围规则
+## 8. 格式校验与范围规则
 
 适用场景：
 
@@ -276,7 +313,7 @@ if ($result->isPassed()) {
 
 ---
 
-## 8. 字段关系与条件 presence
+## 9. 字段关系与条件 presence
 
 适用场景：
 
@@ -336,7 +373,7 @@ if ($result->isPassed()) {
 
 ---
 
-## 9. 何时该补到这份文档
+## 10. 何时该补到这份文档
 
 建议在以下场景补这份文档：
 

@@ -192,6 +192,60 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame('2026-05-14 12:00:00', $result->validatedData()['end_at'], 'formatTime 应完成时间归一化');
     }
 
+    public function testTimeLiteralCompareRulesCanValidateValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'publish_at' => '2026-05-14 10:00:01',
+                'signup_start_at' => '2026-05-14 10:00:00',
+                'close_at' => '2026-05-14 09:59:59',
+                'archive_at' => '2026-05-14 10:00:00',
+            ),
+            array(
+                'publish_at:发布时间' => 'timeAfter:2026-05-14 10:00:00',
+                'signup_start_at:报名开始时间' => 'timeAfterOrEqual:2026-05-14 10:00:00',
+                'close_at:关闭时间' => 'timeBefore:2026-05-14 10:00:00',
+                'archive_at:归档时间' => 'timeBeforeOrEqual:2026-05-14 10:00:00',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '固定时间字面量比较应通过合法输入');
+    }
+
+    public function testTimeLiteralCompareRulesRejectInvalidValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(
+                'publish_at' => '2026-05-14 10:00:00',
+                'signup_start_at' => '2026-05-14 09:59:59',
+                'close_at' => '2026-05-14 10:00:00',
+                'archive_at' => '2026-05-14 10:00:01',
+            ),
+            array(
+                'publish_at:发布时间' => 'timeAfter:2026-05-14 10:00:00',
+                'signup_start_at:报名开始时间' => 'timeAfterOrEqual:2026-05-14 10:00:00',
+                'close_at:关闭时间' => 'timeBefore:2026-05-14 10:00:00',
+                'archive_at:归档时间' => 'timeBeforeOrEqual:2026-05-14 10:00:00',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '固定时间字面量比较应拒绝非法输入');
+        $this->assertCount(4, $result->errors(), '每个非法时间字段都应产生错误');
+    }
+
+    public function testTimeLiteralCompareRulesSkipMissingFieldByDefault()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array('publish_at:发布时间' => 'timeAfter:2026-05-14 10:00:00')
+        );
+
+        $this->assertTrue($result->isPassed(), 'missing 字段未声明 required 时应跳过固定时间比较规则');
+    }
+
     public function testFieldCompareMessageUsesReferencedFieldDisplayName()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);

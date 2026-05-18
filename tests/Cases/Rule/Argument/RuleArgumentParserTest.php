@@ -20,6 +20,8 @@ use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
 use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgumentParser;
+use HongXunPan\Validator\Rule\Argument\TimeLiteralArgument;
+use HongXunPan\Validator\Rule\Argument\TimeLiteralArgumentParser;
 use HongXunPan\Validator\Tests\TestCase;
 
 class RuleArgumentParserTest extends TestCase
@@ -168,6 +170,28 @@ class RuleArgumentParserTest extends TestCase
                 $parser->parse('[5,2]');
             },
             'min 不能大于 max'
+        );
+    }
+
+    public function testTimeLiteralArgumentParser()
+    {
+        $parser = new TimeLiteralArgumentParser();
+        $argument = $parser->parse('2026-05-14 10:00:00');
+
+        $this->assertInstanceOf(TimeLiteralArgument::class, $argument, '时间字面量 parser 应返回时间参数');
+        $this->assertSame('2026-05-14 10:00:00', $argument->literal(), '时间字面量 parser 应保留原始时间文本');
+    }
+
+    public function testTimeLiteralArgumentParserRejectsNaturalLanguage()
+    {
+        $parser = new TimeLiteralArgumentParser();
+
+        $this->assertThrows(
+            InvalidRuleArgumentException::class,
+            function () use ($parser) {
+                $parser->parse('next monday');
+            },
+            '绝对时间字面量'
         );
     }
 

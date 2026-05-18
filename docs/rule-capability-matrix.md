@@ -57,6 +57,10 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | ✅ Supported | `array` | assertion | none | no | no | skipped by default | Supported | Array type assertion |
 | ✅ Supported | `listOf` | assertion | none | no | no | skipped by default | Supported | List type assertion |
 | ✅ Supported | `time` | assertion | none | no | no | skipped by default | Supported | Time parseability assertion |
+| ✅ Supported | `timeAfter` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time after fixed absolute time literal |
+| ✅ Supported | `timeAfterOrEqual` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time after or equal to fixed absolute time literal |
+| ✅ Supported | `timeBefore` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before fixed absolute time literal |
+| ✅ Supported | `timeBeforeOrEqual` | assertion | absolute time literal | no | no | skipped by default | Supported | Current time before or equal to fixed absolute time literal |
 | ✅ Supported | `nonBlank` | assertion | none | no | no | skipped by default | Supported | Non-blank string assertion |
 | ✅ Supported | `regex` | assertion | pattern | no | no | skipped by default | Supported | Pure PHP format rule; complex patterns containing `|` need a future escaping strategy in the DSL |
 | ✅ Supported | `notRegex` | assertion | pattern | no | no | skipped by default | Supported | Negative regex rule; complex patterns containing `|` need a future escaping strategy in the DSL |
@@ -131,10 +135,6 @@ README should only link to this document. Rule capabilities, statuses, and plann
 | 🟡 Planned | `float` | assertion / transform | none | TBD | no | skipped by default | P1 | Still needs a separate boundary decision; `numeric` / `number` already cover strict int / float assertion |
 | 🟡 Planned | `multipleOf` | assertion | number | no | no | skipped by default | P1 | Step, quantity, and money-minor-unit scenarios |
 | 🟡 Planned | `decimalPlaces` | assertion | integer | no | no | skipped by default | P1 | Decimal-place validation without BCMath dependency |
-| 🟡 Planned | `timeAfter` | assertion | time literal | no | no | skipped by default | P1 | Compare against fixed time |
-| 🟡 Planned | `timeAfterOrEqual` | assertion | time literal | no | no | skipped by default | P1 | Compare against fixed time |
-| 🟡 Planned | `timeBefore` | assertion | time literal | no | no | skipped by default | P1 | Compare against fixed time |
-| 🟡 Planned | `timeBeforeOrEqual` | assertion | time literal | no | no | skipped by default | P1 | Compare against fixed time |
 | 🟡 Planned | `date` | assertion | none | no | no | skipped by default | P1 | Must clarify boundary with `time` |
 | 🟡 Planned | `dateFormat` | assertion | format | no | no | skipped by default | P1 | Format assertion only; does not mutate output |
 | 🟡 Planned | `alpha` | assertion | none | no | no | skipped by default | P1 | String content rule; ASCII boundary should be evaluated first |
