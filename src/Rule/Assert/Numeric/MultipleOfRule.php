@@ -7,9 +7,9 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 use HongXunPan\Validator\Rule\Argument\PositiveNumericArgument;
 use HongXunPan\Validator\Rule\Argument\PositiveNumericArgumentParser;
-use HongXunPan\Validator\Rule\Marker\NumericRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule as NumericRuleMarker;
 
-class MultipleOfRule extends AbstractPresentValueAssertionRule implements NumericRule
+class MultipleOfRule extends AbstractPresentValueAssertionRule implements NumericRuleMarker
 {
     const KEY = 'multipleOf';
     const MESSAGE = '$paramName must be a multiple of $rule';

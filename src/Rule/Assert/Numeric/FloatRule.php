@@ -5,8 +5,9 @@ namespace HongXunPan\Validator\Rule\Assert\Numeric;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule as NumericRuleMarker;
 
-class FloatRule extends AbstractPresentValueAssertionRule implements \HongXunPan\Validator\Rule\Marker\NumericRule
+class FloatRule extends AbstractPresentValueAssertionRule implements NumericRuleMarker
 {
     const KEY = 'float';
     const MESSAGE = '$paramName must be float';

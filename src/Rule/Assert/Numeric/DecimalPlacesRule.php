@@ -7,9 +7,9 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 use HongXunPan\Validator\Rule\Argument\NonNegativeIntArgument;
 use HongXunPan\Validator\Rule\Argument\NonNegativeIntArgumentParser;
-use HongXunPan\Validator\Rule\Marker\NumericRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule as NumericRuleMarker;
 
-class DecimalPlacesRule extends AbstractPresentValueAssertionRule implements NumericRule
+class DecimalPlacesRule extends AbstractPresentValueAssertionRule implements NumericRuleMarker
 {
     const KEY = 'decimalPlaces';
     const MESSAGE = '$paramName must have at most $rule decimal places';

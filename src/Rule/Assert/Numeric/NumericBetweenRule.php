@@ -7,9 +7,9 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgument;
 use HongXunPan\Validator\Rule\Argument\NumericRangeArgumentParser;
-use HongXunPan\Validator\Rule\Marker\NumericRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule as NumericRuleMarker;
 
-class NumericBetweenRule extends AbstractPresentValueAssertionRule implements NumericRule
+class NumericBetweenRule extends AbstractPresentValueAssertionRule implements NumericRuleMarker
 {
     const KEY = 'numericBetween';
     const MESSAGE = '$paramName must be between $rule';

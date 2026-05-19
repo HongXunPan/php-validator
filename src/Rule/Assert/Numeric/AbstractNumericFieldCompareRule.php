@@ -2,10 +2,10 @@
 
 namespace HongXunPan\Validator\Rule\Assert\Numeric;
 
-use HongXunPan\Validator\Rule\Marker\NumericRule;
+use HongXunPan\Validator\Rule\Marker\NumericRule as NumericRuleMarker;
 use HongXunPan\Validator\Rule\AbstractReferencedFieldCompareRule;
 
-abstract class AbstractNumericFieldCompareRule extends AbstractReferencedFieldCompareRule implements NumericRule
+abstract class AbstractNumericFieldCompareRule extends AbstractReferencedFieldCompareRule implements NumericRuleMarker
 {
     protected static function normalizeComparablePair($currentValue, $otherValue)
     {
