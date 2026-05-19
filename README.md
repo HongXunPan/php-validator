@@ -41,7 +41,7 @@ Already in place:
 
 - Composer package skeleton;
 - PHP `>=5.6` compatibility baseline;
-- `RuleInterface + AbstractRule + KEY + of(...)` public convention;
+- `RuleInterface + AbstractRule + KEY + of(...) / ofJson(...)` public convention;
 - validator subclass extension configuration:
   - `extraRules`
   - `ruleAliases`
@@ -120,7 +120,9 @@ Rule lookup order is fixed:
 - public keyword classes expose:
   - `KEY`
   - `key()`
-  - `of(...)`
+  - `of(...)` for raw arguments;
+  - `ofJson(...)` for JSON-encoded arguments such as `InRule::ofJson(array('draft', 'published'))`;
+- rules that declare JSON literal parameters, such as `in / notIn / startsWith / requiredKeys`, should prefer `ofJson(...)` in PHP code to avoid hand-written escaping;
 
 ## Package Layout
 

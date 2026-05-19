@@ -5,20 +5,23 @@ namespace HongXunPan\Validator\Rule\Assert\Common;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractPresentValueAssertionRule;
+use HongXunPan\Validator\Rule\Argument\LiteralSetArgument;
+use HongXunPan\Validator\Rule\Argument\LiteralSetArgumentParser;
 
 class InRule extends AbstractPresentValueAssertionRule
 {
     const KEY = 'in';
     const MESSAGE = '$paramName must be in $rule';
+    const ARGUMENT_PARSER = LiteralSetArgumentParser::class;
 
     public static function validate(RuleContext $context)
     {
-        $expect = $context->parseRuleArg();
-        if (!is_array($expect)) {
+        $argument = $context->parsedRuleArg();
+        if (!$argument instanceof LiteralSetArgument) {
             return RuleResult::fail($context->value());
         }
 
-        return in_array($context->value(), $expect)
+        return in_array($context->value(), $argument->values(), true)
             ? RuleResult::pass($context->value())
             : RuleResult::fail($context->value());
     }

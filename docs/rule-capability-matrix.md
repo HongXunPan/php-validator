@@ -85,7 +85,7 @@ For quick lookup, read the `Reason / notes` column as the one-line rule descript
 | ✅ Supported | `maxLength` | assertion | integer | no | no | skipped by default | Supported | Maximum string length |
 | ✅ Supported | `eq` | assertion | JSON literal | no | no | skipped by default | Supported | Current value strictly equals expected value |
 | ✅ Supported | `neq` | assertion | JSON literal | no | no | skipped by default | Supported | Current value strictly differs from expected value |
-| ✅ Supported | `in` | assertion | JSON literal array | no | no | skipped by default | Supported | Current value is in set |
+| ✅ Supported | `in` | assertion | JSON literal array | no | no | skipped by default | Supported | Current value is strictly in set; prefer `InRule::ofJson(...)` in PHP code |
 | ✅ Supported | `notIn` | assertion | JSON literal array | no | no | skipped by default | Supported | Symmetric with `in`, uses strict literal set argument |
 | ✅ Supported | `lengthBetween` | assertion | `[min,max]` | no | no | skipped by default | Supported | String length range; avoids ambiguous `between` |
 | ✅ Supported | `itemsBetween` | assertion | `[min,max]` | no | no | skipped by default | Supported | List item count range |

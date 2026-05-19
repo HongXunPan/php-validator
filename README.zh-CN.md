@@ -41,7 +41,7 @@
 
 - Composer 子包骨架；
 - PHP `>=5.6` 兼容基线；
-- `RuleInterface + AbstractRule + KEY + of(...)` 公开约定；
+- `RuleInterface + AbstractRule + KEY + of(...) / ofJson(...)` 公开约定；
 - `Validator` 子类三组扩展配置：
   - `extraRules`
   - `ruleAliases`
@@ -119,7 +119,9 @@ class DemoValidator extends Validator
 - 公开 keyword 类统一提供：
   - `KEY`
   - `key()`
-  - `of(...)`
+  - `of(...)`，用于原样参数；
+  - `ofJson(...)`，用于 JSON 编码参数，例如 `InRule::ofJson(array('draft', 'published'))`；
+- 声明 JSON literal 参数的规则，例如 `in / notIn / startsWith / requiredKeys`，PHP 代码内优先使用 `ofJson(...)`，避免手写转义；
 
 ## 目录结构
 

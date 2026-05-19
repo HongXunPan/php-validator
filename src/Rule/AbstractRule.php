@@ -35,6 +35,21 @@ abstract class AbstractRule implements RuleInterface
     }
 
     /**
+     * @param mixed $arg
+     *
+     * @return string
+     */
+    final public static function ofJson($arg)
+    {
+        $encoded = json_encode($arg, JSON_UNESCAPED_UNICODE);
+        if ($encoded === false) {
+            throw new LogicException(get_called_class() . ' 的 JSON 规则参数编码失败：' . json_last_error_msg());
+        }
+
+        return static::of($encoded);
+    }
+
+    /**
      * @return string
      */
     public static function defaultMessage()

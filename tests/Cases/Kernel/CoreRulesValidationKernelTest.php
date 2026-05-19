@@ -836,6 +836,29 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertTrue($result->isPassed(), 'notIn 与范围规则应通过合法输入');
     }
 
+    public function testInRuleUsesStrictLiteralSet()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validate(
+            array('status' => 'draft', 'level' => 1),
+            array(
+                'status:状态' => 'in:["draft","published"]',
+                'level:等级' => 'in:[1,2]',
+            )
+        );
+        $failed = $kernel->validate(
+            array('status' => 'archived', 'level' => '1'),
+            array(
+                'status:状态' => 'in:["draft","published"]',
+                'level:等级' => 'in:[1,2]',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), 'in 应接受严格 literal 集合内的值');
+        $this->assertFalse($failed->isPassed(), 'in 应拒绝集合外值，并区分字符串数字与整数');
+        $this->assertCount(2, $failed->errors(), '集合外值与类型不一致都应产生错误');
+    }
+
     public function testSetAndRangeRulesRejectInvalidValues()
     {
         $kernel = ValidationKernel::create(CanonicalValidator::class);
