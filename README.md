@@ -181,6 +181,24 @@ This shows the default smallest path:
 - `validateAndNormalize(...)` returns `ValidationResult`;
 - successful output is read from `validatedData()`.
 
+## Rule Quick Reference
+
+This table is intentionally short. Use it to choose the right rule family quickly;
+read the [Rule Capability Matrix](./docs/rule-capability-matrix.md) for the full
+per-rule status, argument format, mutation behavior, and planning notes.
+
+| Area | Rules | Quick meaning |
+| --- | --- | --- |
+| Presence / missing | `required`, `default`, `nullable` | Require a field, create a missing value, or stop local value rules when present value is `null` |
+| Type / normalization | `string`, `int`, `array`, `listOf`, `boolean`, `toBool`, `trim`, `blankToNull` | Assert common input types or normalize common scalar forms |
+| Integer transforms | `positiveInt`, `nonNegativeInt`, `negativeInt`, `nonPositiveInt` | Normalize integer-like values and enforce sign boundaries |
+| Numeric assertions | `numeric`, `number`, `float`, `numericBetween`, `multipleOf`, `decimalPlaces`, `gt`, `gte`, `lt`, `lte` | Validate real numeric values; `float` is stricter than `number` and rejects `int` / numeric strings |
+| String format / content | `nonBlank`, `email`, `url`, `uuid`, `json`, `regex`, `notRegex`, `ascii`, `alpha`, `alphaNum`, `alphaDash`, `lowercase`, `uppercase` | Validate common string formats and ASCII content boundaries |
+| String parameters | `minLength`, `maxLength`, `lengthBetween`, `startsWith`, `endsWith`, `contains`, `in`, `notIn`, `eq`, `neq` | Validate length, prefix/suffix/substring, set membership, and strict equality |
+| Time / date | `time`, `formatTime`, `timeAfter`, `timeAfterOrEqual`, `timeBefore`, `timeBeforeOrEqual`, `date`, `dateFormat` | Parse, format, or strictly assert time/date values without adding date libraries |
+| Array / list | `distinct`, `sortAsc`, `minItems`, `maxItems`, `itemsBetween`, `requiredKeys`, `prohibitedKeys`, `arrayKeysIn` | Validate or normalize list values and current array keys |
+| Cross-field / conditional | `gtField`, `gteField`, `ltField`, `lteField`, `timeAfterField`, `timeBeforeField`, `requiredIf*`, `nullableIf*`, `prohibitedIf*` | Read prepared values from other fields for comparisons, conditional presence, or guards |
+
 ## Compatibility
 
 - PHP: `>=5.6`

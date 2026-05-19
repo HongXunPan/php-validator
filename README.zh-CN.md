@@ -180,6 +180,23 @@ var_dump($result->validatedData());
 - `validateAndNormalize(...)` 返回 `ValidationResult`；
 - 成功后通过 `validatedData()` 读取归一化后的结果。
 
+## 规则速查
+
+本表故意保持简短，用于快速判断应该选哪一类规则；完整逐条状态、参数格式、是否改值和规划说明，请以
+[规则能力矩阵](./docs/规则能力矩阵.zh-CN.md) 为准。
+
+| 范围 | 规则 | 简短说明 |
+| --- | --- | --- |
+| 存在性 / missing | `required`, `default`, `nullable` | 要求字段存在、为缺失字段补默认值，或 present 且为 `null` 时中断后续 local value 规则 |
+| 类型 / 归一化 | `string`, `int`, `array`, `listOf`, `boolean`, `toBool`, `trim`, `blankToNull` | 断言常见输入类型，或归一化常见标量形态 |
+| 整数 transform | `positiveInt`, `nonNegativeInt`, `negativeInt`, `nonPositiveInt` | 把类整数值归一化为 `int`，并限制正负边界 |
+| 数值 assertion | `numeric`, `number`, `float`, `numericBetween`, `multipleOf`, `decimalPlaces`, `gt`, `gte`, `lt`, `lte` | 校验真实数值；`float` 比 `number` 更严格，会拒绝 `int` 和 numeric string |
+| 字符串格式 / 内容 | `nonBlank`, `email`, `url`, `uuid`, `json`, `regex`, `notRegex`, `ascii`, `alpha`, `alphaNum`, `alphaDash`, `lowercase`, `uppercase` | 校验常见字符串格式和 ASCII 内容边界 |
+| 字符串参数 | `minLength`, `maxLength`, `lengthBetween`, `startsWith`, `endsWith`, `contains`, `in`, `notIn`, `eq`, `neq` | 校验长度、前后缀/子串、集合命中和严格相等 |
+| 时间 / 日期 | `time`, `formatTime`, `timeAfter`, `timeAfterOrEqual`, `timeBefore`, `timeBeforeOrEqual`, `date`, `dateFormat` | 解析、格式化或严格断言时间/日期值，不额外引入日期库 |
+| 数组 / 列表 | `distinct`, `sortAsc`, `minItems`, `maxItems`, `itemsBetween`, `requiredKeys`, `prohibitedKeys`, `arrayKeysIn` | 校验或归一化列表值，以及当前数组内部 key |
+| 跨字段 / 条件 | `gtField`, `gteField`, `ltField`, `lteField`, `timeAfterField`, `timeBeforeField`, `requiredIf*`, `nullableIf*`, `prohibitedIf*` | 读取其他字段 prepared value，承接比较、条件存在性或 guard |
+
 ## 兼容性
 
 - PHP: `>=5.6`

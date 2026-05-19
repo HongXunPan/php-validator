@@ -4,6 +4,8 @@ This document is the rule capability source of truth for `hongxunpan/validator`.
 
 README should only link to this document. Rule capabilities, statuses, and planning batches should be read from this document and the corresponding version tag.
 
+For quick lookup, read the `Reason / notes` column as the one-line rule description. README only keeps a grouped overview to avoid duplicating this source of truth.
+
 ---
 
 ## 1. Status Marks
