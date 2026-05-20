@@ -5,9 +5,12 @@ namespace HongXunPan\Validator\Rule\Condition;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldExpectedLiteralRule;
 
 class ProhibitedIfNotEqRule extends AbstractConditionalFieldPresenceRule
 {
+    use BuildsFieldExpectedLiteralRule;
+
     const KEY = 'prohibitedIfNotEq';
     const MESSAGE = '$paramName is prohibited';
     const ARGUMENT_PARSER = FieldExpectedLiteralArgumentParser::class;

@@ -5,9 +5,12 @@ namespace HongXunPan\Validator\Rule\Condition;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldReferenceRule;
 
 class RequiredIfPresentRule extends AbstractConditionalFieldPresenceRule
 {
+    use BuildsFieldReferenceRule;
+
     const KEY = 'requiredIfPresent';
     const MESSAGE = '$paramName is required';
     const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;

@@ -100,7 +100,7 @@ For quick lookup, read the `Reason / notes` column as the one-line rule descript
 | ✅ Supported | `multipleOf` | assertion | positive JSON number | no | no | skipped by default | Supported | Step / quantity assertion; accepts real int / float values only |
 | ✅ Supported | `decimalPlaces` | assertion | non-negative JSON integer | no | no | skipped by default | Supported | At-most decimal-place assertion without BCMath dependency |
 | ✅ Supported | `gtField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
-| ✅ Supported | `gteField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
+| ✅ Supported | `gteField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value; PHP code may use `GteFieldRule::ofField(...)` |
 | ✅ Supported | `ltField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
 | ✅ Supported | `lteField` | cross-field | field path | no | yes | skipped by default | Supported | Reads referenced prepared value |
 | ✅ Supported | `timeAfterField` | cross-field | field path | no | yes | skipped by default | Supported | Current time after referenced prepared value |
@@ -114,21 +114,21 @@ For quick lookup, read the `Reason / notes` column as the one-line rule descript
 | ✅ Supported | `requiredKeys` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key presence; parameters must be strict JSON string literal or string array literal |
 | ✅ Supported | `prohibitedKeys` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key prohibition; parameters must be strict JSON string literal or string array literal |
 | ✅ Supported | `arrayKeysIn` | assertion | JSON string / JSON string array | no | no | skipped by default | Supported | Array key allowlist; differs from global unknown-field rejection |
-| ✅ Supported | `requiredIfEq` | presence | field path + JSON literal | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with strict literal |
-| ✅ Supported | `requiredIfIn` | presence | field path + JSON literal array | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with set match |
+| ✅ Supported | `requiredIfEq` | presence | field path + JSON literal | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with strict literal; PHP code may use `ofFieldValue(...)` |
+| ✅ Supported | `requiredIfIn` | presence | field path + JSON literal array | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with set match; PHP code may use `ofFieldValues(...)` |
 | ✅ Supported | `requiredIfNotEq` | presence | field path + JSON literal | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with strict not-equal |
 | ✅ Supported | `requiredIfNotIn` | presence | field path + JSON literal array | no | yes | fails when condition hits and current field is missing | Supported | Conditional required with outside-set match |
 | ✅ Supported | `requiredIfMissing` | presence | field path | no | yes | fails when referenced field and current field are missing | Supported | Similar to required_without, but with clearer semantics |
-| ✅ Supported | `nullableIfEq` | guard | field path + JSON literal | no | yes | skipped by default | Supported | Allows null when condition hits |
+| ✅ Supported | `nullableIfEq` | guard | field path + JSON literal | no | yes | skipped by default | Supported | Allows null when condition hits; PHP code may use `ofFieldValue(...)` |
 | ✅ Supported | `nullableIfIn` | guard | field path + JSON literal array | no | yes | skipped by default | Supported | Allows null when set condition hits |
 | ✅ Supported | `nullableIfNotEq` | guard | field path + JSON literal | no | yes | skipped by default | Supported | Allows null when not equal |
 | ✅ Supported | `nullableIfNotIn` | guard | field path + JSON literal array | no | yes | skipped by default | Supported | Allows null when outside set |
-| ✅ Supported | `prohibitedIfEq` | presence | field path + JSON literal | no | yes | missing passes | Supported | Prohibits current field when condition hits |
+| ✅ Supported | `prohibitedIfEq` | presence | field path + JSON literal | no | yes | missing passes | Supported | Prohibits current field when condition hits; PHP code may use `ofFieldValue(...)` |
 | ✅ Supported | `prohibitedIfIn` | presence | field path + JSON literal array | no | yes | missing passes | Supported | Prohibits current field when set condition hits |
 | ✅ Supported | `prohibitedIfNotEq` | presence | field path + JSON literal | no | yes | missing passes | Supported | Prohibits current field when not equal |
 | ✅ Supported | `prohibitedIfNotIn` | presence | field path + JSON literal array | no | yes | missing passes | Supported | Prohibits current field when outside set |
 | ✅ Supported | `prohibitedIfPresent` | presence | field path | no | yes | missing passes | Supported | Prohibits current field when referenced field is present |
-| ✅ Supported | `sameField` | cross-field | field path | no | yes | skipped by default | Supported | Generic field equality, reads prepared value |
+| ✅ Supported | `sameField` | cross-field | field path | no | yes | skipped by default | Supported | Generic field equality, reads prepared value; PHP code may use `SameFieldRule::ofField(...)` |
 | ✅ Supported | `differentField` | cross-field | field path | no | yes | skipped by default | Supported | Generic field inequality, reads prepared value |
 | ✅ Supported | `confirmed` | cross-field | optional field path | no | yes | skipped by default | Supported | Defaults to `<field>_confirmation`, and also supports explicit field path |
 | ✅ Supported | `requiredIfPresent` | presence | field path | no | yes | fails when referenced field is present and current field is missing | Supported | Symmetric with `prohibitedIfPresent`; Laravel-like `requiredWith` is only an alias / migration concept |

@@ -5,9 +5,12 @@ namespace HongXunPan\Validator\Rule\Condition;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldExpectedLiteralRule;
 
 class RequiredIfNotEqRule extends AbstractConditionalFieldPresenceRule
 {
+    use BuildsFieldExpectedLiteralRule;
+
     const KEY = 'requiredIfNotEq';
     const MESSAGE = '$paramName is required';
     const ARGUMENT_PARSER = FieldExpectedLiteralArgumentParser::class;

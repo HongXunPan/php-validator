@@ -122,6 +122,25 @@ class DemoValidator extends Validator
   - `of(...)`，用于原样参数；
   - `ofJson(...)`，用于 JSON 编码参数，例如 `InRule::ofJson(array('draft', 'published'))`；
 - 声明 JSON literal 参数的规则，例如 `in / notIn / startsWith / requiredKeys`，PHP 代码内优先使用 `ofJson(...)`，避免手写转义；
+- 多段参数或多规则组合优先使用三层构造模型：
+  - `RuleArg`：只构造参数片段，例如 `fieldValue($field, $value)`、`fieldValues($field, $values)`、`range($min, $max)`；
+  - 具体规则类语义方法：构造单条规则，例如 `RequiredIfEqRule::ofFieldValue(...)`、`RequiredIfInRule::ofFieldValues(...)`、`GteFieldRule::ofField(...)`；
+  - `RuleChain::join(...)`：组合多条规则，替代手写 `implode('|', ...)` 或连续字符串拼接；
+- `ofJson(...)` 只适合“整段参数就是 JSON”的规则；`requiredIfEq:字段,JSON值` 这类“字段路径 + JSON literal”组合参数应优先用 `ofFieldValue(...)`。
+
+```php
+use HongXunPan\Validator\Rule\Assert\Common\InRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\RuleChain;
+
+'status:状态' => 'required|' . InRule::ofJson(array('draft', 'published'));
+'source_id:来源ID' => RuleChain::join(array(
+    RequiredIfEqRule::ofFieldValue('target_mode', 'activity_checkin_users'),
+    NullableIfNotEqRule::ofFieldValue('target_mode', 'activity_checkin_users'),
+    'nonNegativeInt',
+));
+```
 
 ## 目录结构
 

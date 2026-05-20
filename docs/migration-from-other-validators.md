@@ -109,6 +109,16 @@ For sets:
 requiredIfIn:type,["guest","member"]
 ```
 
+When building rules in PHP, prefer structured helpers over hand-written commas and `json_encode(...)`:
+
+```php
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfInRule;
+
+RequiredIfEqRule::ofFieldValue('type', 'guest');
+RequiredIfInRule::ofFieldValues('type', array('guest', 'member'));
+```
+
 This avoids mixing `"1"`, `1`, `true`, and `"true"`.
 
 ### 3.3 Database Rules

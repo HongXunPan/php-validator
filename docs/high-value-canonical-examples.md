@@ -407,6 +407,19 @@ Notes:
 - `requiredIfPresent` is the core canonical name; `requiredWith` is not the primary rule name.
 - `prohibitedIfMissing` is the core canonical name; `prohibitedWithout` is not the primary rule name.
 - Laravel-like `requiredWith / requiredWithout / prohibitedWith / prohibitedWithout` are better kept as adapter aliases or migration-layer names.
+- When building conditional rules in PHP, prefer `RequiredIfEqRule::ofFieldValue(...)`, `RequiredIfInRule::ofFieldValues(...)`, `SameFieldRule::ofField(...)`, and `RuleChain::join(...)` over hand-written `json_encode(...)` and repeated string concatenation.
+
+```php
+use HongXunPan\Validator\Rule\Condition\NullableIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\RuleChain;
+
+'source_id:Source ID' => RuleChain::join(array(
+    RequiredIfEqRule::ofFieldValue('target_mode', 'activity'),
+    NullableIfNotEqRule::ofFieldValue('target_mode', 'activity'),
+    'nonNegativeInt',
+));
+```
 
 ---
 

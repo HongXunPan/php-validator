@@ -8,9 +8,12 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractCrossFieldAssertionRule;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldReferenceRule;
 
 class SameFieldRule extends AbstractCrossFieldAssertionRule
 {
+    use BuildsFieldReferenceRule;
+
     const KEY = 'sameField';
     const MESSAGE = '$paramName must be same as $rule';
     const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;

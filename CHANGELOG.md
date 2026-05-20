@@ -35,6 +35,7 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - PHPStan static analysis configuration and CI job
 - a dedicated canonical examples document for copy-friendly core scenarios
 - highest-standard pre-release structural refactor plan document in the shared workspace
+- `RuleArg` / `RuleChain` and semantic rule builders such as `ofField(...)`, `ofFieldValue(...)`, and `ofFieldValues(...)` for safer PHP-side rule construction
 
 ### Changed
 

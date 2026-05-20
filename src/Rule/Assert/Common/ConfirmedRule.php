@@ -7,9 +7,12 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractCrossFieldAssertionRule;
 use HongXunPan\Validator\Rule\Argument\ConfirmedFieldArgument;
 use HongXunPan\Validator\Rule\Argument\ConfirmedFieldArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldReferenceRule;
 
 class ConfirmedRule extends AbstractCrossFieldAssertionRule
 {
+    use BuildsFieldReferenceRule;
+
     const KEY = 'confirmed';
     const MESSAGE = '$paramName confirmation does not match';
     const ARGUMENT_PARSER = ConfirmedFieldArgumentParser::class;

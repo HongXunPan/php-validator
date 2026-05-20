@@ -7,9 +7,12 @@ use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldReferenceRule;
 
 abstract class AbstractReferencedFieldCompareRule extends AbstractCrossFieldAssertionRule
 {
+    use BuildsFieldReferenceRule;
+
     const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;
 
     public static function validate(RuleContext $context)

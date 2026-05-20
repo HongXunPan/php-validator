@@ -409,6 +409,19 @@ if ($result->isPassed()) {
 - `requiredIfPresent` 是 core canonical，不把 `requiredWith` 作为主规则名；
 - `prohibitedIfMissing` 是 core canonical，不把 `prohibitedWithout` 作为主规则名；
 - Laravel-like `requiredWith / requiredWithout / prohibitedWith / prohibitedWithout` 更适合作为 adapter alias 或迁移层写法。
+- 如果在 PHP 代码中拼条件规则，优先使用 `RequiredIfEqRule::ofFieldValue(...)`、`RequiredIfInRule::ofFieldValues(...)`、`SameFieldRule::ofField(...)` 与 `RuleChain::join(...)`，避免手写 `json_encode(...)` 和连续字符串拼接。
+
+```php
+use HongXunPan\Validator\Rule\Condition\NullableIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\RuleChain;
+
+'source_id:来源ID' => RuleChain::join(array(
+    RequiredIfEqRule::ofFieldValue('target_mode', 'activity'),
+    NullableIfNotEqRule::ofFieldValue('target_mode', 'activity'),
+    'nonNegativeInt',
+));
+```
 
 ---
 

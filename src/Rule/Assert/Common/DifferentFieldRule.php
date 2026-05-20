@@ -8,9 +8,12 @@ use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\AbstractCrossFieldAssertionRule;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgument;
 use HongXunPan\Validator\Rule\Argument\FieldReferenceArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldReferenceRule;
 
 class DifferentFieldRule extends AbstractCrossFieldAssertionRule
 {
+    use BuildsFieldReferenceRule;
+
     const KEY = 'differentField';
     const MESSAGE = '$paramName must be different from $rule';
     const ARGUMENT_PARSER = FieldReferenceArgumentParser::class;

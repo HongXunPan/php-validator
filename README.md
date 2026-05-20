@@ -123,6 +123,25 @@ Rule lookup order is fixed:
   - `of(...)` for raw arguments;
   - `ofJson(...)` for JSON-encoded arguments such as `InRule::ofJson(array('draft', 'published'))`;
 - rules that declare JSON literal parameters, such as `in / notIn / startsWith / requiredKeys`, should prefer `ofJson(...)` in PHP code to avoid hand-written escaping;
+- use the three-layer builder model for compound arguments and rule chains:
+  - `RuleArg`: builds argument fragments only, such as `fieldValue($field, $value)`, `fieldValues($field, $values)`, and `range($min, $max)`;
+  - semantic helpers on concrete rule classes: build a single rule token, such as `RequiredIfEqRule::ofFieldValue(...)`, `RequiredIfInRule::ofFieldValues(...)`, and `GteFieldRule::ofField(...)`;
+  - `RuleChain::join(...)`: combines rule tokens instead of hand-written `implode('|', ...)` or repeated string concatenation;
+- `ofJson(...)` is for rules whose whole argument is JSON; compound arguments such as `requiredIfEq:field,JSON-value` should prefer `ofFieldValue(...)`.
+
+```php
+use HongXunPan\Validator\Rule\Assert\Common\InRule;
+use HongXunPan\Validator\Rule\Condition\NullableIfNotEqRule;
+use HongXunPan\Validator\Rule\Condition\RequiredIfEqRule;
+use HongXunPan\Validator\Rule\RuleChain;
+
+'status:Status' => 'required|' . InRule::ofJson(array('draft', 'published'));
+'source_id:Source ID' => RuleChain::join(array(
+    RequiredIfEqRule::ofFieldValue('target_mode', 'activity_checkin_users'),
+    NullableIfNotEqRule::ofFieldValue('target_mode', 'activity_checkin_users'),
+    'nonNegativeInt',
+));
+```
 
 ## Package Layout
 

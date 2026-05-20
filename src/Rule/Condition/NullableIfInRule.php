@@ -5,9 +5,12 @@ namespace HongXunPan\Validator\Rule\Condition;
 use HongXunPan\Validator\Context\RuleContext;
 use HongXunPan\Validator\Result\RuleResult;
 use HongXunPan\Validator\Rule\Argument\FieldExpectedLiteralSetArgumentParser;
+use HongXunPan\Validator\Rule\Concern\BuildsFieldExpectedLiteralSetRule;
 
 class NullableIfInRule extends AbstractConditionalPresentValueGuardRule
 {
+    use BuildsFieldExpectedLiteralSetRule;
+
     const KEY = 'nullableIfIn';
     const MESSAGE = '$paramName nullable';
     const ARGUMENT_PARSER = FieldExpectedLiteralSetArgumentParser::class;
