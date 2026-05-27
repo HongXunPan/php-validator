@@ -37,10 +37,16 @@ class ValidatedOutputData
             return;
         }
 
+        $outputValue = $targetValueContext->outputValue();
+        $existingValue = $this->pathAccessor->getValue($this->data, $ruleTarget->fieldPath(), true);
+        if ($existingValue->exists() && is_array($outputValue) && is_array($existingValue->value())) {
+            $outputValue = array_replace_recursive($outputValue, $existingValue->value());
+        }
+
         $this->pathAccessor->setValue(
             $this->data,
             $ruleTarget->fieldPath(),
-            $targetValueContext->outputValue()
+            $outputValue
         );
     }
 

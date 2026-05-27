@@ -1009,4 +1009,239 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertTrue($result->isPassed(), 'canonical 列表规则组合应通过');
         $this->assertSame(array(2, 3), $result->validatedData()['ids'], 'listOf + distinct + sortAsc 应完成归一化');
     }
+
+    public function testWildcardTargetNormalizesScalarListItems()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('ids' => array('1', '2')),
+            array(
+                'ids:ID列表' => 'listOf',
+                'ids.*:ID' => 'nonNegativeInt',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'field.* 应支持标量列表子项校验');
+        $this->assertSame(array(1, 2), $result->validatedData()['ids'], 'field.* 应把子项归一化写回原列表');
+    }
+
+    public function testWildcardTargetNormalizesObjectListField()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'users' => array(
+                    array('name' => ' Alice '),
+                    array('name' => ' Bob '),
+                ),
+            ),
+            array(
+                'users:用户列表' => 'listOf',
+                'users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'field.*.name 应支持对象列表字段校验');
+        $this->assertSame('Alice', $result->validatedData()['users'][0]['name'], '第一个对象字段应完成 trim');
+        $this->assertSame('Bob', $result->validatedData()['users'][1]['name'], '第二个对象字段应完成 trim');
+    }
+
+    public function testWildcardTargetReportsMissingChildByConcretePath()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'users' => array(
+                    array('name' => 'Alice'),
+                    array(),
+                ),
+            ),
+            array(
+                'users:用户列表' => 'listOf',
+                'users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '对象列表子字段缺失时应失败');
+        $this->assertSame('users.1.name', $result->detail()[0]['param'], '通配目标错误应定位到具体路径');
+    }
+
+    public function testWildcardTargetSupportsAssociativeMapValues()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'labels' => array(
+                    'zh' => ' 中文 ',
+                    'en' => ' English ',
+                ),
+            ),
+            array(
+                'labels:多语言文案' => 'array',
+                'labels.*:文案' => 'trim|string',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), 'field.* 应同时支持关联数组值');
+        $this->assertSame('中文', $result->validatedData()['labels']['zh'], '关联数组 zh 值应归一化');
+        $this->assertSame('English', $result->validatedData()['labels']['en'], '关联数组 en 值应归一化');
+    }
+
+    public function testWildcardTargetWorksWithRejectUnknown()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(
+                'users' => array(
+                    array('name' => 'Alice', 'age' => 18),
+                ),
+            ),
+            array(
+                'users:用户列表' => 'listOf',
+                'users.*.name:姓名' => 'string',
+            ),
+            array('reject_unknown' => true)
+        );
+
+        $this->assertFalse($result->isPassed(), 'reject_unknown 应识别通配声明并继续拦截子项未知字段');
+        $this->assertSame('users.0.age', $result->detail()[0]['param'], '未知字段应定位到具体 item 路径');
+    }
+
+    public function testWildcardTargetOutputDoesNotDependOnRuleOrder()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('ids' => array('1', '2')),
+            array(
+                'ids.*:ID' => 'nonNegativeInt',
+                'ids:ID列表' => 'listOf',
+            )
+        );
+
+        $this->assertTrue($result->isPassed(), '父子规则顺序变化时仍应通过');
+        $this->assertSame(array(1, 2), $result->validatedData()['ids'], '父级输出不应覆盖子项归一化结果');
+    }
+
+    public function testWildcardTargetDoesNotExpandWhenParentMissing()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array(),
+            array(
+                'users:用户列表' => 'required|listOf',
+                'users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '父字段缺失时应由父级 required 报错');
+        $this->assertCount(1, $result->errors(), '父字段缺失时不应额外展开通配子规则');
+        $this->assertSame('用户列表', $result->detail()[0]['param'], '错误应停留在父字段显示名');
+    }
+
+    public function testWildcardTargetDoesNotExpandWhenParentIsNotArray()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('users' => 'bad'),
+            array(
+                'users:用户列表' => 'listOf',
+                'users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '父字段非数组时应由父级类型规则报错');
+        $this->assertCount(1, $result->errors(), '父字段非数组时不应额外展开通配子规则');
+        $this->assertSame('用户列表', $result->detail()[0]['param'], '错误应定位到父字段显示名');
+        $this->assertSame('listOf', $result->detail()[0]['rule'], '应由 listOf 报错');
+    }
+
+    public function testWildcardTargetReportsChildPathWhenItemIsNotArray()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('users' => array('bad')),
+            array(
+                'users:用户列表' => 'listOf',
+                'users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), 'item 非数组时，子字段 required 应按具体子路径失败');
+        $this->assertSame('users.0.name', $result->detail()[0]['param'], 'item 非数组时仍应定位到展开后的子字段路径');
+        $this->assertSame('required', $result->detail()[0]['rule'], '应由子字段 required 报错');
+    }
+
+    public function testWildcardTargetSupportsNestedWildcards()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $passed = $kernel->validateAndNormalize(
+            array(
+                'groups' => array(
+                    array(
+                        'users' => array(
+                            array('name' => ' Alice '),
+                            array('name' => ' Bob '),
+                        ),
+                    ),
+                ),
+            ),
+            array(
+                'groups:分组列表' => 'listOf',
+                'groups.*.users:用户列表' => 'listOf',
+                'groups.*.users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+        $failed = $kernel->validateAndNormalize(
+            array(
+                'groups' => array(
+                    array(
+                        'users' => array(
+                            array('name' => 'Alice'),
+                            array(),
+                        ),
+                    ),
+                ),
+            ),
+            array(
+                'groups:分组列表' => 'listOf',
+                'groups.*.users:用户列表' => 'listOf',
+                'groups.*.users.*.name:姓名' => 'required|trim|string',
+            )
+        );
+
+        $this->assertTrue($passed->isPassed(), '多层通配应支持正常对象列表嵌套');
+        $this->assertSame('Alice', $passed->validatedData()['groups'][0]['users'][0]['name'], '多层通配应归一化内层子字段');
+        $this->assertFalse($failed->isPassed(), '多层通配内层子字段缺失时应失败');
+        $this->assertSame('groups.0.users.1.name', $failed->detail()[0]['param'], '多层通配错误应定位到具体路径');
+    }
+
+    public function testWildcardTargetRejectUnknownAllowsDirectWildcardItems()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('labels' => array('zh' => '中文', 'en' => 'English')),
+            array(
+                'labels:多语言文案' => 'array',
+                'labels.*:文案' => 'string',
+            ),
+            array('reject_unknown' => true)
+        );
+
+        $this->assertTrue($result->isPassed(), 'reject_unknown 下 field.* 应允许 map 动态 key 本身');
+    }
+
+    public function testBracketWildcardSyntaxIsNotSupported()
+    {
+        $kernel = ValidationKernel::create(CanonicalValidator::class);
+        $result = $kernel->validateAndNormalize(
+            array('ids' => array('1', '2')),
+            array(
+                'ids:ID列表' => 'listOf',
+                'ids.[*]' => 'required|nonNegativeInt',
+            )
+        );
+
+        $this->assertFalse($result->isPassed(), '[*] 当前应被视为普通路径 segment，而不是通配语法');
+        $this->assertSame('ids.[*]', $result->detail()[0]['param'], '不支持语法应按普通路径报错');
+    }
 }

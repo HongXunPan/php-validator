@@ -127,6 +127,7 @@ class DemoValidator extends Validator
   - 具体规则类语义方法：构造单条规则，例如 `RequiredIfEqRule::ofFieldValue(...)`、`RequiredIfInRule::ofFieldValues(...)`、`GteFieldRule::ofField(...)`；
   - `RuleChain::join(...)`：组合多条规则，替代手写 `implode('|', ...)` 或连续字符串拼接；
 - `ofJson(...)` 只适合“整段参数就是 JSON”的规则；`requiredIfEq:字段,JSON值` 这类“字段路径 + JSON literal”组合参数应优先用 `ofFieldValue(...)`。
+- 目标字段路径支持 `*` 作为独立通配 segment，例如 `ids.*`、`users.*.name`；`*` 只负责定位子节点，列表 / map / 对象数组语义仍由 `listOf / array` 等规则声明；`[*]` 当前不支持，作为保留语法。
 
 ```php
 use HongXunPan\Validator\Rule\Assert\Common\InRule;
@@ -141,6 +142,41 @@ use HongXunPan\Validator\Rule\RuleChain;
     'nonNegativeInt',
 ));
 ```
+
+## 通配目标路径示例
+
+`field.*` 表示 `field` 下任意一个直接子节点，`field.*.name` 表示 `field` 下任意子节点的 `name` 字段。路径层不区分 list 与 map；若业务要求列表，给父字段声明 `listOf`，若只要求数组 / map，给父字段声明 `array`。
+
+```php
+$result = DemoValidator::validateAndNormalize(
+    array(
+        'ids' => array('1', '2'),
+        'users' => array(
+            array('name' => ' Alice '),
+            array('name' => ' Bob '),
+        ),
+        'labels' => array(
+            'zh' => ' 中文 ',
+            'en' => ' English ',
+        ),
+    ),
+    array(
+        'ids:ID列表' => 'listOf',
+        'ids.*:ID' => 'nonNegativeInt',
+        'users:用户列表' => 'listOf',
+        'users.*.name:姓名' => 'required|trim|string',
+        'labels:多语言文案' => 'array',
+        'labels.*:文案' => 'trim|string',
+    )
+);
+```
+
+说明：
+
+- `ids.*` 会把每个 ID 子项按 `nonNegativeInt` 归一化；
+- `users.*.name` 会校验并归一化对象列表里的 `name`；
+- 子字段缺失时，错误会定位到具体路径，例如 `users.1.name`；
+- `reject_unknown` 开启时，通配声明会允许 item key 本身，但仍会拦截 item 内未声明字段。
 
 ## 目录结构
 

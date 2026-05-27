@@ -15,6 +15,7 @@ use HongXunPan\Validator\Internal\Rules\RuleSet;
 use HongXunPan\Validator\Internal\State\ValidationState;
 use HongXunPan\Validator\Internal\Target\TargetLifecycleManager;
 use HongXunPan\Validator\Internal\Target\TargetPlanExecutor;
+use HongXunPan\Validator\Internal\Target\WildcardTargetPlanExpander;
 use HongXunPan\Validator\Support\LiteralValueParser;
 use HongXunPan\Validator\Support\RuleResultNormalizer;
 
@@ -32,6 +33,10 @@ class ObjectValidationRunner
      * @var TargetPlanExecutor
      */
     private $targetPlanExecutor;
+    /**
+     * @var WildcardTargetPlanExpander
+     */
+    private $wildcardTargetPlanExpander;
     /**
      * @var UnknownTargetDetector
      */
@@ -59,6 +64,7 @@ class ObjectValidationRunner
             ),
             new TargetLifecycleManager()
         );
+        $this->wildcardTargetPlanExpander = new WildcardTargetPlanExpander($this->pathAccessor);
         $this->unknownTargetDetector = new UnknownTargetDetector($this->pathAccessor);
     }
 
@@ -86,6 +92,7 @@ class ObjectValidationRunner
     public function runOutput(array $data, array $rules, ValidationOptions $options, $normalizeOutput)
     {
         $compiledPlan = $this->targetRulePlanCompiler->compile($rules);
+        $compiledPlan = $this->wildcardTargetPlanExpander->expand($data, $compiledPlan);
         $state = new ValidationState(
             $data,
             $options,

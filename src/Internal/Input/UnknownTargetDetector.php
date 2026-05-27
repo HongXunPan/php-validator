@@ -53,14 +53,21 @@ class UnknownTargetDetector
     {
         foreach ($data as $key => $value) {
             $key = (string)$key;
-            if (!array_key_exists($key, $allowedRuleTree)) {
+            $allowedRuleTreeNode = null;
+            if (array_key_exists($key, $allowedRuleTree)) {
+                $allowedRuleTreeNode = $allowedRuleTree[$key];
+            } elseif (array_key_exists('*', $allowedRuleTree)) {
+                $allowedRuleTreeNode = $allowedRuleTree['*'];
+            }
+
+            if (!is_array($allowedRuleTreeNode)) {
                 $displayName = $this->pathAccessor->buildDisplayName($key, $fieldPrefix);
                 $detailItems[] = ValidationDetailItem::unknownField($displayName, $value);
 
                 continue;
             }
 
-            $children = $this->extractChildren($allowedRuleTree[$key]);
+            $children = $this->extractChildren($allowedRuleTreeNode);
             if (!$children || !is_array($value)) {
                 continue;
             }

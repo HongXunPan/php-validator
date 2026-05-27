@@ -163,4 +163,24 @@ class CompiledTargetRulePlan
     {
         return !empty($this->unsupportedRules);
     }
+
+    /**
+     * @param RuleTarget $ruleTarget
+     *
+     * @return self
+     */
+    public function withRuleTarget(RuleTarget $ruleTarget)
+    {
+        return new self(
+            $ruleTarget,
+            $this->unsupportedRules,
+            $this->missingValueCreationRules,
+            $this->presentValueNormalizationRules,
+            $this->fieldPresenceAssertionRules,
+            $this->presentValueGuardRules,
+            $this->presentValueTransformRules,
+            $this->presentValueAssertionRules,
+            $this->crossFieldAssertionRules
+        );
+    }
 }

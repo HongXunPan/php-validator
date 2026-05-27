@@ -36,9 +36,11 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - a dedicated canonical examples document for copy-friendly core scenarios
 - highest-standard pre-release structural refactor plan document in the shared workspace
 - `RuleArg` / `RuleChain` and semantic rule builders such as `ofField(...)`, `ofFieldValue(...)`, and `ofFieldValues(...)` for safer PHP-side rule construction
+- wildcard target paths such as `field.*` and `field.*.name` for validating scalar lists, maps, and object-list child fields
 
 ### Changed
 
+- project-specific DSL rule splitting helpers were removed from the shared `Validator` base class; DSL consumers should keep that parsing logic in their own adapter layer
 - internal runtime collaborators were regrouped into clearer directories such as:
   - `Internal/Input`
   - `Internal/Context`
