@@ -33,4 +33,32 @@ class ValidationResultTest extends TestCase
         $this->assertCount(0, $array['errors'], 'success errors 应为空');
         $this->assertSame('Alice', $array['validated_data']['name'], 'validated_data 应保留通过值');
     }
+
+    public function testFailedFieldPathsFiltersInvalidItemsAndKeepsFirstOccurrenceOrder()
+    {
+        $result = ValidationResult::failure(
+            array('name is required', 'name is invalid', 'age is invalid'),
+            array(
+                array('field_path' => 'profile.name', 'param' => '姓名'),
+                array('field_path' => 'profile.name', 'param' => '联系人姓名'),
+                array('field_path' => '', 'param' => '空字段'),
+                array('param' => '旧格式明细'),
+                array('field_path' => 'profile.age', 'param' => '年龄'),
+            ),
+            array()
+        );
+
+        $this->assertSame(
+            array('profile.name', 'profile.age'),
+            $result->failedFieldPaths(),
+            '失败字段路径应去空、去重并保持首次出现顺序'
+        );
+    }
+
+    public function testSuccessResultHasNoFailedFieldPaths()
+    {
+        $result = ValidationResult::success(array('name' => 'Alice'));
+
+        $this->assertSame(array(), $result->failedFieldPaths(), '成功结果不应包含失败字段路径');
+    }
 }

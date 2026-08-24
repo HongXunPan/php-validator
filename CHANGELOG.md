@@ -37,6 +37,7 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 - highest-standard pre-release structural refactor plan document in the shared workspace
 - `RuleArg` / `RuleChain` and semantic rule builders such as `ofField(...)`, `ofFieldValue(...)`, and `ofFieldValues(...)` for safer PHP-side rule construction
 - wildcard target paths such as `field.*` and `field.*.name` for validating scalar lists, maps, and object-list child fields
+- 校验失败明细新增机器可读的 `field_path`，并提供 `ValidationResult::failedFieldPaths()` 统一提取失败字段路径
 
 ### Changed
 

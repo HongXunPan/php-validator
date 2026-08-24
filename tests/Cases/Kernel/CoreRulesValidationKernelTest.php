@@ -1064,6 +1064,7 @@ class CoreRulesValidationKernelTest extends TestCase
 
         $this->assertFalse($result->isPassed(), '对象列表子字段缺失时应失败');
         $this->assertSame('users.1.name', $result->detail()[0]['param'], '通配目标错误应定位到具体路径');
+        $this->assertSame('users.1.name', $result->detail()[0]['field_path'], '通配目标应保留展开后的具体字段路径');
     }
 
     public function testWildcardTargetSupportsAssociativeMapValues()
@@ -1105,6 +1106,7 @@ class CoreRulesValidationKernelTest extends TestCase
 
         $this->assertFalse($result->isPassed(), 'reject_unknown 应识别通配声明并继续拦截子项未知字段');
         $this->assertSame('users.0.age', $result->detail()[0]['param'], '未知字段应定位到具体 item 路径');
+        $this->assertSame('users.0.age', $result->detail()[0]['field_path'], '通配列表未知字段应保留实际路径');
     }
 
     public function testWildcardTargetOutputDoesNotDependOnRuleOrder()
@@ -1213,6 +1215,7 @@ class CoreRulesValidationKernelTest extends TestCase
         $this->assertSame('Alice', $passed->validatedData()['groups'][0]['users'][0]['name'], '多层通配应归一化内层子字段');
         $this->assertFalse($failed->isPassed(), '多层通配内层子字段缺失时应失败');
         $this->assertSame('groups.0.users.1.name', $failed->detail()[0]['param'], '多层通配错误应定位到具体路径');
+        $this->assertSame('groups.0.users.1.name', $failed->detail()[0]['field_path'], '多层通配应保留展开后的字段路径');
     }
 
     public function testWildcardTargetRejectUnknownAllowsDirectWildcardItems()

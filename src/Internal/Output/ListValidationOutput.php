@@ -43,7 +43,7 @@ class ListValidationOutput
      */
     public function addListItemTypeError($itemPrefix, $item)
     {
-        $detailItem = ValidationDetailItem::listItemNotArray($itemPrefix, $item);
+        $detailItem = ValidationDetailItem::listItemNotArray($itemPrefix, $itemPrefix, $item);
         $this->errors[] = $this->messageRenderer->render(
             ArrayType::defaultMessage(),
             $detailItem->param(),

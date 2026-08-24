@@ -61,8 +61,8 @@ class UnknownTargetDetector
             }
 
             if (!is_array($allowedRuleTreeNode)) {
-                $displayName = $this->pathAccessor->buildDisplayName($key, $fieldPrefix);
-                $detailItems[] = ValidationDetailItem::unknownField($displayName, $value);
+                $fieldPath = $this->pathAccessor->join($fieldPrefix, $key);
+                $detailItems[] = ValidationDetailItem::unknownField($fieldPath, $fieldPath, $value);
 
                 continue;
             }

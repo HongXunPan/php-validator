@@ -21,6 +21,7 @@ class ListValidationOutputTest extends TestCase
 
         $this->assertTrue($result->isFailed(), '追加列表项类型错误后结果应失败');
         $this->assertSame('items.2', $result->detail()[0]['param'], '错误路径应正确');
+        $this->assertSame('items.2', $result->detail()[0]['field_path'], '字段路径应保留列表位置');
     }
 
     public function testMergeScalarItemResultCollectsNormalizedValue()

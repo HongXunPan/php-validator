@@ -278,6 +278,7 @@ The most common methods are:
 - `count()`
 - `errors()`
 - `detail()`
+- `failedFieldPaths()`
 - `validatedData()`
 - `toArray()`
 
@@ -293,8 +294,26 @@ if ($result->isFailed()) {
     var_dump($result->count());
     var_dump($result->errors());
     var_dump($result->detail());
+    var_dump($result->failedFieldPaths());
 }
 ```
+
+Failure details keep the machine-readable field path separate from the display name:
+
+```php
+array(
+    'field_path' => 'profile.name',
+    'param' => 'Name',
+    'value' => '',
+    'rule' => 'required',
+    'rule_value' => '',
+    'reason' => 'result: false',
+)
+```
+
+- `field_path` is the stable machine-readable path. Field prefixes and wildcard targets are resolved to their concrete paths.
+- `param` remains the display name used by error messages.
+- `failedFieldPaths()` returns valid field paths in first-seen order with duplicates removed, without exposing failed values.
 
 If an old project still needs the legacy array envelope, convert explicitly in the adapter layer:
 

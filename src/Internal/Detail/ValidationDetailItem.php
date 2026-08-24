@@ -19,6 +19,10 @@ class ValidationDetailItem
     /**
      * @var string
      */
+    private $fieldPath;
+    /**
+     * @var string
+     */
     private $param;
     /**
      * @var mixed
@@ -38,14 +42,16 @@ class ValidationDetailItem
     private $reason;
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      * @param string $rule
      * @param string $ruleValue
      * @param string $reason
      */
-    private function __construct($param, $value, $rule, $ruleValue, $reason)
+    private function __construct($fieldPath, $param, $value, $rule, $ruleValue, $reason)
     {
+        $this->fieldPath = (string)$fieldPath;
         $this->param = (string)$param;
         $this->value = $value;
         $this->rule = (string)$rule;
@@ -54,6 +60,7 @@ class ValidationDetailItem
     }
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      * @param string $rule
@@ -62,20 +69,22 @@ class ValidationDetailItem
      *
      * @return static
      */
-    public static function create($param, $value, $rule, $ruleValue, $reason)
+    public static function create($fieldPath, $param, $value, $rule, $ruleValue, $reason)
     {
-        return new static($param, $value, $rule, $ruleValue, $reason);
+        return new static($fieldPath, $param, $value, $rule, $ruleValue, $reason);
     }
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      *
      * @return static
      */
-    public static function unknownField($param, $value)
+    public static function unknownField($fieldPath, $param, $value)
     {
         return new static(
+            $fieldPath,
             $param,
             $value,
             self::RULE_UNKNOWN,
@@ -85,14 +94,16 @@ class ValidationDetailItem
     }
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      *
      * @return static
      */
-    public static function listItemNotArray($param, $value)
+    public static function listItemNotArray($fieldPath, $param, $value)
     {
         return new static(
+            $fieldPath,
             $param,
             $value,
             self::RULE_ARRAY,
@@ -102,15 +113,17 @@ class ValidationDetailItem
     }
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      * @param string $ruleValue
      *
      * @return static
      */
-    public static function unsupportedRule($param, $value, $ruleValue)
+    public static function unsupportedRule($fieldPath, $param, $value, $ruleValue)
     {
         return new static(
+            $fieldPath,
             $param,
             $value,
             self::RULE_UNSUPPORTED,
@@ -120,6 +133,7 @@ class ValidationDetailItem
     }
 
     /**
+     * @param string $fieldPath
      * @param string $param
      * @param mixed $value
      * @param string $rule
@@ -127,9 +141,10 @@ class ValidationDetailItem
      *
      * @return static
      */
-    public static function ruleFailed($param, $value, $rule, $ruleValue)
+    public static function ruleFailed($fieldPath, $param, $value, $rule, $ruleValue)
     {
         return new static(
+            $fieldPath,
             $param,
             $value,
             $rule,
@@ -184,6 +199,7 @@ class ValidationDetailItem
     public function toArray()
     {
         return array(
+            'field_path' => $this->fieldPath,
             'param' => $this->param,
             'value' => $this->value,
             'rule' => $this->rule,

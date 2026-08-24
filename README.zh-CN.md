@@ -315,6 +315,7 @@ var_dump($result->validatedData());
 - `count()`
 - `errors()`
 - `detail()`
+- `failedFieldPaths()`
 - `validatedData()`
 - `toArray()`
 
@@ -330,8 +331,26 @@ if ($result->isFailed()) {
     var_dump($result->count());
     var_dump($result->errors());
     var_dump($result->detail());
+    var_dump($result->failedFieldPaths());
 }
 ```
+
+失败明细同时区分机器字段路径与展示名称：
+
+```php
+array(
+    'field_path' => 'profile.name',
+    'param' => '姓名',
+    'value' => '',
+    'rule' => 'required',
+    'rule_value' => '',
+    'reason' => 'result: false',
+)
+```
+
+- `field_path` 是稳定、机器可读的实际失败路径；带 `field_prefix` 或通配目标时返回展开后的具体路径；
+- `param` 继续承接错误文案所需的展示名称；
+- `failedFieldPaths()` 只读取合法的 `field_path`，按首次出现顺序去重，不返回失败值。
 
 如果旧项目仍然依赖数组 envelope，可在适配层里显式：
 

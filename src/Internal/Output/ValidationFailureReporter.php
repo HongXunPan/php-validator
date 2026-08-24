@@ -71,6 +71,19 @@ class ValidationFailureReporter
     }
 
     /**
+     * @param RuleTarget $ruleTarget
+     *
+     * @return string
+     */
+    private function fieldPath(RuleTarget $ruleTarget)
+    {
+        return $this->pathAccessor->join(
+            $this->fieldPrefix,
+            $ruleTarget->fieldPath()
+        );
+    }
+
+    /**
      * @param ValidationDetailItem $detailItem
      *
      * @return void
@@ -101,11 +114,13 @@ class ValidationFailureReporter
         TargetValueContext $targetValueContext,
         RuleExecutionOutcome $outcome
     ) {
+        $fieldPath = $this->fieldPath($ruleTarget);
         $paramName = $this->displayName($ruleTarget);
         $parsedRule = $compiledRule->parsedRule();
 
         if ($outcome->isUnsupported()) {
             $detailItem = ValidationDetailItem::unsupportedRule(
+                $fieldPath,
                 $paramName,
                 $targetValueContext->currentValue(),
                 $parsedRule->inputRuleKey()
@@ -125,6 +140,7 @@ class ValidationFailureReporter
 
         $resolvedRule = $outcome->resolvedRule();
         $detailItem = ValidationDetailItem::ruleFailed(
+            $fieldPath,
             $paramName,
             $targetValueContext->currentValue(),
             $resolvedRule->finalRuleKey(),

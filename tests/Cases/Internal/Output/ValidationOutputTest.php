@@ -29,12 +29,13 @@ class ValidationOutputTest extends TestCase
         $output = new ValidationOutput(new PathAccessor());
         $output->appendFailure(
             '姓名 is required',
-            ValidationDetailItem::ruleFailed('姓名', null, 'required', '')
+            ValidationDetailItem::ruleFailed('name', '姓名', null, 'required', '')
         );
 
         $result = $output->toValidationResult();
 
         $this->assertTrue($result->isFailed(), '追加错误明细后结果应失败');
         $this->assertSame('姓名 is required', $result->errors()[0], '错误消息应保留追加值');
+        $this->assertSame('name', $result->detail()[0]['field_path'], '错误明细应保留真实字段路径');
     }
 }

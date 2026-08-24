@@ -87,6 +87,33 @@ class ValidationResult
     }
 
     /**
+     * 返回失败明细中的稳定字段路径，并按首次出现顺序去重。
+     *
+     * @return array<int, string>
+     */
+    public function failedFieldPaths()
+    {
+        $fieldPaths = array();
+        $seen = array();
+
+        foreach ($this->detail as $item) {
+            if (!is_array($item) || !array_key_exists('field_path', $item)) {
+                continue;
+            }
+
+            $fieldPath = $item['field_path'];
+            if (!is_string($fieldPath) || $fieldPath === '' || array_key_exists($fieldPath, $seen)) {
+                continue;
+            }
+
+            $fieldPaths[] = $fieldPath;
+            $seen[$fieldPath] = true;
+        }
+
+        return $fieldPaths;
+    }
+
+    /**
      * @return mixed
      */
     public function validatedData()

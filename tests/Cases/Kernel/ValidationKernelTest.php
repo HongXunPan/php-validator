@@ -101,6 +101,42 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isFailed(), '不支持的规则应失败');
         $this->assertContains('unsupported', $result->errors()[0], '错误消息应标记 unsupported');
+        $this->assertSame('name', $result->detail()[0]['field_path'], '不支持规则明细应保留真实字段路径');
+    }
+
+    public function testFailureDetailsKeepDistinctFieldPathsForDuplicateDisplayNames()
+    {
+        $kernel = ValidationKernel::create(CustomValidator::class);
+        $result = $kernel->validate(
+            array(),
+            array(
+                'real_name:姓名' => 'required',
+                'contact_name:姓名' => 'required',
+            )
+        );
+
+        $this->assertTrue($result->isFailed(), '同名展示字段缺失时应失败');
+        $this->assertSame('姓名', $result->detail()[0]['param'], '第一个字段应继续使用展示名');
+        $this->assertSame('姓名', $result->detail()[1]['param'], '第二个字段应继续使用展示名');
+        $this->assertSame(
+            array('real_name', 'contact_name'),
+            $result->failedFieldPaths(),
+            '同名展示字段必须保留各自真实路径'
+        );
+    }
+
+    public function testFailureDetailSeparatesPrefixedFieldPathFromDisplayName()
+    {
+        $kernel = ValidationKernel::create(CustomValidator::class);
+        $result = $kernel->validate(
+            array('profile' => array()),
+            array('profile.name:姓名' => 'required'),
+            array('field_prefix' => 'user')
+        );
+
+        $this->assertTrue($result->isFailed(), '带前缀的嵌套字段校验失败时应返回明细');
+        $this->assertSame('user.姓名', $result->detail()[0]['param'], '展示名称应继续用于错误文案');
+        $this->assertSame('user.profile.name', $result->detail()[0]['field_path'], '字段路径应保留前缀和真实嵌套路径');
     }
 
     public function testValidateRejectsUnknownFieldsWhenOptionEnabled()
@@ -125,6 +161,7 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isFailed(), 'reject_unknown 开启时应拦截未知字段');
         $this->assertSame('user.profile.nickname', $result->detail()[0]['param'], '未知字段路径应正确');
+        $this->assertSame('user.profile.nickname', $result->detail()[0]['field_path'], '未知字段应直接保留实际路径');
     }
 
     public function testValidateListAndNormalizeSupportsScalarRuleList()
@@ -162,6 +199,7 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isFailed(), '对象规则列表遇到非数组项时应失败');
         $this->assertSame('items.2', $result->detail()[0]['param'], '非数组项应记录正确位置');
+        $this->assertSame('items.2', $result->detail()[0]['field_path'], '非数组项应保留实际字段路径');
         $this->assertSame('array', $result->detail()[0]['rule'], '应使用统一的 array 规则标记');
         $this->assertSame('list item not array', $result->detail()[0]['reason'], '应使用统一的列表项类型错误原因');
     }
@@ -203,6 +241,7 @@ class ValidationKernelTest extends TestCase
 
         $this->assertTrue($result->isFailed(), 'conditional required 命中后缺失字段应失败');
         $this->assertSame('姓名', $result->detail()[0]['param'], '错误应落在当前字段');
+        $this->assertSame('name', $result->detail()[0]['field_path'], '错误明细应保留真实字段路径');
         $this->assertSame('requiredIfTest', $result->detail()[0]['rule'], '应由 conditional required 规则负责报错');
     }
 
