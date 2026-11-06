@@ -67,6 +67,7 @@ The format loosely follows Keep a Changelog, but is intentionally kept simple fo
 
 ### Fixed
 
+- `int` 和四个整数转换规则不再把 `true`、`false` 当作整数；合法整数字符串及原有输出行为保持不变。
 - cross-target comparison rules now read prepared dependent values instead of raw peer input
 - dependent comparison rules skip gracefully when the referenced target is not dependency-readable
 - field-compare message rendering now resolves referenced field display names from declared path labels

@@ -16,6 +16,7 @@ class IntType extends AbstractPresentValueAssertionRule
         $value = $context->value();
         $passed = $value !== null
             && $value !== ''
+            && !is_bool($value)
             && $value == intval($value);
 
         return $passed

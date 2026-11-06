@@ -254,6 +254,8 @@ var_dump($result->validatedData());
 | 数组 / 列表 | `distinct`, `sortAsc`, `minItems`, `maxItems`, `itemsBetween`, `requiredKeys`, `prohibitedKeys`, `arrayKeysIn` | 校验或归一化列表值，以及当前数组内部 key |
 | 跨字段 / 条件 | `gtField`, `gteField`, `ltField`, `lteField`, `timeAfterField`, `timeBeforeField`, `requiredIf*`, `nullableIf*`, `prohibitedIf*` | 读取其他字段 prepared value，承接比较、条件存在性或 guard |
 
+`int` 和四个整数转换规则均拒绝布尔值，仍接受符合规则的整数字符串。`int` 保留原值，转换规则输出 `int`。
+
 ## 兼容性
 
 - PHP: `>=5.6`

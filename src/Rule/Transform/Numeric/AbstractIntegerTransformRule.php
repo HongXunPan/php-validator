@@ -16,6 +16,7 @@ abstract class AbstractIntegerTransformRule extends AbstractPresentValueTransfor
     {
         return $value !== null
             && $value !== ''
+            && !is_bool($value)
             && $value == intval($value);
     }
 
